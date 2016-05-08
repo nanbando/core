@@ -1,0 +1,10 @@
+/vendor/
+.puli
+
+.idea
+*.iml
+
+.nanbando
+nanbando.json
+nanbando.phar
+
