@@ -5,9 +5,24 @@ set_time_limit(0);
 use Dflydev\EmbeddedComposer\Core\EmbeddedComposerBuilder;
 use Nanbando\Application\Application;
 use Nanbando\Application\Kernel;
-use Symfony\Component\Console\Input\ArgvInput;
 
-$input = new ArgvInput();
+$factoryClass = constant('PULI_FACTORY_CLASS');
+$puliFactory = new $factoryClass();
+$discovery = $puliFactory->createDiscovery($puliFactory->createRepository());
+
+$kernel = new Kernel('prod', true, getenv('HOME'), $discovery);
+$kernel->boot();
+
+$embeddedComposerBuilder = new EmbeddedComposerBuilder($classLoader);
+$embeddedComposer = $embeddedComposerBuilder
+    ->setComposerFilename('nanbando.json')
+    ->setVendorDirectory('.nanbando')
+    ->build();
+
+$embeddedComposer->processAdditionalAutoloads();
+
+$input = $kernel->getContainer()->get('input');
+$output = $kernel->getContainer()->get('output');
 
 if ($projectDir = $input->getParameterOption('--root-dir')) {
     if (false !== strpos($projectDir, '~') && function_exists('posix_getuid')) {
@@ -22,19 +37,5 @@ if ($projectDir = $input->getParameterOption('--root-dir')) {
     chdir($projectDir);
 }
 
-$factoryClass = constant('PULI_FACTORY_CLASS');
-$puliFactory = new $factoryClass();
-$discovery = $puliFactory->createDiscovery($puliFactory->createRepository());
-
-$kernel = new Kernel('prod', false, getenv('HOME'), $discovery);
-$kernel->boot();
-
-$embeddedComposerBuilder = new EmbeddedComposerBuilder($classLoader);
-$embeddedComposer = $embeddedComposerBuilder
-    ->setComposerFilename('nanbando.json')
-    ->setVendorDirectory('.nanbando')
-    ->build();
-
-$embeddedComposer->processAdditionalAutoloads();
 $application = new Application($kernel, $embeddedComposer);
-$application->run($input);
+$application->run($input, $output);

@@ -12,6 +12,11 @@ class Application extends SymfonyApplication implements EmbeddedComposerAwareInt
     const GIT_VERSION = '@git_version@';
 
     /**
+     * @var KernelInterface
+     */
+    private $kernel;
+
+    /**
      * @var EmbeddedComposerInterface
      */
     private $embeddedComposer;
@@ -22,6 +27,7 @@ class Application extends SymfonyApplication implements EmbeddedComposerAwareInt
      */
     public function __construct(KernelInterface $kernel, EmbeddedComposerInterface $embeddedComposer)
     {
+        $this->kernel = $kernel;
         $this->embeddedComposer = $embeddedComposer;
 
         $version = $embeddedComposer->findPackage('nanbando/core')->getPrettyVersion();
@@ -43,6 +49,14 @@ class Application extends SymfonyApplication implements EmbeddedComposerAwareInt
         foreach ($kernel->getBundles() as $bundle) {
             $bundle->registerCommands($this);
         }
+    }
+
+    /**
+     * @return KernelInterface
+     */
+    public function getKernel()
+    {
+        return $this->kernel;
     }
 
     /**

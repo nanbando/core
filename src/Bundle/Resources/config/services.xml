@@ -3,9 +3,43 @@
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
     <services>
+        <!-- kernel -->
         <service id="event_dispatcher" class="Symfony\Component\EventDispatcher\ContainerAwareEventDispatcher">
             <argument type="service" id="service_container"/>
         </service>
         <service id="filesystem" class="Symfony\Component\Filesystem\Filesystem"/>
+
+        <!-- console -->
+        <service id="input" class="Symfony\Component\Console\Input\ArgvInput"/>
+        <service id="output" class="Symfony\Component\Console\Output\ConsoleOutput"/>
+
+        <!-- tempfiles -->
+        <service id="temporary_files" class="Nanbando\Core\Temporary\TemporaryFileManager">
+            <argument type="service" id="filesystem"/>
+            <argument type="string">%nanbando.name%</argument>
+            <argument type="string">%nanbando.temp%</argument>
+
+            <!-- TODO on terminate cleanup -->
+        </service>
+
+        <!-- flysystem -->
+        <service id="filesystem.list_files" class="League\Flysystem\Plugin\ListFiles"/>
+
+        <!-- plugins -->
+        <service id="plugins" class="Nanbando\Core\Plugin\PluginRegistry">
+            <argument type="collection"/>
+
+            <!-- TODO collect plugins -->
+        </service>
+
+        <!-- core service -->
+        <service id="nanbando" class="Nanbando\Core\Nanbando">
+            <argument type="string">%nanbando.name%</argument>
+            <argument type="string">%nanbando.backup%</argument>
+            <argument type="service" id="output"/>
+            <argument type="service" id="plugins"/>
+            <argument type="service" id="filesystem.local"/>
+            <argument type="service" id="temporary_files"/>
+        </service>
     </services>
 </container>

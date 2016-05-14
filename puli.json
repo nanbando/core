@@ -2,6 +2,11 @@
     "version": "1.0",
     "name": "nanbando/core",
     "bindings": {
+        "33966441-8809-4dc0-9aae-3eff8cb1aed1": {
+            "_class": "Puli\\Discovery\\Binding\\ClassBinding",
+            "class": "Oneup\\FlysystemBundle\\OneupFlysystemBundle",
+            "type": "nanbando/bundle"
+        },
         "62685e03-694c-4995-bb70-6d81f842eab9": {
             "_class": "Puli\\Discovery\\Binding\\ClassBinding",
             "class": "Dflydev\\EmbeddedComposer\\Bundle\\DflydevEmbeddedComposerBundle",
@@ -20,6 +25,14 @@
         "bootstrap-file": "vendor/autoload.php"
     },
     "packages": {
+        "aws/aws-sdk-php": {
+            "install-path": "vendor/aws/aws-sdk-php",
+            "installer": "composer"
+        },
+        "barracuda/copy": {
+            "install-path": "vendor/barracuda/copy",
+            "installer": "composer"
+        },
         "composer/composer": {
             "install-path": "vendor/composer/composer",
             "installer": "composer"
@@ -53,8 +66,100 @@
             "install-path": "vendor/doctrine/lexer",
             "installer": "composer"
         },
+        "dropbox/dropbox-sdk": {
+            "install-path": "vendor/dropbox/dropbox-sdk",
+            "installer": "composer"
+        },
+        "eher/oauth": {
+            "install-path": "vendor/eher/oauth",
+            "installer": "composer"
+        },
+        "firebase/php-jwt": {
+            "install-path": "vendor/firebase/php-jwt",
+            "installer": "composer"
+        },
+        "guzzle/guzzle": {
+            "install-path": "vendor/guzzle/guzzle",
+            "installer": "composer"
+        },
+        "guzzlehttp/guzzle": {
+            "install-path": "vendor/guzzlehttp/guzzle",
+            "installer": "composer"
+        },
+        "guzzlehttp/promises": {
+            "install-path": "vendor/guzzlehttp/promises",
+            "installer": "composer"
+        },
+        "guzzlehttp/psr7": {
+            "install-path": "vendor/guzzlehttp/psr7",
+            "installer": "composer"
+        },
         "justinrainbow/json-schema": {
             "install-path": "vendor/justinrainbow/json-schema",
+            "installer": "composer"
+        },
+        "league/event": {
+            "install-path": "vendor/league/event",
+            "installer": "composer"
+        },
+        "league/flysystem": {
+            "install-path": "vendor/league/flysystem",
+            "installer": "composer"
+        },
+        "league/flysystem-aws-s3-v3": {
+            "install-path": "vendor/league/flysystem-aws-s3-v3",
+            "installer": "composer"
+        },
+        "league/flysystem-azure": {
+            "install-path": "vendor/league/flysystem-azure",
+            "installer": "composer"
+        },
+        "league/flysystem-copy": {
+            "install-path": "vendor/league/flysystem-copy",
+            "installer": "composer"
+        },
+        "league/flysystem-dropbox": {
+            "install-path": "vendor/league/flysystem-dropbox",
+            "installer": "composer"
+        },
+        "league/flysystem-eventable-filesystem": {
+            "install-path": "vendor/league/flysystem-eventable-filesystem",
+            "installer": "composer"
+        },
+        "league/flysystem-gridfs": {
+            "install-path": "vendor/league/flysystem-gridfs",
+            "installer": "composer"
+        },
+        "league/flysystem-rackspace": {
+            "install-path": "vendor/league/flysystem-rackspace",
+            "installer": "composer"
+        },
+        "league/flysystem-sftp": {
+            "install-path": "vendor/league/flysystem-sftp",
+            "installer": "composer"
+        },
+        "league/flysystem-webdav": {
+            "install-path": "vendor/league/flysystem-webdav",
+            "installer": "composer"
+        },
+        "league/flysystem-ziparchive": {
+            "install-path": "vendor/league/flysystem-ziparchive",
+            "installer": "composer"
+        },
+        "microsoft/azure-storage": {
+            "install-path": "vendor/microsoft/azure-storage",
+            "installer": "composer"
+        },
+        "microsoft/windowsazure": {
+            "install-path": "vendor/microsoft/windowsazure",
+            "installer": "composer"
+        },
+        "mikemccabe/json-patch-php": {
+            "install-path": "vendor/mikemccabe/json-patch-php",
+            "installer": "composer"
+        },
+        "mtdowling/jmespath.php": {
+            "install-path": "vendor/mtdowling/jmespath.php",
             "installer": "composer"
         },
         "myclabs/deep-copy": {
@@ -62,14 +167,50 @@
             "installer": "composer",
             "env": "dev"
         },
+        "oneup/flysystem-bundle": {
+            "install-path": "vendor/oneup/flysystem-bundle",
+            "installer": "composer"
+        },
         "paragonie/random_compat": {
             "install-path": "vendor/paragonie/random_compat",
+            "installer": "composer"
+        },
+        "pear/console_getopt": {
+            "install-path": "vendor/pear/console_getopt",
+            "installer": "composer"
+        },
+        "pear/http_request2": {
+            "install-path": "vendor/pear/http_request2",
+            "installer": "composer"
+        },
+        "pear/mail_mime": {
+            "install-path": "vendor/pear/mail_mime",
+            "installer": "composer"
+        },
+        "pear/mail_mime-decode": {
+            "install-path": "vendor/pear/mail_mime-decode",
+            "installer": "composer"
+        },
+        "pear/net_url2": {
+            "install-path": "vendor/pear/net_url2",
+            "installer": "composer"
+        },
+        "pear/pear-core-minimal": {
+            "install-path": "vendor/pear/pear-core-minimal",
+            "installer": "composer"
+        },
+        "pear/pear_exception": {
+            "install-path": "vendor/pear/pear_exception",
             "installer": "composer"
         },
         "phpdocumentor/reflection-docblock": {
             "install-path": "vendor/phpdocumentor/reflection-docblock",
             "installer": "composer",
             "env": "dev"
+        },
+        "phpseclib/phpseclib": {
+            "install-path": "vendor/phpseclib/phpseclib",
+            "installer": "composer"
         },
         "phpspec/prophecy": {
             "install-path": "vendor/phpspec/prophecy",
@@ -111,6 +252,10 @@
             "installer": "composer",
             "env": "dev"
         },
+        "psr/http-message": {
+            "install-path": "vendor/psr/http-message",
+            "installer": "composer"
+        },
         "psr/log": {
             "install-path": "vendor/psr/log",
             "installer": "composer"
@@ -135,8 +280,28 @@
             "install-path": "vendor/puli/url-generator",
             "installer": "composer"
         },
+        "rackspace/php-opencloud": {
+            "install-path": "vendor/rackspace/php-opencloud",
+            "installer": "composer"
+        },
         "ramsey/uuid": {
             "install-path": "vendor/ramsey/uuid",
+            "installer": "composer"
+        },
+        "sabre/dav": {
+            "install-path": "vendor/sabre/dav",
+            "installer": "composer"
+        },
+        "sabre/event": {
+            "install-path": "vendor/sabre/event",
+            "installer": "composer"
+        },
+        "sabre/http": {
+            "install-path": "vendor/sabre/http",
+            "installer": "composer"
+        },
+        "sabre/vobject": {
+            "install-path": "vendor/sabre/vobject",
             "installer": "composer"
         },
         "sebastian/code-unit-reverse-lookup": {
@@ -247,6 +412,10 @@
         },
         "symfony/http-kernel": {
             "install-path": "vendor/symfony/http-kernel",
+            "installer": "composer"
+        },
+        "symfony/options-resolver": {
+            "install-path": "vendor/symfony/options-resolver",
             "installer": "composer"
         },
         "symfony/polyfill-mbstring": {
