@@ -304,6 +304,10 @@
             "install-path": "vendor/sabre/vobject",
             "installer": "composer"
         },
+        "scriptfusion/byte-formatter": {
+            "install-path": "vendor/scriptfusion/byte-formatter",
+            "installer": "composer"
+        },
         "sebastian/code-unit-reverse-lookup": {
             "install-path": "vendor/sebastian/code-unit-reverse-lookup",
             "installer": "composer",

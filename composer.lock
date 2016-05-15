@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "1c95ef12c12b0ca8cf04415ca9f569fc",
-    "content-hash": "f9b6f23b915ab90004370f8009e78f6c",
+    "hash": "dc43b43e8edb24c1e6cbec75e5e09cd2",
+    "content-hash": "874d00c8ceb69d35d3621bf20d4a2abd",
     "packages": [
         {
             "name": "aws/aws-sdk-php",
@@ -3144,6 +3144,47 @@
                 "vCard"
             ],
             "time": "2016-04-24 07:05:24"
+        },
+        {
+            "name": "scriptfusion/byte-formatter",
+            "version": "3.2.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/ScriptFUSION/ByteFormatter.git",
+                "reference": "edc3b7f02b00b460e8139dc019b284e42948612e"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/ScriptFUSION/ByteFormatter/zipball/edc3b7f02b00b460e8139dc019b284e42948612e",
+                "reference": "edc3b7f02b00b460e8139dc019b284e42948612e",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.5"
+            },
+            "require-dev": {
+                "mockery/mockery": "^0",
+                "phpunit/phpunit": "^4",
+                "squizlabs/php_codesniffer": "^2"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "ScriptFUSION\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Bilge",
+                    "email": "bilge@scriptfusion.com"
+                }
+            ],
+            "description": "Formats byte values as human-readable strings.",
+            "time": "2016-01-03 23:54:33"
         },
         {
             "name": "seld/cli-prompt",

@@ -31,7 +31,8 @@
         "league/flysystem-webdav": "^1.0",
         "league/flysystem-ziparchive": "^1.0",
         "league/flysystem-eventable-filesystem": "^1.0",
-        "symfony/options-resolver": "^3.0"
+        "symfony/options-resolver": "^3.0",
+        "scriptfusion/byte-formatter": "^3.2"
     },
     "require-dev": {
         "phpunit/phpunit": "^5.3"
