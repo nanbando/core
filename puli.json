@@ -4,7 +4,7 @@
     "bindings": {
         "33966441-8809-4dc0-9aae-3eff8cb1aed1": {
             "_class": "Puli\\Discovery\\Binding\\ClassBinding",
-            "class": "Oneup\\FlysystemBundle\\OneupFlysystemBundle",
+            "class": "Nanbando\\Bundle\\NanbandoBundle",
             "type": "nanbando/bundle"
         },
         "62685e03-694c-4995-bb70-6d81f842eab9": {
@@ -14,7 +14,7 @@
         },
         "8838be63-ccc8-4b55-bacd-8c0a5c120574": {
             "_class": "Puli\\Discovery\\Binding\\ClassBinding",
-            "class": "Nanbando\\Bundle\\NanbandoBundle",
+            "class": "Oneup\\FlysystemBundle\\OneupFlysystemBundle",
             "type": "nanbando/bundle"
         }
     },
@@ -169,6 +169,14 @@
         },
         "oneup/flysystem-bundle": {
             "install-path": "vendor/oneup/flysystem-bundle",
+            "installer": "composer"
+        },
+        "padraic/humbug_get_contents": {
+            "install-path": "vendor/padraic/humbug_get_contents",
+            "installer": "composer"
+        },
+        "padraic/phar-updater": {
+            "install-path": "vendor/padraic/phar-updater",
             "installer": "composer"
         },
         "paragonie/random_compat": {
