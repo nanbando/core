@@ -41,5 +41,12 @@
             <argument type="service" id="filesystem.local"/>
             <argument type="service" id="temporary_files"/>
         </service>
+
+        <!-- plugin -->
+        <service id="plugins.directory" class="Nanbando\Core\Plugin\DirectoryPlugin">
+            <argument type="service" id="output"/>
+
+            <tag name="nanbando.plugin" alias="directory"/>
+        </service>
     </services>
 </container>
