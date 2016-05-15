@@ -1,0 +1,6 @@
+.idea/
+.nanbando/
+.puli/
+.travis/
+*.iml
+vendor/
