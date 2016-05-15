@@ -6,5 +6,8 @@
 
 .nanbando
 nanbando.json
-nanbando.phar
 
+.travis/phar-private.pem
+nanbando.phar
+nanbando.phar.pubkey
+nanbando.phar.version

@@ -468,8 +468,7 @@
         },
         "symfony/yaml": {
             "install-path": "vendor/symfony/yaml",
-            "installer": "composer",
-            "env": "dev"
+            "installer": "composer"
         },
         "webmozart/assert": {
             "install-path": "vendor/webmozart/assert",
