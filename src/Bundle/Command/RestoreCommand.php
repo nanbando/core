@@ -32,11 +32,13 @@ class RestoreCommand extends ContainerAwareCommand
         /** @var TemporaryFileManager $temporaryFileManager */
         $temporaryFileManager = $this->getContainer()->get('temporary_files');
 
-        $localFiles = array_map(
+        $localFiles = array_filter(
+            array_map(
             function ($item) {
                 return $item['filename'];
             },
             $localFilesystem->listFiles($this->getContainer()->getParameter('nanbando.name'))
+            )
         );
 
         $helper = $this->getHelper('question');
