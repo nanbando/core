@@ -1,0 +1,30 @@
+sudo: false
+language: php
+cache:
+  directories:
+  - "$HOME/.composer/cache"
+  - vendor
+matrix:
+  fast_finish: true
+  include:
+  - php: 5.6
+    env:
+    - EXECUTE_DEPLOYMENT=true
+before_install:
+- wget https://github.com/puli/cli/releases/download/1.0.0-beta10/puli.phar
+- chmod +x puli.phar
+- openssl aes-256-cbc -K $encrypted_7a05c4e35c71_key -iv $encrypted_7a05c4e35c71_iv
+  -in .travis/secrets.tar.enc -out .travis/secrets.tar -d
+- phpenv config-rm xdebug.ini
+- composer self-update
+install:
+- travis_retry composer install --no-interaction
+- composer info -i
+script:
+- ./vendor/bin/phpunit
+notifications:
+  email: true
+after_success:
+- if [[ $EXECUTE_DEPLOYMENT == 'true' && $TRAVIS_BRANCH == 'master' && $TRAVIS_PULL_REQUEST == 'false' ]]; then composer install --no-dev ; fi
+- if [[ $EXECUTE_DEPLOYMENT == 'true' && $TRAVIS_BRANCH == 'master' && $TRAVIS_PULL_REQUEST == 'false' ]]; then ./bin/deploy.sh ; fi
+

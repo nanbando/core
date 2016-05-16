@@ -1,5 +1,6 @@
 /vendor/
 .puli
+composer.lock
 
 .idea
 *.iml
@@ -11,3 +12,5 @@ nanbando.json
 nanbando.phar
 nanbando.phar.pubkey
 nanbando.phar.version
+.travis/build-key.pem
+.travis/secrets.tar
