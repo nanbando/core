@@ -98,7 +98,7 @@ class Nanbando
         $destination = new Filesystem($destinationAdapter);
 
         // TODO readonly
-        $source = new Filesystem(new Local('.'));
+        $source = new Filesystem(new Local(realpath('.')));
         $source->addPlugin(new ListFiles());
 
         $systemDatabase = new Database();
@@ -172,7 +172,7 @@ class Nanbando
         // TODO readonly
         $source = new Filesystem(new ZipArchiveAdapter($filename));
 
-        $destination = new Filesystem(new Local('.', LOCK_EX, null));
+        $destination = new Filesystem(new Local(realpath('.'), LOCK_EX, null));
         $destination->addPlugin(new ListFiles());
 
         $systemData = json_decode($source->read('/database/system.json'), true);

@@ -35,16 +35,7 @@ class Application extends SymfonyApplication implements EmbeddedComposerAwareInt
             $version .= ' (' . self::GIT_VERSION . ')';
         }
 
-        parent::__construct(
-            'Nanbando',
-            sprintf(
-                '%s - %s / %s%s',
-                $version,
-                $kernel->getName(),
-                $kernel->getEnvironment(),
-                ($kernel->isDebug() ? '/debug' : '')
-            )
-        );
+        parent::__construct('Nanbando', sprintf('%s - %s', $version, $kernel->getName()));
 
         foreach ($kernel->getBundles() as $bundle) {
             $bundle->registerCommands($this);

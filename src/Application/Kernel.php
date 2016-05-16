@@ -2,7 +2,10 @@
 
 namespace Nanbando\Application;
 
+use Dflydev\EmbeddedComposer\Bundle\DflydevEmbeddedComposerBundle;
+use Nanbando\Bundle\NanbandoBundle;
 use Nanbando\Core\Config\JsonLoader;
+use Oneup\FlysystemBundle\OneupFlysystemBundle;
 use Puli\Discovery\Api\Discovery;
 use Puli\Discovery\Binding\ClassBinding;
 use Symfony\Component\Config\Loader\DelegatingLoader;
@@ -15,6 +18,7 @@ use Symfony\Component\DependencyInjection\Loader\IniFileLoader;
 use Symfony\Component\DependencyInjection\Loader\PhpFileLoader;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
+use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpKernel\Config\FileLocator;
 use Symfony\Component\HttpKernel\Kernel as SymfonyKernel;
 
@@ -51,12 +55,18 @@ class Kernel extends SymfonyKernel
      */
     public function registerBundles()
     {
-        $bundles = [];
+        $bundles = [
+            new NanbandoBundle(),
+            new DflydevEmbeddedComposerBundle(),
+            new OneupFlysystemBundle(),
+        ];
 
         /** @var ClassBinding $binding */
         foreach ($this->discovery->findBindings('nanbando/bundle') as $binding) {
             $class = $binding->getClassName();
-            $bundles[] = new $class;
+            if (class_exists($class)) {
+                $bundles[] = new $class;
+            }
         }
 
         return $bundles;
@@ -104,7 +114,12 @@ class Kernel extends SymfonyKernel
      */
     public function getCacheDir()
     {
-        return '.nanbando/app/cache';
+        $cacheDir = getcwd(). '/.nanbando/app/cache';
+
+        $filesystem = new Filesystem();
+        $filesystem->mkdir($cacheDir);
+
+        return $cacheDir;
     }
 
     /**
@@ -112,7 +127,12 @@ class Kernel extends SymfonyKernel
      */
     public function getLogDir()
     {
-        return '.nanbando/app/log';
+        $logDir = getcwd(). '/.nanbando/app/log';
+
+        $filesystem = new Filesystem();
+        $filesystem->mkdir($logDir);
+
+        return $logDir;
     }
 
     /**

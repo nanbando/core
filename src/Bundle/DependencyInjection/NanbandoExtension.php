@@ -3,6 +3,7 @@
 namespace Nanbando\Bundle\DependencyInjection;
 
 use Symfony\Component\Config\FileLocator;
+use Symfony\Component\Config\Resource\FileResource;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
@@ -43,5 +44,10 @@ class NanbandoExtension extends Extension
 
         $loader = new Loader\XmlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
         $loader->load('services.xml');
+
+        // ensure container rebuild after puli bindings changes
+        if (file_exists('.puli/bindings.json')) {
+            $container->addResource(new FileResource('.puli/bindings.json'));
+        }
     }
 }

@@ -18,7 +18,7 @@ class Configuration implements ConfigurationInterface
 
         $rootNode
             ->children()
-                ->scalarNode('name')->end()
+                ->scalarNode('name')->defaultValue('nanbando')->end()
                 ->scalarNode('temp')->defaultValue(sys_get_temp_dir())->end()
                 ->arrayNode('backup')
                     ->useAttributeAsKey('name')

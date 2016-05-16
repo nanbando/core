@@ -8,8 +8,8 @@ chmod 600 .travis/build-key.pem
 ssh-add .travis/build-key.pem
 
 # Setup git defaults:
-git config --global user.email "<your email here>"
-git config --global user.name "<your name here>"
+git config --global user.email "johannes.wachter@outlook.com"
+git config --global user.name "Johannes Wachter"
 
 # Add SSH-based remote to GitHub repo:
 git remote add deploy git@github.com:nanbando/core.git
@@ -28,6 +28,7 @@ mv nanbando.phar nanbando.phar.tmp
 
 # Checkout gh-pages and add PHAR file and version:
 git checkout -b gh-pages deploy/gh-pages
+git pull deploy gh-pages
 mv nanbando.phar.tmp nanbando.phar
 sha1sum nanbando.phar > nanbando.phar.version
 git add nanbando.phar nanbando.phar.version

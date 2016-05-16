@@ -5,21 +5,19 @@ set_time_limit(0);
 use Dflydev\EmbeddedComposer\Core\EmbeddedComposerBuilder;
 use Nanbando\Application\Application;
 use Nanbando\Application\Kernel;
+use Puli\Discovery\JsonDiscovery;
 
-$factoryClass = constant('PULI_FACTORY_CLASS');
-$puliFactory = new $factoryClass();
-$discovery = $puliFactory->createDiscovery($puliFactory->createRepository());
-
-$kernel = new Kernel('prod', true, getenv('HOME'), $discovery);
-$kernel->boot();
+$discovery = new JsonDiscovery(realpath('.') . '/.puli/bindings.json');
 
 $embeddedComposerBuilder = new EmbeddedComposerBuilder($classLoader);
 $embeddedComposer = $embeddedComposerBuilder
     ->setComposerFilename('nanbando.json')
     ->setVendorDirectory('.nanbando')
     ->build();
-
 $embeddedComposer->processAdditionalAutoloads();
+
+$kernel = new Kernel('prod', true, getenv('HOME'), $discovery);
+$kernel->boot();
 
 $input = $kernel->getContainer()->get('input');
 $output = $kernel->getContainer()->get('output');
