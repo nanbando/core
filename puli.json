@@ -167,6 +167,14 @@
             "installer": "composer",
             "env": "dev"
         },
+        "nanbando/jackrabbit": {
+            "install-path": "vendor/nanbando/jackrabbit",
+            "installer": "composer"
+        },
+        "nanbando/mysql": {
+            "install-path": "vendor/nanbando/mysql",
+            "installer": "composer"
+        },
         "oneup/flysystem-bundle": {
             "install-path": "vendor/oneup/flysystem-bundle",
             "installer": "composer"
