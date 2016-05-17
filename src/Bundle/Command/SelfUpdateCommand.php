@@ -39,4 +39,9 @@ class SelfUpdateCommand extends Command
 
         $output->writeln(sprintf('Updated from %s to %s', $old, $new));
     }
+    
+    public function isEnabled()
+    {
+        return false !== strpos(__DIR__, 'phar:');
+    }
 }

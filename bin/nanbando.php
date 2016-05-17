@@ -6,8 +6,9 @@ use Dflydev\EmbeddedComposer\Core\EmbeddedComposerBuilder;
 use Nanbando\Application\Application;
 use Nanbando\Application\Kernel;
 use Puli\Discovery\JsonDiscovery;
+use Webmozart\PathUtil\Path;
 
-$discovery = new JsonDiscovery(realpath('.') . '/.puli/bindings.json');
+$discovery = new JsonDiscovery(getcwd(). '/.puli/bindings.json');
 
 $embeddedComposerBuilder = new EmbeddedComposerBuilder($classLoader);
 $embeddedComposer = $embeddedComposerBuilder
@@ -16,7 +17,7 @@ $embeddedComposer = $embeddedComposerBuilder
     ->build();
 $embeddedComposer->processAdditionalAutoloads();
 
-$kernel = new Kernel('prod', true, getenv('HOME'), $discovery);
+$kernel = new Kernel('prod', true, Path::getHomeDirectory(), $discovery);
 $kernel->boot();
 
 $input = $kernel->getContainer()->get('input');
