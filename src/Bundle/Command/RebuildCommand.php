@@ -4,6 +4,8 @@ namespace Nanbando\Bundle\Command;
 
 use Composer\IO\NullIO;
 use Dflydev\EmbeddedComposer\Core\EmbeddedComposerInterface;
+use Puli\Discovery\Api\Type\BindingType;
+use Puli\Manager\Api\Discovery\BindingTypeDescriptor;
 use Puli\Manager\Api\Puli;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -26,9 +28,6 @@ class RebuildCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $filesystem = new Filesystem();
-        $filesystem->remove(Path::join([getcwd(), '/.puli']));
-
         $puli = new Puli(getcwd());
         $puli->start();
 
@@ -58,8 +57,16 @@ class RebuildCommand extends Command
             );
         }
 
-        $packageManager->installPackage(Path::join([__DIR__, '/../../..']), 'nanbando/core', 'nanbando');
-        $puli->getDiscoveryManager()->buildDiscovery();
+        $filesystem = new Filesystem();
+        $filesystem->remove(Path::join([getcwd(), '/.puli']));
+
+        $discoveryManager = $puli->getDiscoveryManager();
+        if (!$discoveryManager->hasRootTypeDescriptor('nanbando/bundle')) {
+            $discoveryManager->addRootTypeDescriptor(new BindingTypeDescriptor(new BindingType('nanbando/bundle')), 0);
+        }
+
+        $discoveryManager->clearDiscovery();
+        $discoveryManager->buildDiscovery();
 
         $filesystem = new Filesystem();
         $filesystem->remove(Path::join([getcwd(), '/.nanbando/app/cache']));
