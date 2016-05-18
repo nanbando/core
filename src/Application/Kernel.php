@@ -57,7 +57,6 @@ class Kernel extends SymfonyKernel
     {
         $bundles = [
             new NanbandoBundle(),
-            new DflydevEmbeddedComposerBundle(),
             new OneupFlysystemBundle(),
         ];
 
