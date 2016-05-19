@@ -36,4 +36,4 @@ The executable is signed with a OpenSSL private key.
 
 ## Documentation
 
-See the official documentation (coming soon).
+See the official documentation on [nanbando.readthedocs.io](http://nanbando.readthedocs.io/en/latest/).
