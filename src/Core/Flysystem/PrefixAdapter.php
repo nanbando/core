@@ -152,20 +152,25 @@ class PrefixAdapter implements AdapterInterface
         $contents = $this->adapter->listContents($this->getPath($directory), $recursive);
         $root = ltrim($this->root, '/');
 
-        return array_filter(
-            $contents,
-            function (&$file) use ($root) {
-                if (0 !== strpos($file['path'], $root)) {
-                    return false;
-                }
-
+        return array_map(
+            function ($file) use ($root) {
                 $file['path'] = Path::makeRelative($file['path'], $root);
                 if (array_key_exists('dirname', $file)) {
                     $file['dirname'] = Path::makeRelative($file['dirname'], $root);
                 }
 
-                return true;
-            }
+                return $file;
+            },
+            array_filter(
+                $contents,
+                function ($file) use ($root) {
+                    if (0 !== strpos($file['path'], $root)) {
+                        return false;
+                    }
+
+                    return true;
+                }
+            )
         );
     }
 
