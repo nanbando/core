@@ -14,7 +14,9 @@ class SelfUpdateCommand extends Command
      */
     protected function configure()
     {
-        $this->setName('self-update');
+        $this
+            ->setName('self-update')
+            ->setDescription('Updates the application.');
     }
 
     /**
@@ -39,7 +41,10 @@ class SelfUpdateCommand extends Command
 
         $output->writeln(sprintf('Updated from %s to %s', $old, $new));
     }
-    
+
+    /**
+     * {@inheritdoc}
+     */
     public function isEnabled()
     {
         return false !== strpos(__DIR__, 'phar:');

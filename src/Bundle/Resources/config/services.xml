@@ -40,6 +40,7 @@
             <argument type="service" id="plugins"/>
             <argument type="service" id="filesystem.local"/>
             <argument type="service" id="temporary_files"/>
+            <argument type="service" id="slugify"/>
         </service>
 
         <!-- plugin -->

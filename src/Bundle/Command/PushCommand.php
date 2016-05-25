@@ -4,6 +4,7 @@ namespace Nanbando\Bundle\Command;
 
 use League\Flysystem\Filesystem;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -14,7 +15,15 @@ class PushCommand extends ContainerAwareCommand
      */
     protected function configure()
     {
-        $this->setName('push');
+        $this
+            ->setName('push')
+            ->setDescription('Pushes all backup archives to the remote storage.')
+            ->setHelp(
+                <<<EOT
+The <info>{$this->getName()}</info> pushes all backup archives to the remote storage.
+
+EOT
+            );
     }
 
     /**

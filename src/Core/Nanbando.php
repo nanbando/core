@@ -2,6 +2,7 @@
 
 namespace Nanbando\Core;
 
+use Cocur\Slugify\Slugify;
 use League\Flysystem\Adapter\Local;
 use League\Flysystem\FileNotFoundException;
 use League\Flysystem\Filesystem;
@@ -54,12 +55,18 @@ class Nanbando
     private $temporaryFileManager;
 
     /**
+     * @var Slugify
+     */
+    private $slugify;
+
+    /**
      * @param string $name
      * @param array $backup
      * @param OutputInterface $output
      * @param PluginRegistry $pluginRegistry
      * @param Filesystem $localFilesystem
      * @param TemporaryFileManager $temporaryFileManager
+     * @param Slugify $slugify
      */
     public function __construct(
         $name,
@@ -67,7 +74,8 @@ class Nanbando
         OutputInterface $output,
         PluginRegistry $pluginRegistry,
         Filesystem $localFilesystem,
-        TemporaryFileManager $temporaryFileManager
+        TemporaryFileManager $temporaryFileManager,
+        Slugify $slugify
     ) {
         $this->name = $name;
         $this->backup = $backup;
@@ -75,6 +83,7 @@ class Nanbando
         $this->pluginRegistry = $pluginRegistry;
         $this->localFilesystem = $localFilesystem;
         $this->temporaryFileManager = $temporaryFileManager;
+        $this->slugify = $slugify;
     }
 
     /**
@@ -145,7 +154,7 @@ class Nanbando
             '/%s/%s%s.zip',
             $this->name,
             date('H-i-s-Y-m-d'),
-            (!empty($label) ? ('_' . $label) : '')
+            (!empty($label) ? ('_' . $this->slugify->slugify($label)) : '')
         );
         $this->localFilesystem->putStream($destinationPath, fopen($tempFilename, 'r'));
 
@@ -192,11 +201,11 @@ class Nanbando
             $plugin->configureOptionsResolver($optionsResolver);
             $parameter = $optionsResolver->resolve($backup['parameter']);
 
-            $backupSource = new Filesystem(new PrefixAdapter('/backup/' . $name, $source->getAdapter()));
+            $backupSource = new Filesystem(new PrefixAdapter('backup/' . $name, $source->getAdapter()));
             $backupSource->addPlugin(new ListFiles());
 
             $database = new ReadonlyDatabase(
-                json_decode($source->read(sprintf('/database/backup/%s.json', $name)), true)
+                json_decode($source->read(sprintf('database/backup/%s.json', $name)), true)
             );
             $plugin->restore($backupSource, $destination, $database, $parameter);
 

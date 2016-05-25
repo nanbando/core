@@ -14,7 +14,9 @@ class RollbackCommand extends Command
      */
     protected function configure()
     {
-        $this->setName('rollback');
+        $this
+            ->setName('rollback')
+            ->setDescription('Rollback last self-update command.');
     }
 
     /**
@@ -23,8 +25,11 @@ class RollbackCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $updater = new Updater();
-        $result = $updater->rollback();
+        $updater->rollback();
 
-        // output
+        $new = $updater->getNewVersion();
+        $old = $updater->getOldVersion();
+
+        $output->writeln(sprintf('Rolled back from %s to %s', $old, $new));
     }
 }

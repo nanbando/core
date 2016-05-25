@@ -2,6 +2,7 @@
 
 namespace Nanbando\Application;
 
+use Cocur\Slugify\Bridge\Symfony\CocurSlugifyBundle;
 use Dflydev\EmbeddedComposer\Bundle\DflydevEmbeddedComposerBundle;
 use Nanbando\Bundle\NanbandoBundle;
 use Nanbando\Core\Config\JsonLoader;
@@ -58,6 +59,7 @@ class Kernel extends SymfonyKernel
         $bundles = [
             new NanbandoBundle(),
             new OneupFlysystemBundle(),
+            new CocurSlugifyBundle(),
         ];
 
         /** @var ClassBinding $binding */

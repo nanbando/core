@@ -28,7 +28,7 @@ projects in the require section of the file.
         }
     }
 
-To install this plugin run the ``update`` command. It will install the plugin with the `embedded-composer`_ and
+To install this plugin run the ``reconfigure`` command. It will install the plugin with the `embedded-composer`_ and
 reconfigure the local application. After that you can run the ``backup`` command to backup the database and ``restore``
 to restore the database.
 

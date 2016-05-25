@@ -3,6 +3,7 @@
 namespace Nanbando\Bundle\Command;
 
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -16,8 +17,19 @@ class BackupCommand extends ContainerAwareCommand
     {
         $this
             ->setName('backup')
-            ->addOption('label', 'l', InputOption::VALUE_OPTIONAL)
-            ->addOption('message', 'm', InputOption::VALUE_OPTIONAL);
+            ->addArgument('label', InputArgument::OPTIONAL, 'This label will be used to generate the filename for the backup.')
+            ->addOption('message', 'm', InputOption::VALUE_OPTIONAL, 'An additional message to identify the backup.')
+            ->setDescription('Backup data into local archive')
+            ->setHelp(
+                <<<EOT
+The <info>{$this->getName()}</info> command reads a nanbando.json formatted file 
+and runs the defined steps to backup this project.
+
+For additional information, which should be stored in the backup archive use
+the label and description option.
+
+EOT
+            );
     }
 
     /**
@@ -25,6 +37,6 @@ class BackupCommand extends ContainerAwareCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->getContainer()->get('nanbando')->backup($input->getOption('label'), $input->getOption('message'));
+        $this->getContainer()->get('nanbando')->backup($input->getArgument('label'), $input->getOption('message'));
     }
 }

@@ -55,7 +55,7 @@ configuration. If you have added requirements to the configuration the applicati
 
 .. code:: bash
 
-    php nanbando.phar update
+    php nanbando.phar reconfigure
     php nanbando.phar backup
 
 The second command will create a new backup zip in the local folder ``~/nanbando/local/application/<date>.zip``.
@@ -64,4 +64,4 @@ After this steps you can do following steps:
 
 - ``php nanbando.phar restore`` - restore a local backup
 - ``php nanbando.phar push`` - push backups to remote storage
-- ``php nanbando.phar fetched`` - fetch a backup on a different machine to restore it there
+- ``php nanbando.phar fetch`` - fetch a backup on a different machine to restore it there

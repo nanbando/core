@@ -4,6 +4,7 @@ namespace Nanbando\Bundle\Command;
 
 use League\Flysystem\Filesystem;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ChoiceQuestion;
@@ -15,14 +16,31 @@ class FetchCommand extends ContainerAwareCommand
      */
     protected function configure()
     {
-        $this->setName('fetch');
+        // TODO add latest option
+
+        $this
+            ->setName('fetch')
+            ->setDescription('Fetches backup archives from remote storage.')
+            ->addArgument('files', InputArgument::IS_ARRAY, 'Defines which file will be downloaded.')
+            ->setHelp(
+                <<<EOT
+The <info>{$this->getName()}</info> command fetches backup archives from remote storage.
+
+The command will ask you which archive should be downloaded if no file isset.
+
+EOT
+            );
     }
 
     /**
      * {@inheritdoc}
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function interact(InputInterface $input, OutputInterface $output)
     {
+        if ($input->hasArgument('files') && !empty($input->getArgument('files'))) {
+            return;
+        }
+
         $name = $this->getContainer()->getParameter('nanbando.name');
 
         /** @var Filesystem $localFilesystem */
@@ -56,9 +74,22 @@ class FetchCommand extends ContainerAwareCommand
         $question->setMultiselect(true);
         $question->setErrorMessage('Backup %s is invalid.');
 
-        $files = $helper->ask($input, $output, $question);
+        $input->setArgument('files', $helper->ask($input, $output, $question));
+    }
 
-        foreach ($files as $file) {
+    /**
+     * {@inheritdoc}
+     */
+    protected function execute(InputInterface $input, OutputInterface $output)
+    {
+        $name = $this->getContainer()->getParameter('nanbando.name');
+
+        /** @var Filesystem $localFilesystem */
+        $localFilesystem = $this->getContainer()->get('filesystem.local');
+        /** @var Filesystem $remoteFilesystem */
+        $remoteFilesystem = $this->getContainer()->get('filesystem.remote');
+
+        foreach ($input->getArgument('files') as $file) {
             $path = sprintf('%s/%s.zip', $name, $file);
             $localFilesystem->putStream($path, $remoteFilesystem->readStream($path));
         }
