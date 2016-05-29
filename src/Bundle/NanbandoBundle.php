@@ -2,8 +2,8 @@
 
 namespace Nanbando\Bundle;
 
+use Nanbando\Application\CompilerPass\CollectorCompilerPass;
 use Nanbando\Bundle\DependencyInjection\Compiler\RegisterKernelListenersPass;
-use Nanbando\Core\Symfony\CollectorCompilerPass;
 use Symfony\Component\DependencyInjection\Compiler\PassConfig;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Bundle\Bundle;

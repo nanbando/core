@@ -2,6 +2,7 @@
 
 [![Documentation Status](https://readthedocs.org/projects/nanbando/badge/?version=latest)](http://nanbando.readthedocs.io/en/latest/?badge=latest)
 [![Build Status](https://travis-ci.org/nanbando/core.svg?branch=master)](https://travis-ci.org/nanbando/core)
+[![StyleCI](https://styleci.io/repos/58751512/shield)](https://styleci.io/repos/58751512)
 
 <img src="https://raw.githubusercontent.com/nanbando/core/master/docs/img/logo.png" alt="Nanbando" style="max-width:100%;" height="300px">
 

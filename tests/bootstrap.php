@@ -1,6 +1,7 @@
 <?php
 
 use Doctrine\Common\Annotations\AnnotationRegistry;
+use Webmozart\PathUtil\Path;
 
 $file = __DIR__ . '/../vendor/autoload.php';
 if (!file_exists($file)) {
@@ -9,5 +10,7 @@ if (!file_exists($file)) {
 
 $loader = require $file;
 AnnotationRegistry::registerLoader([$loader, 'loadClass']);
+
+define('RESOURCE_DIR', Path::join([__DIR__, 'Resources']));
 
 return $loader;

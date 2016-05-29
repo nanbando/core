@@ -39,14 +39,14 @@ class ReadonlyDatabase
      *
      * @param string $name
      *
-     * @throws \Exception
-     *
      * @return mixed
+     *
+     * @throws PropertyNotExistsException
      */
     public function get($name)
     {
         if (!$this->exists($name)) {
-            throw new \Exception();
+            throw new PropertyNotExistsException($name);
         }
 
         return $this->data[$name];
