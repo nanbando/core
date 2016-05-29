@@ -29,8 +29,8 @@ class TemporaryFileManager
 
     /**
      * @param Filesystem $filesystem
-     * @param string $name
-     * @param string $tempFolder
+     * @param string     $name
+     * @param string     $tempFolder
      */
     public function __construct(Filesystem $filesystem, $name, $tempFolder)
     {

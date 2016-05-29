@@ -31,7 +31,7 @@ class SelfUpdateCommand extends Command
         $result = $updater->update();
         if (!$result) {
             $output->writeln('You are already using composer version ' . $updater->getNewVersion());
-            
+
             // No update needed!
             return;
         }

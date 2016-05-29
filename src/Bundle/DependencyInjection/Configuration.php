@@ -10,7 +10,6 @@ class Configuration implements ConfigurationInterface
     /**
      * {@inheritdoc}
      */
-
     public function getConfigTreeBuilder()
     {
         $treeBuilder = new TreeBuilder();

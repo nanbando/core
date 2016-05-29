@@ -60,13 +60,13 @@ class Nanbando
     private $slugify;
 
     /**
-     * @param string $name
-     * @param array $backup
-     * @param OutputInterface $output
-     * @param PluginRegistry $pluginRegistry
-     * @param Filesystem $localFilesystem
+     * @param string               $name
+     * @param array                $backup
+     * @param OutputInterface      $output
+     * @param PluginRegistry       $pluginRegistry
+     * @param Filesystem           $localFilesystem
      * @param TemporaryFileManager $temporaryFileManager
-     * @param Slugify $slugify
+     * @param Slugify              $slugify
      */
     public function __construct(
         $name,

@@ -23,7 +23,7 @@ class ReconfigureCommand extends Command
             ->setName('reconfigure')
             ->setDescription('Reconfigure application')
             ->setDefinition(
-                array(
+                [
                     new InputOption(
                         'prefer-source',
                         null,
@@ -54,7 +54,7 @@ class ReconfigureCommand extends Command
                         InputOption::VALUE_NONE,
                         'Uses lock file in the same folder to determine which packages should be installed.'
                     ),
-                )
+                ]
             )
             ->setHelp(
                 <<<EOT
@@ -116,7 +116,7 @@ EOT
         $rootPackage = $composer->getPackage();
 
         $repository = $composer->getRepositoryManager()->getLocalRepository();
-        $packages = array();
+        $packages = [];
         foreach ($repository->getPackages() as $package) {
             $packages[$package->getName()] = $package;
         }

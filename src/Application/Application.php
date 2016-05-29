@@ -22,7 +22,7 @@ class Application extends SymfonyApplication implements EmbeddedComposerAwareInt
     private $embeddedComposer;
 
     /**
-     * @param KernelInterface $kernel
+     * @param KernelInterface           $kernel
      * @param EmbeddedComposerInterface $embeddedComposer
      */
     public function __construct(KernelInterface $kernel, EmbeddedComposerInterface $embeddedComposer)

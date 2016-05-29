@@ -17,7 +17,7 @@ if ($projectDir = $input->getParameterOption('--root-dir')) {
     }
     if (!is_dir($projectDir)) {
         throw new \InvalidArgumentException(
-            sprintf("Specified project directory %s does not exist", $projectDir)
+            sprintf('Specified project directory %s does not exist', $projectDir)
         );
     }
     chdir($projectDir);
