@@ -3,7 +3,6 @@
 namespace Nanbando\Application;
 
 use Cocur\Slugify\Bridge\Symfony\CocurSlugifyBundle;
-use Dflydev\EmbeddedComposer\Bundle\DflydevEmbeddedComposerBundle;
 use Nanbando\Bundle\NanbandoBundle;
 use Nanbando\Core\Config\JsonLoader;
 use Oneup\FlysystemBundle\OneupFlysystemBundle;
@@ -38,9 +37,9 @@ class Kernel extends SymfonyKernel
     private $discovery;
 
     /**
-     * @param string $environment The environment
-     * @param bool $debug Whether to enable debugging or not
-     * @param string $userDir
+     * @param string    $environment The environment
+     * @param bool      $debug       Whether to enable debugging or not
+     * @param string    $userDir
      * @param Discovery $discovery
      */
     public function __construct($environment, $debug, $userDir, Discovery $discovery)
@@ -66,7 +65,7 @@ class Kernel extends SymfonyKernel
         foreach ($this->discovery->findBindings('nanbando/bundle') as $binding) {
             $class = $binding->getClassName();
             if (class_exists($class)) {
-                $bundles[] = new $class;
+                $bundles[] = new $class();
             }
         }
 
@@ -96,7 +95,7 @@ class Kernel extends SymfonyKernel
     {
         $locator = new FileLocator($this);
         $resolver = new LoaderResolver(
-            array(
+            [
                 new XmlFileLoader($container, $locator),
                 new YamlFileLoader($container, $locator),
                 new IniFileLoader($container, $locator),
@@ -104,7 +103,7 @@ class Kernel extends SymfonyKernel
                 new DirectoryLoader($container, $locator),
                 new JsonLoader($container, $locator),
                 new ClosureLoader($container),
-            )
+            ]
         );
 
         return new DelegatingLoader($resolver);
@@ -115,7 +114,7 @@ class Kernel extends SymfonyKernel
      */
     public function getCacheDir()
     {
-        $cacheDir = getcwd(). '/.nanbando/app/cache';
+        $cacheDir = getcwd() . '/.nanbando/app/cache';
 
         $filesystem = new Filesystem();
         $filesystem->mkdir($cacheDir);
@@ -128,7 +127,7 @@ class Kernel extends SymfonyKernel
      */
     public function getLogDir()
     {
-        $logDir = getcwd(). '/.nanbando/app/log';
+        $logDir = getcwd() . '/.nanbando/app/log';
 
         $filesystem = new Filesystem();
         $filesystem->mkdir($logDir);

@@ -19,7 +19,7 @@ class PrefixAdapter implements AdapterInterface
     private $adapter;
 
     /**
-     * @param string $root
+     * @param string           $root
      * @param AdapterInterface $adapter
      */
     public function __construct($root, AdapterInterface $adapter)

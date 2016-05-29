@@ -8,7 +8,7 @@ class Database extends ReadonlyDatabase
      * Set property name with given value.
      *
      * @param string $name
-     * @param mixed $value
+     * @param mixed  $value
      */
     public function set($name, $value)
     {

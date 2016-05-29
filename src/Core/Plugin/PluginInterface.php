@@ -20,16 +20,16 @@ interface PluginInterface
     /**
      * @param Filesystem $source
      * @param Filesystem $destination
-     * @param Database $database
-     * @param array $parameter
+     * @param Database   $database
+     * @param array      $parameter
      */
     public function backup(Filesystem $source, Filesystem $destination, Database $database, array $parameter);
 
     /**
-     * @param Filesystem $source
-     * @param Filesystem $destination
+     * @param Filesystem       $source
+     * @param Filesystem       $destination
      * @param ReadonlyDatabase $database
-     * @param array $parameter
+     * @param array            $parameter
      */
     public function restore(
         Filesystem $source,

@@ -2,11 +2,11 @@
 
 namespace Nanbando\Bundle\DependencyInjection\Compiler;
 
-use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 /**
- * Register Kernel Listener Pass
+ * Register Kernel Listener Pass.
  *
  * Originally from FrameworkBundle/DependencyInjection/Compiler/RegisterKernelListenersPass.php
  *
@@ -34,14 +34,16 @@ class RegisterKernelListenersPass implements CompilerPassInterface
                 }
 
                 if (!isset($event['method'])) {
-                    $event['method'] = 'on'.preg_replace_callback(array(
+                    $event['method'] = 'on' . preg_replace_callback([
                             '/(?<=\b)[a-z]/i',
                             '/[^a-z0-9]/i',
-                        ), function ($matches) { return strtoupper($matches[0]); }, $event['event']);
+                        ], function ($matches) {
+                            return strtoupper($matches[0]);
+                        }, $event['event']);
                     $event['method'] = preg_replace('/[^a-z0-9]/i', '', $event['method']);
                 }
 
-                $definition->addMethodCall('addListenerService', array($event['event'], array($id, $event['method']), $priority));
+                $definition->addMethodCall('addListenerService', [$event['event'], [$id, $event['method']], $priority]);
             }
         }
 
@@ -55,7 +57,7 @@ class RegisterKernelListenersPass implements CompilerPassInterface
                 throw new \InvalidArgumentException(sprintf('Service "%s" must implement interface "%s".', $id, $interface));
             }
 
-            $definition->addMethodCall('addSubscriberService', array($id, $class));
+            $definition->addMethodCall('addSubscriberService', [$id, $class]);
         }
     }
 }

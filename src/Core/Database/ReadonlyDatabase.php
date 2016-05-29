@@ -21,7 +21,7 @@ class ReadonlyDatabase
      * Returns value for name or default if not exists.
      *
      * @param string $name
-     * @param mixed $default
+     * @param mixed  $default
      *
      * @return mixed
      */
@@ -39,9 +39,9 @@ class ReadonlyDatabase
      *
      * @param string $name
      *
-     * @return mixed
-     *
      * @throws \Exception
+     *
+     * @return mixed
      */
     public function get($name)
     {
@@ -57,7 +57,7 @@ class ReadonlyDatabase
      *
      * @param string $name
      *
-     * @return boolean
+     * @return bool
      */
     public function exists($name)
     {
