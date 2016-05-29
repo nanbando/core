@@ -1,6 +1,6 @@
 <?php
 
-namespace Nanbando\Core\Symfony;
+namespace Nanbando\Application\CompilerPass;
 
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;

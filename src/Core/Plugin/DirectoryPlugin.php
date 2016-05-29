@@ -88,7 +88,7 @@ class DirectoryPlugin implements PluginInterface
         $progressBar->start();
 
         foreach ($files as $file) {
-            $destination->putStream(
+            $destination->writeStream(
                 $parameter['directory'] . '/' . $file['path'],
                 $source->readStream($file['path'])
             );

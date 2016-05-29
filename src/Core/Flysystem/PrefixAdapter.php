@@ -41,6 +41,22 @@ class PrefixAdapter implements AdapterInterface
     }
 
     /**
+     * @return string
+     */
+    public function getRoot()
+    {
+        return $this->root;
+    }
+
+    /**
+     * @return AdapterInterface
+     */
+    public function getAdapter()
+    {
+        return $this->adapter;
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function write($path, $contents, Config $config)

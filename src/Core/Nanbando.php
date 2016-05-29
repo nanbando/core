@@ -2,7 +2,7 @@
 
 namespace Nanbando\Core;
 
-use Cocur\Slugify\Slugify;
+use Cocur\Slugify\SlugifyInterface;
 use League\Flysystem\Adapter\Local;
 use League\Flysystem\FileNotFoundException;
 use League\Flysystem\Filesystem;
@@ -55,7 +55,7 @@ class Nanbando
     private $temporaryFileManager;
 
     /**
-     * @var Slugify
+     * @var SlugifyInterface
      */
     private $slugify;
 
@@ -66,7 +66,7 @@ class Nanbando
      * @param PluginRegistry       $pluginRegistry
      * @param Filesystem           $localFilesystem
      * @param TemporaryFileManager $temporaryFileManager
-     * @param Slugify              $slugify
+     * @param SlugifyInterface $slugify
      */
     public function __construct(
         $name,
@@ -75,7 +75,7 @@ class Nanbando
         PluginRegistry $pluginRegistry,
         Filesystem $localFilesystem,
         TemporaryFileManager $temporaryFileManager,
-        Slugify $slugify
+        SlugifyInterface $slugify
     ) {
         $this->name = $name;
         $this->backup = $backup;
@@ -129,7 +129,7 @@ class Nanbando
             $plugin->configureOptionsResolver($optionsResolver);
             $parameter = $optionsResolver->resolve($backup['parameter']);
 
-            $backupDestination = new Filesystem(new PrefixAdapter('/backup/' . $name, $destination->getAdapter()));
+            $backupDestination = new Filesystem(new PrefixAdapter('backup/' . $name, $destination->getAdapter()));
             $backupDestination->addPlugin(new ListFiles());
 
             $database = new Database();
@@ -137,7 +137,7 @@ class Nanbando
             $plugin->backup($source, $backupDestination, $database, $parameter);
             $database->set('finished', (new \DateTime())->format(\DateTime::RFC3339));
             $encodedData = json_encode($database->getAll(), JSON_PRETTY_PRINT);
-            $destination->put(sprintf('/database/backup/%s.json', $name), $encodedData);
+            $destination->put(sprintf('database/backup/%s.json', $name), $encodedData);
 
             $this->output->writeln('');
         }
@@ -145,13 +145,13 @@ class Nanbando
         $systemDatabase->set('finished', (new \DateTime())->format(\DateTime::RFC3339));
 
         $encodedSystemData = json_encode($systemDatabase->getAll(), JSON_PRETTY_PRINT);
-        $destination->put('/database/system.json', $encodedSystemData);
+        $destination->put('database/system.json', $encodedSystemData);
 
         // close zip file
         $destinationAdapter->getArchive()->close();
 
         $destinationPath = sprintf(
-            '/%s/%s%s.zip',
+            '%s/%s%s.zip',
             $this->name,
             date('H-i-s-Y-m-d'),
             (!empty($label) ? ('_' . $this->slugify->slugify($label)) : '')
@@ -184,7 +184,7 @@ class Nanbando
         $destination = new Filesystem(new Local(realpath('.'), LOCK_EX, null));
         $destination->addPlugin(new ListFiles());
 
-        $systemData = json_decode($source->read('/database/system.json'), true);
+        $systemData = json_decode($source->read('database/system.json'), true);
         $systemDatabase = new ReadonlyDatabase($systemData);
 
         $this->output->writeln(sprintf('Backup "%s" started will be restored:', $this->name));
