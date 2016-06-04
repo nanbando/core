@@ -6,6 +6,7 @@ use Composer\Json\JsonFile;
 use Symfony\Component\Config\Resource\FileResource;
 use Symfony\Component\DependencyInjection\Exception\BadMethodCallException;
 use Symfony\Component\DependencyInjection\Loader\FileLoader;
+use Webmozart\PathUtil\Path;
 
 class JsonLoader extends FileLoader
 {
@@ -25,6 +26,27 @@ class JsonLoader extends FileLoader
         $file = new JsonFile($path);
         $content = $file->read();
         $extension = pathinfo($resource, PATHINFO_FILENAME);
+
+        if (array_key_exists('parameters', $content)) {
+            foreach ($content['parameters'] as $name => $parameter) {
+                $this->container->setParameter($name, $parameter);
+            }
+
+            unset($content['parameters']);
+        }
+
+        if (array_key_exists('imports', $content)) {
+            foreach ($content['imports'] as $import) {
+                $importFilename = $import;
+                if (!Path::isAbsolute($importFilename)) {
+                    $importFilename = Path::join([dirname($path), $import]);
+                }
+
+                $this->import($importFilename, null, false, $file);
+            }
+
+            unset($content['imports']);
+        }
 
         $this->container->loadFromExtension($extension, $content);
     }
