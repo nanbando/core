@@ -17,7 +17,7 @@ Contents
     usage
     configuration
     plugins/index
-
+    cookbook/index
 
 Indices and tables
 ------------------

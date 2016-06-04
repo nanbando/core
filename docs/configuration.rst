@@ -45,11 +45,14 @@ The local configuration contains the name, backup configuration and the addition
 
     {
         "name": "application",
+        "parameters": {
+            "directory": "path/to/data/directory"
+        },
         "backup": {
             "data": {
                 "plugin": "directory",
                 "parameter": {
-                    "directory": "path/to/data/directory"
+                    "directory": "%directory%"
                 }
             }
         },
@@ -58,5 +61,10 @@ The local configuration contains the name, backup configuration and the addition
     }
 
 The ``backup`` section can contain as much parts as needed. Each plugin can provide its own ``parameter`` structure.
+
+.. note::
+
+    The section ``parameters`` can be used to define global parameters which can be used in the plugin configuration.
+    To import files place them in the ``imports`` array. This can be used to reuse the symfony-application parameter.
 
 .. _`OneupFlysystemBundle`: https://github.com/1up-lab/OneupFlysystemBundle/blob/master/Resources/doc/index.md#step3-configure-your-filesystems

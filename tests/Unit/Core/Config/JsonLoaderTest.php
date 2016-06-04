@@ -5,6 +5,8 @@ namespace Nanbando\Tests\Unit\Core\Config;
 use Nanbando\Core\Config\JsonLoader;
 use Prophecy\Argument;
 use Symfony\Component\Config\FileLocatorInterface;
+use Symfony\Component\Config\Loader\LoaderInterface;
+use Symfony\Component\Config\Loader\LoaderResolverInterface;
 use Symfony\Component\Config\Resource\FileResource;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Webmozart\PathUtil\Path;
@@ -66,5 +68,53 @@ class JsonLoaderTest extends \PHPUnit_Framework_TestCase
         $this->container->loadFromExtension('test', ['name' => 'test'])->shouldBeCalled();
 
         $this->loader->load('test.json');
+    }
+
+    public function testImport()
+    {
+        $ymlLoader = $this->prophesize(LoaderInterface::class);
+        $ymlLoader->load(Path::join([RESOURCE_DIR, 'Config', 'parameters.yml']), null)->shouldBeCalled();
+
+        $resolver = $this->prophesize(LoaderResolverInterface::class);
+        $resolver->resolve(Path::join([RESOURCE_DIR, 'Config', 'parameters.yml']), null)
+            ->willReturn($ymlLoader->reveal());
+
+        $this->loader->setResolver($resolver->reveal());
+
+        $path1 = Path::join([RESOURCE_DIR, 'Config', 'test-imports.json']);
+        $path2 = Path::join([RESOURCE_DIR, 'Config', 'parameters.json']);
+
+        $this->locator->locate('test-imports.json')->willReturn($path1);
+        $this->locator->locate('parameters.yml')->willReturn($path2);
+
+        $this->container->addResource(
+            Argument::that(
+                function (FileResource $resource) use ($path1) {
+                    return $resource->getResource() === $path1;
+                }
+            )
+        )->shouldBeCalled();
+        $this->container->loadFromExtension('test-imports', ['name' => 'test'])->shouldBeCalled();
+
+        $this->loader->load('test-imports.json');
+    }
+
+    public function testParameters()
+    {
+        $path = Path::join([RESOURCE_DIR, 'Config', 'test-parameters.json']);
+
+        $this->locator->locate('test-parameters.json')->willReturn($path);
+
+        $this->container->addResource(
+            Argument::that(
+                function (FileResource $resource) use ($path) {
+                    return $resource->getResource() === $path;
+                }
+            )
+        )->shouldBeCalled();
+        $this->container->loadFromExtension('test-parameters', ['name' => 'test'])->shouldBeCalled();
+        $this->container->setParameter('test', 'value')->shouldBeCalled();
+
+        $this->loader->load('test-parameters.json');
     }
 }
