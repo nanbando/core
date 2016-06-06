@@ -11,6 +11,7 @@ use League\Flysystem\ZipArchive\ZipArchiveAdapter;
 use Nanbando\Core\Database\Database;
 use Nanbando\Core\Database\ReadonlyDatabase;
 use Nanbando\Core\Flysystem\PrefixAdapter;
+use Nanbando\Core\Flysystem\ReadonlyAdapter;
 use Nanbando\Core\Plugin\PluginRegistry;
 use Nanbando\Core\Temporary\TemporaryFileManager;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -106,8 +107,7 @@ class Nanbando
         $destinationAdapter = new ZipArchiveAdapter($tempFilename);
         $destination = new Filesystem($destinationAdapter);
 
-        // TODO readonly
-        $source = new Filesystem(new Local(realpath('.')));
+        $source = new Filesystem(new ReadonlyAdapter(new Local(realpath('.'))));
         $source->addPlugin(new ListFiles());
 
         $systemDatabase = new Database();
@@ -178,7 +178,6 @@ class Nanbando
      */
     public function restore($filename)
     {
-        // TODO readonly
         $source = new Filesystem(new ZipArchiveAdapter($filename));
 
         $destination = new Filesystem(new Local(realpath('.'), LOCK_EX, null));
@@ -201,7 +200,9 @@ class Nanbando
             $plugin->configureOptionsResolver($optionsResolver);
             $parameter = $optionsResolver->resolve($backup['parameter']);
 
-            $backupSource = new Filesystem(new PrefixAdapter('backup/' . $name, $source->getAdapter()));
+            $backupSource = new Filesystem(
+                new ReadonlyAdapter(new PrefixAdapter('backup/' . $name, $source->getAdapter()))
+            );
             $backupSource->addPlugin(new ListFiles());
 
             $database = new ReadonlyDatabase(
