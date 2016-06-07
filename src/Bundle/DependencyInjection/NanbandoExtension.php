@@ -23,7 +23,7 @@ class NanbandoExtension extends Extension
         $container->setParameter('nanbando.name', $config['name']);
         $container->setParameter('nanbando.temp', $config['temp']);
         $container->setParameter('nanbando.backup', $config['backup']);
-        $container->setParameter('nanbando.storage.locale_directory', $config['storage']['local_directory']);
+        $container->setParameter('nanbando.storage.local_directory', $config['storage']['local_directory']);
         $container->setParameter('nanbando.storage.remote_service', $config['storage']['remote_service']);
 
         $container->prependExtensionConfig(

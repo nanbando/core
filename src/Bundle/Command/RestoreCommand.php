@@ -2,9 +2,8 @@
 
 namespace Nanbando\Bundle\Command;
 
-use League\Flysystem\Filesystem;
 use Nanbando\Core\Nanbando;
-use Nanbando\Core\Temporary\TemporaryFileManager;
+use Nanbando\Core\Storage\StorageInterface;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -39,17 +38,9 @@ EOT
             return;
         }
 
-        /** @var Filesystem $localFilesystem */
-        $localFilesystem = $this->getContainer()->get('filesystem.local');
-
-        $localFiles = array_filter(
-            array_map(
-                function ($item) {
-                    return $item['filename'];
-                },
-                $localFilesystem->listFiles($this->getContainer()->getParameter('nanbando.name'))
-            )
-        );
+        /** @var StorageInterface $storage */
+        $storage = $this->getContainer()->get('storage');
+        $localFiles = $storage->localListing();
 
         $helper = $this->getHelper('question');
         $question = new ChoiceQuestion('Which backup', $localFiles);
@@ -66,17 +57,6 @@ EOT
     {
         /** @var Nanbando $nanbando */
         $nanbando = $this->getContainer()->get('nanbando');
-        /** @var TemporaryFileManager $temporaryFileManager */
-        $temporaryFileManager = $this->getContainer()->get('temporary_files');
-        /** @var Filesystem $localFilesystem */
-        $localFilesystem = $this->getContainer()->get('filesystem.local');
-
-        // TODO show progressbar
-        $tempFileName = $temporaryFileManager->getFilename();
-        $stream = $localFilesystem->readStream(
-            sprintf('%s/%s.zip', $this->getContainer()->getParameter('nanbando.name'), $input->getArgument('file'))
-        );
-        file_put_contents($tempFileName, $stream);
-        $nanbando->restore($tempFileName);
+        $nanbando->restore($input->getArgument('file'));
     }
 }

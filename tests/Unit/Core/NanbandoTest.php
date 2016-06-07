@@ -2,7 +2,6 @@
 
 namespace Nanbando\Tests\Unit\Core;
 
-use Cocur\Slugify\SlugifyInterface;
 use League\Flysystem\Adapter\Local;
 use League\Flysystem\Filesystem;
 use League\Flysystem\ZipArchive\ZipArchiveAdapter;
@@ -13,7 +12,7 @@ use Nanbando\Core\Flysystem\ReadonlyAdapter;
 use Nanbando\Core\Nanbando;
 use Nanbando\Core\Plugin\PluginInterface;
 use Nanbando\Core\Plugin\PluginRegistry;
-use Nanbando\Core\Temporary\TemporaryFileManager;
+use Nanbando\Core\Storage\StorageInterface;
 use Prophecy\Argument;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -37,27 +36,15 @@ class NanbandoTest extends \PHPUnit_Framework_TestCase
     private $pluginRegistry;
 
     /**
-     * @var Filesystem
+     * @var StorageInterface
      */
-    private $localFilesystem;
-
-    /**
-     * @var TemporaryFileManager
-     */
-    private $temporaryFileManager;
-
-    /**
-     * @var SlugifyInterface
-     */
-    private $slugify;
+    private $storage;
 
     public function setUp()
     {
         $this->output = $this->prophesize(OutputInterface::class);
         $this->pluginRegistry = $this->prophesize(PluginRegistry::class);
-        $this->localFilesystem = $this->prophesize(Filesystem::class);
-        $this->temporaryFileManager = $this->prophesize(TemporaryFileManager::class);
-        $this->slugify = $this->prophesize(SlugifyInterface::class);
+        $this->storage = $this->prophesize(StorageInterface::class);
     }
 
     protected function getNanbando(array $backup)
@@ -67,9 +54,7 @@ class NanbandoTest extends \PHPUnit_Framework_TestCase
             $backup,
             $this->output->reveal(),
             $this->pluginRegistry->reveal(),
-            $this->localFilesystem->reveal(),
-            $this->temporaryFileManager->reveal(),
-            $this->slugify->reveal()
+            $this->storage->reveal()
         );
     }
 
@@ -87,7 +72,8 @@ class NanbandoTest extends \PHPUnit_Framework_TestCase
         );
 
         $tempFile = tempnam('/tmp', 'nanbando');
-        $this->temporaryFileManager->getFilename()->willReturn($tempFile);
+        $filesystem = new Filesystem(new ZipArchiveAdapter($tempFile));
+        $this->storage->start()->willReturn($filesystem);
 
         $plugin = $this->prophesize(PluginInterface::class);
         $this->pluginRegistry->getPlugin('directory')->willReturn($plugin->reveal());
@@ -122,9 +108,11 @@ class NanbandoTest extends \PHPUnit_Framework_TestCase
             ]
         )->shouldBeCalled();
 
-        $this->localFilesystem->putStream(Argument::any(), Argument::any())->shouldBeCalled();
+        $this->storage->close($filesystem)->shouldBeCalled();
 
         $nanbando->backup();
+
+        $filesystem->getAdapter()->getArchive()->close();
 
         $zipFile = new ZipArchiveAdapter($tempFile);
         $files = $zipFile->listContents();
@@ -161,6 +149,9 @@ class NanbandoTest extends \PHPUnit_Framework_TestCase
             ]
         );
 
+        $filesystem = new Filesystem(new ZipArchiveAdapter($path));
+        $this->storage->open('13-21-45-2016-05-29')->willReturn($filesystem);
+
         $plugin = $this->prophesize(PluginInterface::class);
         $this->pluginRegistry->getPlugin('directory')->willReturn($plugin->reveal());
         $plugin->configureOptionsResolver(Argument::type(OptionsResolver::class))
@@ -175,9 +166,9 @@ class NanbandoTest extends \PHPUnit_Framework_TestCase
                     /** @var ReadonlyAdapter $adapter */
                     $adapter = $filesystem->getAdapter();
 
-                    $this->assertInstanceOf(ReadonlyAdapter::class, $adapter);
+                    $this->assertInstanceOf(PrefixAdapter::class, $adapter);
 
-                    return $adapter->getAdapter()->getRoot() === 'backup/uploads';
+                    return $adapter->getRoot() === 'backup/uploads';
                 }
             ),
             Argument::that(
@@ -194,6 +185,6 @@ class NanbandoTest extends \PHPUnit_Framework_TestCase
             ]
         )->shouldBeCalled();
 
-        $nanbando->restore($path);
+        $nanbando->restore('13-21-45-2016-05-29');
     }
 }
