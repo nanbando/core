@@ -9,6 +9,7 @@ use League\Flysystem\ZipArchive\ZipArchiveAdapter;
 use Nanbando\Core\Database\Database;
 use Nanbando\Core\Database\ReadonlyDatabase;
 use Nanbando\Core\Flysystem\PrefixAdapter;
+use Nanbando\Core\Flysystem\ReadonlyAdapter;
 use Nanbando\Core\Nanbando;
 use Nanbando\Core\Plugin\PluginInterface;
 use Nanbando\Core\Plugin\PluginRegistry;
@@ -99,10 +100,12 @@ class NanbandoTest extends \PHPUnit_Framework_TestCase
         $plugin->backup(
             Argument::that(
                 function (Filesystem $filesystem) {
-                    /** @var Local $adapter */
+                    /** @var ReadonlyAdapter $adapter */
                     $adapter = $filesystem->getAdapter();
 
-                    return $adapter->getPathPrefix() === realpath('.') . '/';
+                    $this->assertInstanceOf(ReadonlyAdapter::class, $adapter);
+
+                    return $adapter->getAdapter()->getPathPrefix() === realpath('.') . '/';
                 }
             ),
             Argument::that(
@@ -169,10 +172,12 @@ class NanbandoTest extends \PHPUnit_Framework_TestCase
         $plugin->restore(
             Argument::that(
                 function (Filesystem $filesystem) {
-                    /** @var PrefixAdapter $adapter */
+                    /** @var ReadonlyAdapter $adapter */
                     $adapter = $filesystem->getAdapter();
 
-                    return $adapter->getRoot() === 'backup/uploads';
+                    $this->assertInstanceOf(ReadonlyAdapter::class, $adapter);
+
+                    return $adapter->getAdapter()->getRoot() === 'backup/uploads';
                 }
             ),
             Argument::that(
