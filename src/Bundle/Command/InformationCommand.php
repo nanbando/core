@@ -2,9 +2,8 @@
 
 namespace Nanbando\Bundle\Command;
 
-use League\Flysystem\Filesystem;
-use League\Flysystem\ZipArchive\ZipArchiveAdapter;
 use Nanbando\Core\Database\ReadonlyDatabase;
+use Nanbando\Core\Storage\StorageInterface;
 use ScriptFUSION\Byte\ByteFormatter;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
@@ -40,19 +39,9 @@ EOT
             return;
         }
 
-        $name = $this->getContainer()->getParameter('nanbando.name');
-
-        /** @var Filesystem $localFilesystem */
-        $localFilesystem = $this->getContainer()->get('filesystem.local');
-
-        $localFiles = array_filter(
-            array_map(
-                function ($item) {
-                    return $item['filename'];
-                },
-                $localFilesystem->listFiles($name)
-            )
-        );
+        /** @var StorageInterface $storage */
+        $storage = $this->getContainer()->get('storage');
+        $localFiles = $storage->localListing();
 
         $helper = $this->getHelper('question');
         $question = new ChoiceQuestion('Which backup', $localFiles);
@@ -67,15 +56,9 @@ EOT
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $name = $this->getContainer()->getParameter('nanbando.name');
-
-        $zipFilename = sprintf(
-            '%s/%s/%s.zip',
-            $this->getContainer()->getParameter('nanbando.storage.locale_directory'),
-            $name,
-            $input->getArgument('file')
-        );
-        $backupFilesystem = new Filesystem(new ZipArchiveAdapter($zipFilename));
+        /** @var StorageInterface $storage */
+        $storage = $this->getContainer()->get('storage');
+        $backupFilesystem = $storage->open($input->getArgument('file'));
 
         $database = new ReadonlyDatabase(json_decode($backupFilesystem->read('database/system.json'), true));
 
@@ -83,6 +66,6 @@ EOT
         $output->writeln(sprintf(' * message:  %s', $database->get('message')));
         $output->writeln(sprintf(' * started:  %s', $database->get('started')));
         $output->writeln(sprintf(' * finished: %s', $database->get('finished')));
-        $output->writeln(sprintf(' * size:     %s', (new ByteFormatter())->format(filesize($zipFilename))));
+        $output->writeln(sprintf(' * size:     %s', (new ByteFormatter())->format($storage->size($backupFilesystem))));
     }
 }

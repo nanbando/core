@@ -32,4 +32,12 @@ class RollbackCommand extends Command
 
         $output->writeln(sprintf('Rolled back from %s to %s', $old, $new));
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function isEnabled()
+    {
+        return false !== strpos(__DIR__, 'phar:');
+    }
 }

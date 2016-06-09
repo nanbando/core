@@ -2,7 +2,7 @@
 
 namespace Nanbando\Bundle\Command;
 
-use League\Flysystem\Filesystem;
+use Nanbando\Core\Storage\StorageInterface;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -41,25 +41,11 @@ EOT
             return;
         }
 
-        $name = $this->getContainer()->getParameter('nanbando.name');
+        /** @var StorageInterface $storage */
+        $storage = $this->getContainer()->get('storage');
 
-        /** @var Filesystem $localFilesystem */
-        $localFilesystem = $this->getContainer()->get('filesystem.local');
-        /** @var Filesystem $remoteFilesystem */
-        $remoteFilesystem = $this->getContainer()->get('filesystem.remote');
-
-        $remoteFiles = array_map(
-            function ($item) {
-                return $item['filename'];
-            },
-            $remoteFilesystem->listFiles($name)
-        );
-        $localFiles = array_map(
-            function ($item) {
-                return $item['filename'];
-            },
-            $localFilesystem->listFiles($name)
-        );
+        $remoteFiles = $storage->remoteListing();
+        $localFiles = $storage->localListing();
 
         if (count(array_diff($remoteFiles, $localFiles)) === 0) {
             $output->writeln('All files fetched');
@@ -82,16 +68,11 @@ EOT
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $name = $this->getContainer()->getParameter('nanbando.name');
-
-        /** @var Filesystem $localFilesystem */
-        $localFilesystem = $this->getContainer()->get('filesystem.local');
-        /** @var Filesystem $remoteFilesystem */
-        $remoteFilesystem = $this->getContainer()->get('filesystem.remote');
+        /** @var StorageInterface $storage */
+        $storage = $this->getContainer()->get('storage');
 
         foreach ($input->getArgument('files') as $file) {
-            $path = sprintf('%s/%s.zip', $name, $file);
-            $localFilesystem->putStream($path, $remoteFilesystem->readStream($path));
+            $storage->fetch($file);
         }
     }
 }

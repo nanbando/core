@@ -2,18 +2,16 @@
 
 namespace Nanbando\Core;
 
-use Cocur\Slugify\SlugifyInterface;
 use League\Flysystem\Adapter\Local;
 use League\Flysystem\FileNotFoundException;
 use League\Flysystem\Filesystem;
 use League\Flysystem\Plugin\ListFiles;
-use League\Flysystem\ZipArchive\ZipArchiveAdapter;
 use Nanbando\Core\Database\Database;
 use Nanbando\Core\Database\ReadonlyDatabase;
 use Nanbando\Core\Flysystem\PrefixAdapter;
 use Nanbando\Core\Flysystem\ReadonlyAdapter;
 use Nanbando\Core\Plugin\PluginRegistry;
-use Nanbando\Core\Temporary\TemporaryFileManager;
+use Nanbando\Core\Storage\StorageInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\OptionsResolver\Exception\AccessException;
 use Symfony\Component\OptionsResolver\Exception\InvalidOptionsException;
@@ -46,45 +44,29 @@ class Nanbando
     private $pluginRegistry;
 
     /**
-     * @var Filesystem
+     * @var StorageInterface
      */
-    private $localFilesystem;
+    private $storage;
 
     /**
-     * @var TemporaryFileManager
-     */
-    private $temporaryFileManager;
-
-    /**
-     * @var SlugifyInterface
-     */
-    private $slugify;
-
-    /**
-     * @param string               $name
-     * @param array                $backup
-     * @param OutputInterface      $output
-     * @param PluginRegistry       $pluginRegistry
-     * @param Filesystem           $localFilesystem
-     * @param TemporaryFileManager $temporaryFileManager
-     * @param SlugifyInterface $slugify
+     * @param string $name
+     * @param array $backup
+     * @param OutputInterface $output
+     * @param PluginRegistry $pluginRegistry
+     * @param StorageInterface $storage
      */
     public function __construct(
         $name,
         array $backup,
         OutputInterface $output,
         PluginRegistry $pluginRegistry,
-        Filesystem $localFilesystem,
-        TemporaryFileManager $temporaryFileManager,
-        SlugifyInterface $slugify
+        StorageInterface $storage
     ) {
         $this->name = $name;
         $this->backup = $backup;
         $this->output = $output;
         $this->pluginRegistry = $pluginRegistry;
-        $this->localFilesystem = $localFilesystem;
-        $this->temporaryFileManager = $temporaryFileManager;
-        $this->slugify = $slugify;
+        $this->storage = $storage;
     }
 
     /**
@@ -103,9 +85,7 @@ class Nanbando
      */
     public function backup($label = '', $message = '')
     {
-        $tempFilename = $this->temporaryFileManager->getFilename();
-        $destinationAdapter = new ZipArchiveAdapter($tempFilename);
-        $destination = new Filesystem($destinationAdapter);
+        $destination = $this->storage->start();
 
         $source = new Filesystem(new ReadonlyAdapter(new Local(realpath('.'))));
         $source->addPlugin(new ListFiles());
@@ -121,15 +101,15 @@ class Nanbando
         $this->output->writeln(sprintf(' * started: %s', $systemDatabase->get('started')));
         $this->output->writeln('');
 
-        foreach ($this->backup as $name => $backup) {
-            $this->output->writeln('- ' . $name . ' (' . $backup['plugin'] . '):');
+        foreach ($this->backup as $backupName => $backup) {
+            $this->output->writeln('- ' . $backupName . ' (' . $backup['plugin'] . '):');
             $plugin = $this->pluginRegistry->getPlugin($backup['plugin']);
 
             $optionsResolver = new OptionsResolver();
             $plugin->configureOptionsResolver($optionsResolver);
             $parameter = $optionsResolver->resolve($backup['parameter']);
 
-            $backupDestination = new Filesystem(new PrefixAdapter('backup/' . $name, $destination->getAdapter()));
+            $backupDestination = new Filesystem(new PrefixAdapter('backup/' . $backupName, $destination->getAdapter()));
             $backupDestination->addPlugin(new ListFiles());
 
             $database = new Database();
@@ -137,7 +117,7 @@ class Nanbando
             $plugin->backup($source, $backupDestination, $database, $parameter);
             $database->set('finished', (new \DateTime())->format(\DateTime::RFC3339));
             $encodedData = json_encode($database->getAll(), JSON_PRETTY_PRINT);
-            $destination->put(sprintf('database/backup/%s.json', $name), $encodedData);
+            $destination->put(sprintf('database/backup/%s.json', $backupName), $encodedData);
 
             $this->output->writeln('');
         }
@@ -147,25 +127,16 @@ class Nanbando
         $encodedSystemData = json_encode($systemDatabase->getAll(), JSON_PRETTY_PRINT);
         $destination->put('database/system.json', $encodedSystemData);
 
-        // close zip file
-        $destinationAdapter->getArchive()->close();
-
-        $destinationPath = sprintf(
-            '%s/%s%s.zip',
-            $this->name,
-            date('H-i-s-Y-m-d'),
-            (!empty($label) ? ('_' . $this->slugify->slugify($label)) : '')
-        );
-        $this->localFilesystem->putStream($destinationPath, fopen($tempFilename, 'r'));
+        $name = $this->storage->close($destination);
 
         $this->output->writeln('');
-        $this->output->writeln('Backup finished');
+        $this->output->writeln(sprintf('Backup "%s" finished', $name));
     }
 
     /**
      * Restore process.
      *
-     * @param string $filename
+     * @param string $name
      *
      * @throws \Exception
      * @throws InvalidOptionsException
@@ -176,9 +147,9 @@ class Nanbando
      * @throws OptionDefinitionException
      * @throws UndefinedOptionsException
      */
-    public function restore($filename)
+    public function restore($name)
     {
-        $source = new Filesystem(new ZipArchiveAdapter($filename));
+        $source = $this->storage->open($name);
 
         $destination = new Filesystem(new Local(realpath('.'), LOCK_EX, null));
         $destination->addPlugin(new ListFiles());
@@ -192,21 +163,19 @@ class Nanbando
         $this->output->writeln(sprintf(' * started: %s', $systemDatabase->get('started')));
         $this->output->writeln('');
 
-        foreach ($this->backup as $name => $backup) {
-            $this->output->writeln('- ' . $name . ' (' . $backup['plugin'] . '):');
+        foreach ($this->backup as $backupName => $backup) {
+            $this->output->writeln('- ' . $backupName . ' (' . $backup['plugin'] . '):');
             $plugin = $this->pluginRegistry->getPlugin($backup['plugin']);
 
             $optionsResolver = new OptionsResolver();
             $plugin->configureOptionsResolver($optionsResolver);
             $parameter = $optionsResolver->resolve($backup['parameter']);
 
-            $backupSource = new Filesystem(
-                new ReadonlyAdapter(new PrefixAdapter('backup/' . $name, $source->getAdapter()))
-            );
+            $backupSource = new Filesystem(new PrefixAdapter('backup/' . $backupName, $source->getAdapter()));
             $backupSource->addPlugin(new ListFiles());
 
             $database = new ReadonlyDatabase(
-                json_decode($source->read(sprintf('database/backup/%s.json', $name)), true)
+                json_decode($source->read(sprintf('database/backup/%s.json', $backupName)), true)
             );
             $plugin->restore($backupSource, $destination, $database, $parameter);
 

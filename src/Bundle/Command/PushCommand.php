@@ -2,7 +2,7 @@
 
 namespace Nanbando\Bundle\Command;
 
-use League\Flysystem\Filesystem;
+use Nanbando\Core\Storage\StorageInterface;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -30,22 +30,11 @@ EOT
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $name = $this->getContainer()->getParameter('nanbando.name');
+        /** @var StorageInterface $storage */
+        $storage = $this->getContainer()->get('storage');
 
-        /** @var Filesystem $localFilesystem */
-        $localFilesystem = $this->getContainer()->get('filesystem.local');
-        /** @var Filesystem $remoteFilesystem */
-        $remoteFilesystem = $this->getContainer()->get('filesystem.remote');
-
-        $localFiles = array_map(
-            function ($item) {
-                return $item['path'];
-            },
-            $localFilesystem->listFiles($name)
-        );
-
-        foreach ($localFiles as $file) {
-            $remoteFilesystem->putStream($file, $localFilesystem->readStream($file));
+        foreach ($storage->localListing() as $file) {
+            $storage->push($file);
         }
     }
 }
