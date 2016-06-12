@@ -27,6 +27,7 @@ wget http://nanbando.github.io/core/nanbando.phar.pubkey
 chmod +x nanbando.phar
 mv nanbando.phar /usr/local/bin/nanbando
 mv nanbando.phar.pubkey /usr/local/bin/nanbando.pubkey
+nanbando check
 ```
 
 After first installation you can update the application with a built-in command.

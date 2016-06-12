@@ -124,7 +124,7 @@ class LocalStorage implements StorageInterface
         if (!$this->remoteFilesystem) {
             throw new RemoteStorageNotConfiguredException();
         }
-        
+
         return $this->listing($this->remoteFilesystem);
     }
 
@@ -167,7 +167,7 @@ class LocalStorage implements StorageInterface
         if (!$this->remoteFilesystem) {
             throw new RemoteStorageNotConfiguredException();
         }
-        
+
         $path = sprintf('%s/%s.zip', $this->name, $file);
 
         if (false === ($stream = $this->localFilesystem->readStream($path))) {

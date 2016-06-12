@@ -3,6 +3,11 @@ Configuration
 
 The configuration is devided into two parts - global (optional) and project configuration.
 
+.. warning::
+
+    After changing configuration please run command ``reconfigure`` to be sure that the configuration will be used for
+    recreating the symfony container.
+
 Global Configuration
 --------------------
 
@@ -37,7 +42,7 @@ For nanbando you have to define the local directory, where the backup command ca
 remote filesystem-service which can be configured in the ``oneup_flysystem`` extension.
 
 By default the ``local_directory`` will be set to ``%home%/nanbando`` and the ``remote_service`` will be ``null``. This
-leads to local backups will work out of the box but all commands (``fetch``, ``push`) which needs the remote-storage
+leads to local backups will work out of the box but all commands (``fetch``, ``push``) which needs the remote-storage
 will be disabled.
 
 Local Configuration

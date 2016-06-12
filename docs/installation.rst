@@ -20,3 +20,5 @@ After first installation you can update the application with a built-in command.
 .. note::
 
     The executable is signed with a OpenSSL private key. This ensures the origin of the build.
+
+Check the configuration state of your application by using the command ``nanbando check``.
