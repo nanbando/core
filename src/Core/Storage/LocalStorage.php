@@ -39,16 +39,16 @@ class LocalStorage implements StorageInterface
     /**
      * @param string $name
      * @param TemporaryFileManager $temporaryFileManager
+     * @param SlugifyInterface $slugify
      * @param Filesystem $localFilesystem
      * @param Filesystem $remoteFilesystem
-     * @param SlugifyInterface $slugify
      */
     public function __construct(
         $name,
         TemporaryFileManager $temporaryFileManager,
+        SlugifyInterface $slugify,
         Filesystem $localFilesystem,
-        Filesystem $remoteFilesystem,
-        SlugifyInterface $slugify
+        Filesystem $remoteFilesystem = null
     ) {
         $this->name = $name;
         $this->temporaryFileManager = $temporaryFileManager;
@@ -121,6 +121,10 @@ class LocalStorage implements StorageInterface
      */
     public function remoteListing()
     {
+        if (!$this->remoteFilesystem) {
+            throw new RemoteStorageNotConfiguredException();
+        }
+        
         return $this->listing($this->remoteFilesystem);
     }
 
@@ -142,6 +146,10 @@ class LocalStorage implements StorageInterface
      */
     public function fetch($file)
     {
+        if (!$this->remoteFilesystem) {
+            throw new RemoteStorageNotConfiguredException();
+        }
+
         $path = sprintf('%s/%s.zip', $this->name, $file);
 
         if (false === ($stream = $this->remoteFilesystem->readStream($path))) {
@@ -156,6 +164,10 @@ class LocalStorage implements StorageInterface
      */
     public function push($file)
     {
+        if (!$this->remoteFilesystem) {
+            throw new RemoteStorageNotConfiguredException();
+        }
+        
         $path = sprintf('%s/%s.zip', $this->name, $file);
 
         if (false === ($stream = $this->localFilesystem->readStream($path))) {

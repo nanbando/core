@@ -32,9 +32,9 @@
         <service id="storage" class="Nanbando\Core\Storage\LocalStorage">
             <argument type="string">%nanbando.name%</argument>
             <argument type="service" id="temporary_files"/>
-            <argument type="service" id="filesystem.local"/>
-            <argument type="service" id="filesystem.remote"/>
             <argument type="service" id="slugify"/>
+            <argument type="service" id="filesystem.local"/>
+            <argument type="service" id="filesystem.remote" on-invalid="null"/>
         </service>
 
         <!-- core service -->

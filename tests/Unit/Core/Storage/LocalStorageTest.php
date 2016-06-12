@@ -7,6 +7,7 @@ use League\Flysystem\Filesystem;
 use League\Flysystem\ZipArchive\ZipArchiveAdapter;
 use Nanbando\Core\Flysystem\ReadonlyAdapter;
 use Nanbando\Core\Storage\LocalStorage;
+use Nanbando\Core\Storage\RemoteStorageNotConfiguredException;
 use Nanbando\Core\Storage\StorageInterface;
 use Nanbando\Core\Temporary\TemporaryFileManager;
 use Prophecy\Argument;
@@ -54,9 +55,9 @@ class LocalStorageTest extends \PHPUnit_Framework_TestCase
         $this->storage = new LocalStorage(
             $this->name,
             $this->temporaryFileManager->reveal(),
+            $this->slugify->reveal(),
             $this->localFilesystem->reveal(),
-            $this->remoteFilesystem->reveal(),
-            $this->slugify->reveal()
+            $this->remoteFilesystem->reveal()
         );
     }
 
@@ -188,5 +189,47 @@ class LocalStorageTest extends \PHPUnit_Framework_TestCase
         $this->remoteFilesystem->putStream($path, Argument::any())->shouldNotBeCalled();
 
         $this->storage->push($file);
+    }
+
+    public function testPushNoRemote()
+    {
+        $this->setExpectedException(RemoteStorageNotConfiguredException::class);
+
+        $storage = new LocalStorage(
+            $this->name,
+            $this->temporaryFileManager->reveal(),
+            $this->slugify->reveal(),
+            $this->localFilesystem->reveal()
+        );
+
+        $storage->push('test');
+    }
+
+    public function testFetchNoRemote()
+    {
+        $this->setExpectedException(RemoteStorageNotConfiguredException::class);
+
+        $storage = new LocalStorage(
+            $this->name,
+            $this->temporaryFileManager->reveal(),
+            $this->slugify->reveal(),
+            $this->localFilesystem->reveal()
+        );
+
+        $storage->fetch('test');
+    }
+
+    public function testRemoteListingNoRemote()
+    {
+        $this->setExpectedException(RemoteStorageNotConfiguredException::class);
+
+        $storage = new LocalStorage(
+            $this->name,
+            $this->temporaryFileManager->reveal(),
+            $this->slugify->reveal(),
+            $this->localFilesystem->reveal()
+        );
+
+        $storage->remoteListing();
     }
 }

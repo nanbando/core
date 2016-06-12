@@ -1,7 +1,7 @@
 Configuration
 =============
 
-The configuration is devided into two parts - global and project configuration.
+The configuration is devided into two parts - global (optional) and project configuration.
 
 Global Configuration
 --------------------
@@ -13,7 +13,7 @@ Put this configuration into ``~/.nanbando.yml``.
 
     nanbando:
         storage:
-            local_directory: "%home%/nanbando/local"
+            local_directory: "%home%/nanbando"
             remote_service: filesystem.remote
 
     oneup_flysystem:
@@ -35,6 +35,10 @@ Put this configuration into ``~/.nanbando.yml``.
 
 For nanbando you have to define the local directory, where the backup command can place the backup archives, and the
 remote filesystem-service which can be configured in the ``oneup_flysystem`` extension.
+
+By default the ``local_directory`` will be set to ``%home%/nanbando`` and the ``remote_service`` will be ``null``. This
+leads to local backups will work out of the box but all commands (``fetch``, ``push`) which needs the remote-storage
+will be disabled.
 
 Local Configuration
 -------------------

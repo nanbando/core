@@ -37,4 +37,12 @@ EOT
             $storage->push($file);
         }
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function isEnabled()
+    {
+        return $this->getContainer()->has('filesystem.remote');
+    }
 }

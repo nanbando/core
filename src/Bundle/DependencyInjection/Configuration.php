@@ -4,6 +4,7 @@ namespace Nanbando\Bundle\DependencyInjection;
 
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
+use Webmozart\PathUtil\Path;
 
 class Configuration implements ConfigurationInterface
 {
@@ -31,8 +32,11 @@ class Configuration implements ConfigurationInterface
                     ->end()
                 ->end()
                 ->arrayNode('storage')
+                    ->addDefaultsIfNotSet()
                     ->children()
-                        ->scalarNode('local_directory')->end()
+                        ->scalarNode('local_directory')
+                            ->defaultValue(Path::join([Path::getHomeDirectory(), 'nanbando']))
+                        ->end()
                         ->scalarNode('remote_service')->end()
                     ->end()
                 ->end()
