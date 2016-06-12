@@ -24,7 +24,12 @@ class NanbandoExtension extends Extension
         $container->setParameter('nanbando.temp', $config['temp']);
         $container->setParameter('nanbando.backup', $config['backup']);
         $container->setParameter('nanbando.storage.local_directory', $config['storage']['local_directory']);
-        $container->setParameter('nanbando.storage.remote_service', $config['storage']['remote_service']);
+
+        if (array_key_exists('remote_service', $config['storage'])
+            && $config['storage']['remote_service'] !== 'filesystem.remote'
+        ) {
+            $container->setAlias('filesystem.remote', $config['storage']['remote_service']);
+        }
 
         $container->prependExtensionConfig(
             'oneup_flysystem',
