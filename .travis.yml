@@ -26,7 +26,7 @@ notifications:
 after_success:
 - wget https://scrutinizer-ci.com/ocular.phar
 - php ocular.phar code-coverage:upload --access-token="f754e5b15940ecb564c663c274a89eefbdd500e5c4c039da03fd4cf225d91894" --format=php-clover coverage.clover
-- if [[ $EXECUTE_DEPLOYMENT == 'true' && $TRAVIS_BRANCH == 'master' && $TRAVIS_PULL_REQUEST == 'false' ]]; rm vendor/dflydev/embedded-composer/.root_package.json ; fi
+- if [[ $EXECUTE_DEPLOYMENT == 'true' && $TRAVIS_BRANCH == 'master' && $TRAVIS_PULL_REQUEST == 'false' ]]; then rm vendor/dflydev/embedded-composer/.root_package.json ; fi
 - if [[ $EXECUTE_DEPLOYMENT == 'true' && $TRAVIS_BRANCH == 'master' && $TRAVIS_PULL_REQUEST == 'false' ]]; then composer install --no-dev ; fi
 - if [[ $EXECUTE_DEPLOYMENT == 'true' && $TRAVIS_BRANCH == 'master' && $TRAVIS_PULL_REQUEST == 'false' ]]; then ./bin/deploy.sh ; fi
 
