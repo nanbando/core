@@ -52,7 +52,7 @@ class ReconfigureCommand extends Command
                         'update',
                         null,
                         InputOption::VALUE_NONE,
-                        'Uses lock file in the same folder to determine which packages should be installed.'
+                        'Updated dependencies and lock-file.'
                     ),
                 ]
             )
