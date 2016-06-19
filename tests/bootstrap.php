@@ -12,5 +12,6 @@ $loader = require $file;
 AnnotationRegistry::registerLoader([$loader, 'loadClass']);
 
 define('RESOURCE_DIR', Path::join([__DIR__, 'Resources']));
+define('DATAFIXTURES_DIR', Path::join([__DIR__, 'DataFixtures']));
 
 return $loader;

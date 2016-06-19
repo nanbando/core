@@ -54,7 +54,7 @@ class JsonLoaderTest extends \PHPUnit_Framework_TestCase
 
     public function testLoad()
     {
-        $path = Path::join([RESOURCE_DIR, 'Config', 'test.json']);
+        $path = Path::join([DATAFIXTURES_DIR, 'config', 'test.json']);
 
         $this->locator->locate('test.json')->willReturn($path);
 
@@ -73,16 +73,16 @@ class JsonLoaderTest extends \PHPUnit_Framework_TestCase
     public function testImport()
     {
         $ymlLoader = $this->prophesize(LoaderInterface::class);
-        $ymlLoader->load(Path::join([RESOURCE_DIR, 'Config', 'parameters.yml']), null)->shouldBeCalled();
+        $ymlLoader->load(Path::join([DATAFIXTURES_DIR, 'config', 'parameters.yml']), null)->shouldBeCalled();
 
         $resolver = $this->prophesize(LoaderResolverInterface::class);
-        $resolver->resolve(Path::join([RESOURCE_DIR, 'Config', 'parameters.yml']), null)
+        $resolver->resolve(Path::join([DATAFIXTURES_DIR, 'config', 'parameters.yml']), null)
             ->willReturn($ymlLoader->reveal());
 
         $this->loader->setResolver($resolver->reveal());
 
-        $path1 = Path::join([RESOURCE_DIR, 'Config', 'test-imports.json']);
-        $path2 = Path::join([RESOURCE_DIR, 'Config', 'parameters.json']);
+        $path1 = Path::join([DATAFIXTURES_DIR, 'config', 'test-imports.json']);
+        $path2 = Path::join([DATAFIXTURES_DIR, 'config', 'parameters.json']);
 
         $this->locator->locate('test-imports.json')->willReturn($path1);
         $this->locator->locate('parameters.yml')->willReturn($path2);
@@ -101,7 +101,7 @@ class JsonLoaderTest extends \PHPUnit_Framework_TestCase
 
     public function testParameters()
     {
-        $path = Path::join([RESOURCE_DIR, 'Config', 'test-parameters.json']);
+        $path = Path::join([DATAFIXTURES_DIR, 'config', 'test-parameters.json']);
 
         $this->locator->locate('test-parameters.json')->willReturn($path);
 

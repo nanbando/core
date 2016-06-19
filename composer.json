@@ -33,7 +33,8 @@
         "symfony/options-resolver": "^3.0",
         "scriptfusion/byte-formatter": "^3.2",
         "padraic/phar-updater": "^1.0",
-        "cocur/slugify": "^2.1"
+        "cocur/slugify": "^2.1",
+        "neutron/temporary-filesystem": "^2.2"
     },
     "require-dev": {
         "phpunit/phpunit": "^5.3"

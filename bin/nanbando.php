@@ -40,5 +40,3 @@ $output = $kernel->getContainer()->get('output');
 
 $application = new Application($kernel, $embeddedComposer);
 $application->run($input, $output);
-
-$kernel->getContainer()->get('temporary_files')->cleanup;
