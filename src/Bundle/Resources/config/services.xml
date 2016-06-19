@@ -14,10 +14,12 @@
         <service id="output" class="Symfony\Component\Console\Output\ConsoleOutput"/>
 
         <!-- tempfiles -->
-        <service id="temporary_files" class="Nanbando\Core\Temporary\TemporaryFileManager">
+        <service id="temporary_filesystem" class="Neutron\TemporaryFilesystem\TemporaryFilesystem" public="false">
             <argument type="service" id="filesystem"/>
-            <argument type="string">%nanbando.name%</argument>
-            <argument type="string">%nanbando.temp%</argument>
+        </service>
+        <service id="temporary_files" class="Neutron\TemporaryFilesystem\Manager">
+            <argument type="service" id="temporary_filesystem"/>
+            <argument type="service" id="filesystem"/>
         </service>
 
         <!-- flysystem -->

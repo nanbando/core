@@ -7,7 +7,7 @@ use League\Flysystem\Filesystem;
 use League\Flysystem\Plugin\ListFiles;
 use League\Flysystem\ZipArchive\ZipArchiveAdapter;
 use Nanbando\Core\Flysystem\ReadonlyAdapter;
-use Nanbando\Core\Temporary\TemporaryFileManager;
+use Neutron\TemporaryFilesystem\TemporaryFilesystemInterface;
 
 class LocalStorage implements StorageInterface
 {
@@ -17,9 +17,9 @@ class LocalStorage implements StorageInterface
     private $name;
 
     /**
-     * @var TemporaryFileManager
+     * @var TemporaryFilesystemInterface
      */
-    private $temporaryFileManager;
+    private $temporaryFileSystem;
 
     /**
      * @var Filesystem
@@ -38,20 +38,20 @@ class LocalStorage implements StorageInterface
 
     /**
      * @param string $name
-     * @param TemporaryFileManager $temporaryFileManager
+     * @param TemporaryFilesystemInterface $temporaryFileSystem
      * @param SlugifyInterface $slugify
      * @param Filesystem $localFilesystem
      * @param Filesystem $remoteFilesystem
      */
     public function __construct(
         $name,
-        TemporaryFileManager $temporaryFileManager,
+        TemporaryFilesystemInterface $temporaryFileSystem,
         SlugifyInterface $slugify,
         Filesystem $localFilesystem,
         Filesystem $remoteFilesystem = null
     ) {
         $this->name = $name;
-        $this->temporaryFileManager = $temporaryFileManager;
+        $this->temporaryFileSystem = $temporaryFileSystem;
         $this->localFilesystem = $localFilesystem;
         $this->remoteFilesystem = $remoteFilesystem;
         $this->slugify = $slugify;
@@ -62,7 +62,7 @@ class LocalStorage implements StorageInterface
      */
     public function start()
     {
-        $filename = $this->temporaryFileManager->getFilename();
+        $filename = $this->temporaryFileSystem->createTemporaryFile();
         $adapter = new ZipArchiveAdapter($filename);
         $filesystem = new Filesystem($adapter);
         $filesystem->addPlugin(new ListFiles());
@@ -98,7 +98,7 @@ class LocalStorage implements StorageInterface
      */
     public function open($name)
     {
-        $tempFileName = $this->temporaryFileManager->getFilename();
+        $tempFileName = $this->temporaryFileSystem->createTemporaryFile();
         $stream = $this->localFilesystem->readStream(sprintf('%s/%s.zip', $this->name, $name));
         file_put_contents($tempFileName, $stream);
 

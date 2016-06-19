@@ -9,7 +9,7 @@ use Nanbando\Core\Flysystem\ReadonlyAdapter;
 use Nanbando\Core\Storage\LocalStorage;
 use Nanbando\Core\Storage\RemoteStorageNotConfiguredException;
 use Nanbando\Core\Storage\StorageInterface;
-use Nanbando\Core\Temporary\TemporaryFileManager;
+use Neutron\TemporaryFilesystem\TemporaryFilesystemInterface;
 use Prophecy\Argument;
 use Webmozart\PathUtil\Path;
 
@@ -21,9 +21,9 @@ class LocalStorageTest extends \PHPUnit_Framework_TestCase
     private $name = 'test';
 
     /**
-     * @var TemporaryFileManager
+     * @var TemporaryFilesystemInterface
      */
-    private $temporaryFileManager;
+    private $temporaryFileSystem;
 
     /**
      * @var Filesystem
@@ -47,14 +47,14 @@ class LocalStorageTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->temporaryFileManager = $this->prophesize(TemporaryFileManager::class);
+        $this->temporaryFileSystem = $this->prophesize(TemporaryFilesystemInterface::class);
         $this->localFilesystem = $this->prophesize(Filesystem::class);
         $this->remoteFilesystem = $this->prophesize(Filesystem::class);
         $this->slugify = $this->prophesize(SlugifyInterface::class);
 
         $this->storage = new LocalStorage(
             $this->name,
-            $this->temporaryFileManager->reveal(),
+            $this->temporaryFileSystem->reveal(),
             $this->slugify->reveal(),
             $this->localFilesystem->reveal(),
             $this->remoteFilesystem->reveal()
@@ -64,7 +64,7 @@ class LocalStorageTest extends \PHPUnit_Framework_TestCase
     public function testStart()
     {
         $tempFile = tempnam('/tmp', 'nanbando');
-        $this->temporaryFileManager->getFilename()->willReturn($tempFile);
+        $this->temporaryFileSystem->createTemporaryFile()->willReturn($tempFile);
 
         $filesystem = $this->storage->start();
 
@@ -105,10 +105,10 @@ class LocalStorageTest extends \PHPUnit_Framework_TestCase
     public function testOpen()
     {
         $name = $this->testClose();
-        $path = Path::join([RESOURCE_DIR, 'backups', '13-21-45-2016-05-29.zip']);
+        $path = Path::join([DATAFIXTURES_DIR, 'backups', '13-21-45-2016-05-29.zip']);
 
         $tempFile = tempnam('/tmp', 'nanbando');
-        $this->temporaryFileManager->getFilename()->willReturn($tempFile);
+        $this->temporaryFileSystem->createTemporaryFile()->willReturn($tempFile);
 
         $this->localFilesystem->readStream(sprintf('%s/%s.zip', $this->name, $name))
             ->willReturn(file_get_contents($path));
@@ -139,7 +139,7 @@ class LocalStorageTest extends \PHPUnit_Framework_TestCase
 
     public function testSize()
     {
-        $path = Path::join([RESOURCE_DIR, 'backups', '13-21-45-2016-05-29.zip']);
+        $path = Path::join([DATAFIXTURES_DIR, 'backups', '13-21-45-2016-05-29.zip']);
 
         $adapter = new ZipArchiveAdapter($path);
         $filesystem = new Filesystem(new ReadonlyAdapter($adapter));
@@ -149,7 +149,7 @@ class LocalStorageTest extends \PHPUnit_Framework_TestCase
 
     public function testFetch()
     {
-        $zipPath = Path::join([RESOURCE_DIR, 'backups', '13-21-45-2016-05-29.zip']);
+        $zipPath = Path::join([DATAFIXTURES_DIR, 'backups', '13-21-45-2016-05-29.zip']);
 
         $file = '123-123-123';
         $path = sprintf('%s/%s.zip', $this->name, $file);
@@ -171,7 +171,7 @@ class LocalStorageTest extends \PHPUnit_Framework_TestCase
 
     public function testPush()
     {
-        $zipPath = Path::join([RESOURCE_DIR, 'backups', '13-21-45-2016-05-29.zip']);
+        $zipPath = Path::join([DATAFIXTURES_DIR, 'backups', '13-21-45-2016-05-29.zip']);
 
         $file = '123-123-123';
         $path = sprintf('%s/%s.zip', $this->name, $file);
@@ -197,7 +197,7 @@ class LocalStorageTest extends \PHPUnit_Framework_TestCase
 
         $storage = new LocalStorage(
             $this->name,
-            $this->temporaryFileManager->reveal(),
+            $this->temporaryFileSystem->reveal(),
             $this->slugify->reveal(),
             $this->localFilesystem->reveal()
         );
@@ -211,7 +211,7 @@ class LocalStorageTest extends \PHPUnit_Framework_TestCase
 
         $storage = new LocalStorage(
             $this->name,
-            $this->temporaryFileManager->reveal(),
+            $this->temporaryFileSystem->reveal(),
             $this->slugify->reveal(),
             $this->localFilesystem->reveal()
         );
@@ -225,7 +225,7 @@ class LocalStorageTest extends \PHPUnit_Framework_TestCase
 
         $storage = new LocalStorage(
             $this->name,
-            $this->temporaryFileManager->reveal(),
+            $this->temporaryFileSystem->reveal(),
             $this->slugify->reveal(),
             $this->localFilesystem->reveal()
         );

@@ -137,7 +137,7 @@ class NanbandoTest extends \PHPUnit_Framework_TestCase
 
     public function testRestore()
     {
-        $path = Path::join([RESOURCE_DIR, 'backups', '13-21-45-2016-05-29.zip']);
+        $path = Path::join([DATAFIXTURES_DIR, 'backups', '13-21-45-2016-05-29.zip']);
         $nanbando = $this->getNanbando(
             [
                 'uploads' => [
