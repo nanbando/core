@@ -8,7 +8,8 @@
         }
     ],
     "require": {
-        "dflydev/embedded-composer": "dev-use_register_package",
+        "dflydev/embedded-composer": "dev-master",
+        "composer/composer": "^1.2",
         "symfony/console": "^3.0",
         "symfony/http-kernel": "^3.0",
         "symfony/dependency-injection": "^3.0",
@@ -44,12 +45,6 @@
             "Nanbando\\": "src/"
         }
     },
-    "repositories": [
-        {
-            "type": "vcs",
-            "url": "git@github.com:dantleech/dflydev-embedded-composer.git"
-        }
-    ],
     "bin": [
         "bin/nanbando",
         "bin/nanbando.php"

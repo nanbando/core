@@ -9,7 +9,7 @@
     "LICENSE",
     "vendor/composer/installed.json",
     "vendor/dflydev/embedded-composer/.root_package.json",
-    "vendor/composer/composer/res/cacert.pem"
+    "vendor/composer/ca-bundle/res/cacert.pem"
   ],
   "finder": [
     {
