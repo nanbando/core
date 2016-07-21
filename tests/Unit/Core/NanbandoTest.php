@@ -6,6 +6,7 @@ use League\Flysystem\Adapter\Local;
 use League\Flysystem\Filesystem;
 use League\Flysystem\ZipArchive\ZipArchiveAdapter;
 use Nanbando\Core\Database\Database;
+use Nanbando\Core\Database\DatabaseFactory;
 use Nanbando\Core\Database\ReadonlyDatabase;
 use Nanbando\Core\Flysystem\PrefixAdapter;
 use Nanbando\Core\Flysystem\ReadonlyAdapter;
@@ -40,11 +41,23 @@ class NanbandoTest extends \PHPUnit_Framework_TestCase
      */
     private $storage;
 
+    /**
+     * @var DatabaseFactory
+     */
+    private $databaseFactory;
+
     public function setUp()
     {
         $this->output = $this->prophesize(OutputInterface::class);
         $this->pluginRegistry = $this->prophesize(PluginRegistry::class);
         $this->storage = $this->prophesize(StorageInterface::class);
+        $this->databaseFactory = $this->prophesize(DatabaseFactory::class);
+        $this->databaseFactory->create(Argument::any())->will(function ($data) {
+            return new Database(isset($data[0]) ? $data[0] : []);
+        });
+        $this->databaseFactory->createReadonly(Argument::any())->will(function ($data) {
+            return new ReadonlyDatabase(isset($data[0]) ? $data[0] : []);
+        });
     }
 
     protected function getNanbando(array $backup)
@@ -54,7 +67,8 @@ class NanbandoTest extends \PHPUnit_Framework_TestCase
             $backup,
             $this->output->reveal(),
             $this->pluginRegistry->reveal(),
-            $this->storage->reveal()
+            $this->storage->reveal(),
+            $this->databaseFactory->reveal()
         );
     }
 

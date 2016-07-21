@@ -6,8 +6,7 @@ use League\Flysystem\Adapter\Local;
 use League\Flysystem\FileNotFoundException;
 use League\Flysystem\Filesystem;
 use League\Flysystem\Plugin\ListFiles;
-use Nanbando\Core\Database\Database;
-use Nanbando\Core\Database\ReadonlyDatabase;
+use Nanbando\Core\Database\DatabaseFactory;
 use Nanbando\Core\Flysystem\PrefixAdapter;
 use Nanbando\Core\Flysystem\ReadonlyAdapter;
 use Nanbando\Core\Plugin\PluginRegistry;
@@ -49,24 +48,32 @@ class Nanbando
     private $storage;
 
     /**
+     * @var DatabaseFactory
+     */
+    private $databaseFactory;
+
+    /**
      * @param string $name
      * @param array $backup
      * @param OutputInterface $output
      * @param PluginRegistry $pluginRegistry
      * @param StorageInterface $storage
+     * @param DatabaseFactory $databaseFactory
      */
     public function __construct(
         $name,
         array $backup,
         OutputInterface $output,
         PluginRegistry $pluginRegistry,
-        StorageInterface $storage
+        StorageInterface $storage,
+        DatabaseFactory $databaseFactory
     ) {
         $this->name = $name;
         $this->backup = $backup;
         $this->output = $output;
         $this->pluginRegistry = $pluginRegistry;
         $this->storage = $storage;
+        $this->databaseFactory = $databaseFactory;
     }
 
     /**
@@ -90,7 +97,7 @@ class Nanbando
         $source = new Filesystem(new ReadonlyAdapter(new Local(realpath('.'))));
         $source->addPlugin(new ListFiles());
 
-        $systemDatabase = new Database();
+        $systemDatabase = $this->databaseFactory->create();
         $systemDatabase->set('label', $label);
         $systemDatabase->set('message', $message);
         $systemDatabase->set('started', (new \DateTime())->format(\DateTime::RFC3339));
@@ -112,7 +119,7 @@ class Nanbando
             $backupDestination = new Filesystem(new PrefixAdapter('backup/' . $backupName, $destination->getAdapter()));
             $backupDestination->addPlugin(new ListFiles());
 
-            $database = new Database();
+            $database = $this->databaseFactory->create();
             $database->set('started', (new \DateTime())->format(\DateTime::RFC3339));
             $plugin->backup($source, $backupDestination, $database, $parameter);
             $database->set('finished', (new \DateTime())->format(\DateTime::RFC3339));
@@ -155,7 +162,7 @@ class Nanbando
         $destination->addPlugin(new ListFiles());
 
         $systemData = json_decode($source->read('database/system.json'), true);
-        $systemDatabase = new ReadonlyDatabase($systemData);
+        $systemDatabase = $this->databaseFactory->createReadonly($systemData);
 
         $this->output->writeln(sprintf('Backup "%s" started will be restored:', $this->name));
         $this->output->writeln(sprintf(' * label:   %s', $systemDatabase->get('label')));
@@ -174,7 +181,7 @@ class Nanbando
             $backupSource = new Filesystem(new PrefixAdapter('backup/' . $backupName, $source->getAdapter()));
             $backupSource->addPlugin(new ListFiles());
 
-            $database = new ReadonlyDatabase(
+            $database = $this->databaseFactory->createReadonly(
                 json_decode($source->read(sprintf('database/backup/%s.json', $backupName)), true)
             );
             $plugin->restore($backupSource, $destination, $database, $parameter);

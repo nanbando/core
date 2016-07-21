@@ -27,6 +27,11 @@ class ReadonlyDatabaseTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($this->data['name'], $this->database->get('name'));
     }
 
+    public function testGetAll()
+    {
+        $this->assertEquals($this->data, $this->database->getAll());
+    }
+
     public function testGetNotExisting()
     {
         $this->setExpectedException(PropertyNotExistsException::class);

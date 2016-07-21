@@ -18,11 +18,6 @@ class DatabaseTest extends ReadonlyDatabaseTest
         $this->database = new Database($this->data);
     }
 
-    public function testGetAll()
-    {
-        $this->assertEquals(['name' => 'nanbando'], $this->database->getAll());
-    }
-
     public function testSet()
     {
         $this->database->set('version', '1.0');

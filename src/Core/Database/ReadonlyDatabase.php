@@ -53,6 +53,16 @@ class ReadonlyDatabase
     }
 
     /**
+     * Returns complete dataset.
+     *
+     * @return array
+     */
+    public function getAll()
+    {
+        return $this->data;
+    }
+
+    /**
      * Returns true if property exists.
      *
      * @param string $name

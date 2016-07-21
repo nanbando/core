@@ -28,14 +28,4 @@ class Database extends ReadonlyDatabase
 
         unset($this->data[$name]);
     }
-
-    /**
-     * Returns complete dataset.
-     *
-     * @return array
-     */
-    public function getAll()
-    {
-        return $this->data;
-    }
 }
