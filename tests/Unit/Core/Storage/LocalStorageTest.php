@@ -105,7 +105,7 @@ class LocalStorageTest extends \PHPUnit_Framework_TestCase
     public function testOpen()
     {
         $name = $this->testClose();
-        $path = Path::join([DATAFIXTURES_DIR, 'backups', '13-21-45-2016-05-29.zip']);
+        $path = Path::join([DATAFIXTURES_DIR, 'backups', '13-21-2016-05-29_success.zip']);
 
         $tempFile = tempnam('/tmp', 'nanbando');
         $this->temporaryFileSystem->createTemporaryFile()->willReturn($tempFile);
@@ -139,7 +139,7 @@ class LocalStorageTest extends \PHPUnit_Framework_TestCase
 
     public function testSize()
     {
-        $path = Path::join([DATAFIXTURES_DIR, 'backups', '13-21-45-2016-05-29.zip']);
+        $path = Path::join([DATAFIXTURES_DIR, 'backups', '13-21-2016-05-29_success.zip']);
 
         $adapter = new ZipArchiveAdapter($path);
         $filesystem = new Filesystem(new ReadonlyAdapter($adapter));
@@ -149,7 +149,7 @@ class LocalStorageTest extends \PHPUnit_Framework_TestCase
 
     public function testFetch()
     {
-        $zipPath = Path::join([DATAFIXTURES_DIR, 'backups', '13-21-45-2016-05-29.zip']);
+        $zipPath = Path::join([DATAFIXTURES_DIR, 'backups', '13-21-2016-05-29_success.zip']);
 
         $file = '123-123-123';
         $path = sprintf('%s/%s.zip', $this->name, $file);
@@ -171,7 +171,7 @@ class LocalStorageTest extends \PHPUnit_Framework_TestCase
 
     public function testPush()
     {
-        $zipPath = Path::join([DATAFIXTURES_DIR, 'backups', '13-21-45-2016-05-29.zip']);
+        $zipPath = Path::join([DATAFIXTURES_DIR, 'backups', '13-21-2016-05-29_success.zip']);
 
         $file = '123-123-123';
         $path = sprintf('%s/%s.zip', $this->name, $file);

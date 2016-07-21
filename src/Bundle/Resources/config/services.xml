@@ -43,6 +43,10 @@
         <service id="database_factory" class="Nanbando\Core\Database\DatabaseFactory"/>
 
         <!-- core service -->
+        <service id="nanbando.console_environment" class="Nanbando\Core\Environment\ConsoleEnvironment">
+            <argument type="service" id="output"/>
+            <argument type="service" id="input"/>
+        </service>
         <service id="nanbando" class="Nanbando\Core\Nanbando">
             <argument type="string">%nanbando.name%</argument>
             <argument type="string">%nanbando.backup%</argument>
@@ -50,6 +54,7 @@
             <argument type="service" id="plugins"/>
             <argument type="service" id="storage"/>
             <argument type="service" id="database_factory"/>
+            <argument type="service" id="nanbando.console_environment"/>
         </service>
 
         <!-- plugin -->
