@@ -8,8 +8,13 @@
 
 - Exception handling of plugins [\#16](https://github.com/nanbando/core/issues/16)
 
+**Closed issues:**
+
+- Fetch latest option [\#11](https://github.com/nanbando/core/issues/11)
+
 **Merged pull requests:**
 
+- Added latest option to fetch command [\#31](https://github.com/nanbando/core/pull/31) ([wachterjohannes](https://github.com/wachterjohannes))
 - Added exception handling for plugins [\#29](https://github.com/nanbando/core/pull/29) ([wachterjohannes](https://github.com/wachterjohannes))
 
 ## [0.1.1](https://github.com/nanbando/core/tree/0.1.1) (2016-07-21)
