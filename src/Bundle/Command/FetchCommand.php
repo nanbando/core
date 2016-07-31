@@ -6,6 +6,7 @@ use Nanbando\Core\Storage\StorageInterface;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ChoiceQuestion;
 
@@ -22,6 +23,7 @@ class FetchCommand extends ContainerAwareCommand
             ->setName('fetch')
             ->setDescription('Fetches backup archives from remote storage.')
             ->addArgument('files', InputArgument::IS_ARRAY, 'Defines which file will be downloaded.')
+            ->addOption('latest', null, InputOption::VALUE_NONE, 'Loads the latest file.')
             ->setHelp(
                 <<<EOT
 The <info>{$this->getName()}</info> command fetches backup archives from remote storage.
@@ -37,12 +39,22 @@ EOT
      */
     protected function interact(InputInterface $input, OutputInterface $output)
     {
-        if ($input->hasArgument('files') && !empty($input->getArgument('files'))) {
-            return;
-        }
-
         /** @var StorageInterface $storage */
         $storage = $this->getContainer()->get('storage');
+        $files = $input->getArgument('files');
+
+        if ($input->getOption('latest')) {
+            $remoteFiles = $storage->remoteListing();
+
+            if (count($remoteFiles) > 0) {
+                $files[] = end($remoteFiles);
+                $input->setArgument('files', $files);
+            }
+        }
+
+        if ($input->hasArgument('files') && !empty($files)) {
+            return;
+        }
 
         $remoteFiles = $storage->remoteListing();
         $localFiles = $storage->localListing();
