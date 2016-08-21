@@ -142,6 +142,6 @@ class Kernel extends SymfonyKernel
     {
         $parameter = parent::getKernelParameters();
 
-        return array_merge($parameter, ['home' => $this->userDir]);
+        return array_merge($parameter, ['home' => $this->userDir, 'project' => getcwd()]);
     }
 }
