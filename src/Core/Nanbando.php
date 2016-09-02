@@ -2,6 +2,7 @@
 
 namespace Nanbando\Core;
 
+use Emgag\Flysystem\Hash\HashPlugin;
 use League\Flysystem\Adapter\Local;
 use League\Flysystem\Filesystem;
 use League\Flysystem\Plugin\ListFiles;
@@ -116,6 +117,7 @@ class Nanbando
 
         $source = new Filesystem(new ReadonlyAdapter(new Local(realpath('.'))));
         $source->addPlugin(new ListFiles());
+        $source->addPlugin(new HashPlugin());
 
         $systemDatabase = $this->databaseFactory->create();
         $systemDatabase->set('label', $label);
@@ -139,6 +141,7 @@ class Nanbando
 
             $backupDestination = new Filesystem(new PrefixAdapter('backup/' . $backupName, $destination->getAdapter()));
             $backupDestination->addPlugin(new ListFiles());
+            $backupDestination->addPlugin(new HashPlugin());
 
             $database = $this->databaseFactory->create();
             $database->set('started', (new \DateTime())->format(\DateTime::RFC3339));
@@ -190,6 +193,7 @@ class Nanbando
 
         $destination = new Filesystem(new Local(realpath('.'), LOCK_EX, null));
         $destination->addPlugin(new ListFiles());
+        $destination->addPlugin(new HashPlugin());
 
         $systemData = json_decode($source->read('database/system.json'), true);
         $systemDatabase = $this->databaseFactory->createReadonly($systemData);
@@ -216,6 +220,7 @@ class Nanbando
 
             $backupSource = new Filesystem(new PrefixAdapter('backup/' . $backupName, $source->getAdapter()));
             $backupSource->addPlugin(new ListFiles());
+            $backupSource->addPlugin(new HashPlugin());
 
             $database = $this->databaseFactory->createReadonly(
                 json_decode($source->read(sprintf('database/backup/%s.json', $backupName)), true)
@@ -236,9 +241,9 @@ class Nanbando
             }
 
             $this->output->writeln('');
+            $this->output->writeln('');
         }
 
-        $this->output->writeln('');
         $this->output->writeln('Restore finished');
     }
 

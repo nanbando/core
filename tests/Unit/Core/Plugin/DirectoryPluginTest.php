@@ -59,8 +59,8 @@ class DirectoryPluginTest extends \PHPUnit_Framework_TestCase
 
     public function testRestore()
     {
-        $source = $this->prophesize(Filesystem::class);
-        $destination = $this->prophesize(Filesystem::class);
+        $source = $this->prophesize(Filesystem::class)->willImplement(HashPluginInterface::class);
+        $destination = $this->prophesize(Filesystem::class)->willImplement(HashPluginInterface::class);
         $database = $this->prophesize(Database::class);
 
         $source->listFiles('', true)->willReturn(
@@ -72,8 +72,63 @@ class DirectoryPluginTest extends \PHPUnit_Framework_TestCase
         );
 
         $source->readStream('test.json')->willReturn('file resource');
+
+        $destination->has('test/test.json')->willReturn(false);
         $destination->writeStream('test/test.json', 'file resource')->shouldBeCalled();
 
         $this->plugin->restore($source->reveal(), $destination->reveal(), $database->reveal(), ['directory' => 'test']);
     }
+
+    public function testRestoreExistingFile()
+    {
+        $source = $this->prophesize(Filesystem::class)->willImplement(HashPluginInterface::class);
+        $destination = $this->prophesize(Filesystem::class)->willImplement(HashPluginInterface::class);
+        $database = $this->prophesize(Database::class);
+
+        $source->listFiles('', true)->willReturn(
+            [
+                [
+                    'path' => 'test.json',
+                ],
+            ]
+        );
+
+        $source->readStream('test.json')->willReturn('file resource');
+        $source->hash('test.json')->willReturn('123-123-123');
+
+        $destination->has('test/test.json')->willReturn(true);
+        $destination->hash('test/test.json')->willReturn('123-123-123');
+        $destination->writeStream('test/test.json', 'file resource')->shouldNotBeCalled();
+
+        $this->plugin->restore($source->reveal(), $destination->reveal(), $database->reveal(), ['directory' => 'test']);
+    }
+
+    public function testRestoreExistingDifferentFile()
+    {
+        $source = $this->prophesize(Filesystem::class)->willImplement(HashPluginInterface::class);
+        $destination = $this->prophesize(Filesystem::class)->willImplement(HashPluginInterface::class);
+        $database = $this->prophesize(Database::class);
+
+        $source->listFiles('', true)->willReturn(
+            [
+                [
+                    'path' => 'test.json',
+                ],
+            ]
+        );
+
+        $source->readStream('test.json')->willReturn('file resource');
+        $source->hash('test.json')->willReturn('xxx');
+
+        $destination->has('test/test.json')->willReturn(true);
+        $destination->hash('test/test.json')->willReturn('123-123-123');
+        $destination->writeStream('test/test.json', 'file resource')->shouldBeCalled();
+
+        $this->plugin->restore($source->reveal(), $destination->reveal(), $database->reveal(), ['directory' => 'test']);
+    }
+}
+
+interface HashPluginInterface
+{
+    public function hash($file);
 }
