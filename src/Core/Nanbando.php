@@ -200,7 +200,9 @@ class Nanbando
         $this->output->writeln(sprintf(' * started: %s', $systemDatabase->get('started')));
         $this->output->writeln('');
 
-        if ($systemDatabase->get('state') === self::STATE_PARTIALLY && !$this->environment->restorePartiallyBackup()) {
+        if ($systemDatabase->getWithDefault('state', self::STATE_SUCCESS) === self::STATE_PARTIALLY
+            && !$this->environment->restorePartiallyBackup()
+        ) {
             return;
         }
 
@@ -219,7 +221,7 @@ class Nanbando
                 json_decode($source->read(sprintf('database/backup/%s.json', $backupName)), true)
             );
 
-            if ($database->get('state') === self::STATE_FAILED) {
+            if ($database->getWithDefault('state', self::STATE_SUCCESS) === self::STATE_FAILED) {
                 $this->output->writeln('  <info>Bypassed</info>');
 
                 continue;
