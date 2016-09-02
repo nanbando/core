@@ -10,10 +10,14 @@
 
 **Closed issues:**
 
+- Migrate old backups from 0.1.1 to 0.2 [\#33](https://github.com/nanbando/core/issues/33)
 - Fetch latest option [\#11](https://github.com/nanbando/core/issues/11)
 
 **Merged pull requests:**
 
+- Fixed restore if destination file already exists [\#36](https://github.com/nanbando/core/pull/36) ([wachterjohannes](https://github.com/wachterjohannes))
+- Fixed \#33 introduced default values for new database values [\#35](https://github.com/nanbando/core/pull/35) ([wachterjohannes](https://github.com/wachterjohannes))
+- Introduced project parameter [\#34](https://github.com/nanbando/core/pull/34) ([wachterjohannes](https://github.com/wachterjohannes))
 - Added latest option to fetch command [\#31](https://github.com/nanbando/core/pull/31) ([wachterjohannes](https://github.com/wachterjohannes))
 - Added exception handling for plugins [\#29](https://github.com/nanbando/core/pull/29) ([wachterjohannes](https://github.com/wachterjohannes))
 
