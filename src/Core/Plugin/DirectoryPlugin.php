@@ -88,10 +88,13 @@ class DirectoryPlugin implements PluginInterface
         $progressBar->start();
 
         foreach ($files as $file) {
-            $destination->writeStream(
-                $parameter['directory'] . '/' . $file['path'],
-                $source->readStream($file['path'])
-            );
+            $path = $file['path'];
+            $fullPath = $parameter['directory'] . '/' . $file['path'];
+            if ($destination->has($fullPath) && $destination->hash($fullPath) === $source->hash($path)) {
+                continue;
+            }
+
+            $destination->writeStream($fullPath, $source->readStream($path));
             $progressBar->advance();
         }
 
