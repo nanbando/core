@@ -1,8 +1,7 @@
 # Change Log
 
-## [Unreleased](https://github.com/nanbando/core/tree/HEAD)
-
-[Full Changelog](https://github.com/nanbando/core/compare/0.1.1...HEAD)
+## [0.2.0](https://github.com/nanbando/core/tree/0.2.0) (2016-09-23)
+[Full Changelog](https://github.com/nanbando/core/compare/0.1.1...0.2.0)
 
 **Implemented enhancements:**
 
