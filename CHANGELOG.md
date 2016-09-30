@@ -1,5 +1,17 @@
 # Change Log
 
+## [Unreleased](https://github.com/nanbando/core/tree/HEAD)
+
+[Full Changelog](https://github.com/nanbando/core/compare/0.2.0...HEAD)
+
+**Fixed bugs:**
+
+- PHAR package doesn't work with relative local\_directory values  [\#32](https://github.com/nanbando/core/issues/32)
+
+**Merged pull requests:**
+
+- Added realpath call to resolve local-directory [\#39](https://github.com/nanbando/core/pull/39) ([wachterjohannes](https://github.com/wachterjohannes))
+
 ## [0.2.0](https://github.com/nanbando/core/tree/0.2.0) (2016-09-23)
 [Full Changelog](https://github.com/nanbando/core/compare/0.1.1...0.2.0)
 
