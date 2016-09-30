@@ -17,6 +17,8 @@ class RestoreCommand extends ContainerAwareCommand
      */
     protected function configure()
     {
+        // TODO add latest option
+
         $this
             ->setName('restore')
             ->setDescription('Restore a backup archive.')
