@@ -17,7 +17,7 @@ You can use the following configuration to backup the application using jackrabb
             "uploads": {
                 "plugin": "directory",
                 "parameter": {
-                    "directory": "uploads"
+                    "directory": "var/uploads"
                 }
             },
             "database": {
@@ -32,6 +32,7 @@ You can use the following configuration to backup the application using jackrabb
                 "plugin": "jackrabbit",
                 "parameter": {
                     "jackrabbit_uri": "%jackrabbit_uri%",
+                    "workspace": "%phpcr_workspace%",
                     "path": "/cmf"
                 }
             },
@@ -39,7 +40,16 @@ You can use the following configuration to backup the application using jackrabb
                 "plugin": "jackrabbit",
                 "parameter": {
                     "jackrabbit_uri": "%jackrabbit_uri%",
+                    "workspace": "%phpcr_workspace%",
                     "path": "/jcr:versions"
+                }
+            },
+            "cmf_live": {
+                "plugin": "jackrabbit",
+                "parameter": {
+                    "jackrabbit_uri": "%jackrabbit_uri%",
+                    "workspace": "%phpcr_workspace%_live",
+                    "path": "/cmf"
                 }
             }
         },
@@ -49,7 +59,14 @@ You can use the following configuration to backup the application using jackrabb
         }
     }
 
-If you use mysql as data storage for phpcr you can remove the ``cmf`` and ``versions`` part of the backup.
+.. note::
+
+    This configuration is optimized for Sulu (minimal) version `^1.3` with the drafting feature. If you want to
+    backup earlier versions you can omit the backup section `cmf_Live`. For the standard edition you have to
+    adapt the path to the uploads directory.
+
+If you use mysql as data storage for phpcr you can remove the ``cmf``, ``cmf_live`` and ``versions`` part
+of the backup.
 
 .. code::
 

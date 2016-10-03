@@ -17,8 +17,6 @@ class FetchCommand extends ContainerAwareCommand
      */
     protected function configure()
     {
-        // TODO add latest option
-
         $this
             ->setName('fetch')
             ->setDescription('Fetches backup archives from remote storage.')
