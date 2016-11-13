@@ -7,13 +7,17 @@ use League\Flysystem\Adapter\Local;
 use League\Flysystem\Filesystem;
 use League\Flysystem\Plugin\ListFiles;
 use Nanbando\Core\Database\DatabaseFactory;
-use Nanbando\Core\Environment\EnvironmentInterface;
+use Nanbando\Core\Events\BackupEvent;
+use Nanbando\Core\Events\Events;
+use Nanbando\Core\Events\PostBackupEvent;
+use Nanbando\Core\Events\PreBackupEvent;
+use Nanbando\Core\Events\PreRestoreEvent;
+use Nanbando\Core\Events\RestoreEvent;
 use Nanbando\Core\Flysystem\PrefixAdapter;
 use Nanbando\Core\Flysystem\ReadonlyAdapter;
-use Nanbando\Core\Plugin\PluginRegistry;
 use Nanbando\Core\Storage\StorageInterface;
-use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\EventDispatcher\Event;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
  * Core service.
@@ -21,45 +25,9 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 class Nanbando
 {
     /**
-     * State indicates successful backup.
-     */
-    const STATE_SUCCESS = 1;
-
-    /**
-     * State indicates failed backup.
-     */
-    const STATE_FAILED = 2;
-
-    /**
-     * State indicates partially-finished backup.
-     */
-    const STATE_PARTIALLY = 3;
-
-    const STATE_MESSAGES = [
-        self::STATE_SUCCESS => '<info>successfully</info>',
-        self::STATE_FAILED => '<error>failed</error>',
-        self::STATE_PARTIALLY => '<comment>partially</comment>',
-    ];
-
-    /**
-     * @var string
-     */
-    private $name;
-
-    /**
      * @var array
      */
     private $backup;
-
-    /**
-     * @var OutputInterface
-     */
-    private $output;
-
-    /**
-     * @var PluginRegistry
-     */
-    private $pluginRegistry;
 
     /**
      * @var StorageInterface
@@ -72,35 +40,26 @@ class Nanbando
     private $databaseFactory;
 
     /**
-     * @var EnvironmentInterface
+     * @var EventDispatcherInterface
      */
-    private $environment;
+    private $eventDispatcher;
 
     /**
-     * @param string $name
      * @param array $backup
-     * @param OutputInterface $output
-     * @param PluginRegistry $pluginRegistry
      * @param StorageInterface $storage
      * @param DatabaseFactory $databaseFactory
-     * @param EnvironmentInterface $environment
+     * @param EventDispatcherInterface $eventDispatcher
      */
     public function __construct(
-        $name,
         array $backup,
-        OutputInterface $output,
-        PluginRegistry $pluginRegistry,
         StorageInterface $storage,
         DatabaseFactory $databaseFactory,
-        EnvironmentInterface $environment
+        EventDispatcherInterface $eventDispatcher
     ) {
-        $this->name = $name;
         $this->backup = $backup;
-        $this->output = $output;
-        $this->pluginRegistry = $pluginRegistry;
         $this->storage = $storage;
         $this->databaseFactory = $databaseFactory;
-        $this->environment = $environment;
+        $this->eventDispatcher = $eventDispatcher;
     }
 
     /**
@@ -124,62 +83,52 @@ class Nanbando
         $systemDatabase->set('message', $message);
         $systemDatabase->set('started', (new \DateTime())->format(\DateTime::RFC3339));
 
-        $this->output->writeln(sprintf('Backup "%s" started:', $this->name));
-        $this->output->writeln(sprintf(' * label:   %s', $systemDatabase->get('label')));
-        $this->output->writeln(sprintf(' * message: %s', $systemDatabase->get('message')));
-        $this->output->writeln(sprintf(' * started: %s', $systemDatabase->get('started')));
-        $this->output->writeln('');
+        $event = new PreBackupEvent($this->backup, $systemDatabase, $source, $destination);
+        $this->eventDispatcher->dispatch(Events::PRE_BACKUP_EVENT, $event);
+        if ($event->isCanceled()) {
+            $this->storage->cancel($destination);
 
-        $state = self::STATE_SUCCESS;
-        foreach ($this->backup as $backupName => $backup) {
-            $this->output->writeln('- ' . $backupName . ' (' . $backup['plugin'] . '):');
-            $plugin = $this->pluginRegistry->getPlugin($backup['plugin']);
+            return BackupStatus::STATE_FAILED;
+        }
 
-            $optionsResolver = new OptionsResolver();
-            $plugin->configureOptionsResolver($optionsResolver);
-            $parameter = $optionsResolver->resolve($backup['parameter']);
-
+        $status = BackupStatus::STATE_SUCCESS;
+        $backupConfig = $event->getBackup();
+        foreach ($backupConfig as $backupName => $backup) {
             $backupDestination = new Filesystem(new PrefixAdapter('backup/' . $backupName, $destination->getAdapter()));
             $backupDestination->addPlugin(new ListFiles());
             $backupDestination->addPlugin(new HashPlugin());
 
             $database = $this->databaseFactory->create();
-            $database->set('started', (new \DateTime())->format(\DateTime::RFC3339));
 
-            try {
-                $plugin->backup($source, $backupDestination, $database, $parameter);
-                $database->set('state', self::STATE_SUCCESS);
-            } catch (\Exception $exception) {
-                $database->set('state', self::STATE_FAILED);
-                $database->set('exception', $this->serializeException($exception));
-                $state = self::STATE_PARTIALLY;
+            $event = new BackupEvent(
+                $systemDatabase, $database, $source, $backupDestination, $backupName, $backup
+            );
+            $this->eventDispatcher->dispatch(Events::BACKUP_EVENT, $event);
+            if ($event->isCanceled()) {
+                $this->storage->cancel($destination);
 
-                if (!$this->environment->continueFailedBackup($exception)) {
-                    return self::STATE_FAILED;
-                }
+                return BackupStatus::STATE_FAILED;
             }
 
-            $database->set('finished', (new \DateTime())->format(\DateTime::RFC3339));
-            $encodedData = json_encode($database->getAll(), JSON_PRETTY_PRINT);
-            $destination->put(sprintf('database/backup/%s.json', $backupName), $encodedData);
+            if ($event->getStatus() === BackupStatus::STATE_FAILED) {
+                $status = BackupStatus::STATE_PARTIALLY;
+            }
 
-            $this->output->writeln('');
+            $encodedData = json_encode($database->getAll(), JSON_PRETTY_PRINT);
+            $destination->put(sprintf('database/backup/%s.json', $event->getName()), $encodedData);
         }
 
         $systemDatabase->set('finished', (new \DateTime())->format(\DateTime::RFC3339));
-        $systemDatabase->set('state', $state);
+        $systemDatabase->set('state', $status);
 
         $encodedSystemData = json_encode($systemDatabase->getAll(), JSON_PRETTY_PRINT);
         $destination->put('database/system.json', $encodedSystemData);
 
         $name = $this->storage->close($destination);
 
-        $this->output->writeln('');
-        $this->output->writeln(
-            sprintf('Backup "%s" finished %s', $name, self::STATE_MESSAGES[$state])
-        );
+        $this->eventDispatcher->dispatch(Events::POST_BACKUP_EVENT, new PostBackupEvent($name, $status));
 
-        return $state;
+        return $status;
     }
 
     /**
@@ -198,71 +147,27 @@ class Nanbando
         $systemData = json_decode($source->read('database/system.json'), true);
         $systemDatabase = $this->databaseFactory->createReadonly($systemData);
 
-        $this->output->writeln(sprintf('Backup "%s" started will be restored:', $this->name));
-        $this->output->writeln(sprintf(' * label:   %s', $systemDatabase->get('label')));
-        $this->output->writeln(sprintf(' * message: %s', $systemDatabase->get('message')));
-        $this->output->writeln(sprintf(' * started: %s', $systemDatabase->get('started')));
-        $this->output->writeln('');
-
-        if ($systemDatabase->getWithDefault('state', self::STATE_SUCCESS) === self::STATE_PARTIALLY
-            && !$this->environment->restorePartiallyBackup()
-        ) {
+        $event = new PreRestoreEvent($this->backup, $systemDatabase, $source, $destination);
+        $this->eventDispatcher->dispatch(Events::PRE_RESTORE_EVENT, $event);
+        if ($event->isCanceled()) {
             return;
         }
 
-        foreach ($this->backup as $backupName => $backup) {
-            $this->output->writeln('- ' . $backupName . ' (' . $backup['plugin'] . '):');
-            $plugin = $this->pluginRegistry->getPlugin($backup['plugin']);
-
-            $optionsResolver = new OptionsResolver();
-            $plugin->configureOptionsResolver($optionsResolver);
-            $parameter = $optionsResolver->resolve($backup['parameter']);
-
+        $backupConfig = $event->getBackup();
+        foreach ($backupConfig as $backupName => $backup) {
             $backupSource = new Filesystem(new PrefixAdapter('backup/' . $backupName, $source->getAdapter()));
             $backupSource->addPlugin(new ListFiles());
             $backupSource->addPlugin(new HashPlugin());
 
-            $database = $this->databaseFactory->createReadonly(
-                json_decode($source->read(sprintf('database/backup/%s.json', $backupName)), true)
+            $data = json_decode($source->read(sprintf('database/backup/%s.json', $backupName)), true);
+            $database = $this->databaseFactory->createReadonly($data);
+
+            $event = new RestoreEvent(
+                $systemDatabase, $database, $backupSource, $destination, $backupName, $backup
             );
-
-            if ($database->getWithDefault('state', self::STATE_SUCCESS) === self::STATE_FAILED) {
-                $this->output->writeln('  <info>Bypassed</info>');
-
-                continue;
-            }
-
-            try {
-                $plugin->restore($backupSource, $destination, $database, $parameter);
-            } catch (\Exception $exception) {
-                if (!$this->environment->continueFailedRestore($exception)) {
-                    return;
-                }
-            }
-
-            $this->output->writeln('');
-            $this->output->writeln('');
+            $this->eventDispatcher->dispatch(Events::RESTORE_EVENT, $event);
         }
 
-        $this->output->writeln('Restore finished');
-    }
-
-    /**
-     * Serializes exception.
-     *
-     * @param \Exception $exception
-     *
-     * @return array
-     */
-    private function serializeException(\Exception $exception)
-    {
-        return [
-            'message' => $exception->getMessage(),
-            'code' => $exception->getCode(),
-            'trace' => $exception->getTrace(),
-            'file' => $exception->getFile(),
-            'line' => $exception->getLine(),
-            'previous' => null !== $exception->getPrevious() ? $this->serializeException($exception->getPrevious()) : null,
-        ];
+        $this->eventDispatcher->dispatch(Events::POST_RESTORE_EVENT, new Event());
     }
 }

@@ -121,6 +121,7 @@ class DirectoryPluginTest extends \PHPUnit_Framework_TestCase
         $source->hash('test.json')->willReturn('xxx');
 
         $destination->has('test/test.json')->willReturn(true);
+        $destination->delete('test/test.json')->willReturn(true);
         $destination->hash('test/test.json')->willReturn('123-123-123');
         $destination->writeStream('test/test.json', 'file resource')->shouldBeCalled();
 

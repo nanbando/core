@@ -14,6 +14,7 @@
         "symfony/http-kernel": "^3.0",
         "symfony/dependency-injection": "^3.0",
         "symfony/framework-bundle": "^3.0",
+        "symfony/event-dispatcher": "^3.0",
         "symfony/config": "^3.0",
         "symfony/yaml": "^3.0",
         "puli/repository": "^1.0-beta9",

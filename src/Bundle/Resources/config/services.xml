@@ -35,6 +35,7 @@
             <argument type="string">%nanbando.name%</argument>
             <argument type="service" id="temporary_files"/>
             <argument type="service" id="slugify"/>
+            <argument type="service" id="filesystem"/>
             <argument type="service" id="filesystem.local"/>
             <argument type="service" id="filesystem.remote" on-invalid="null"/>
         </service>
@@ -48,13 +49,10 @@
             <argument type="service" id="input"/>
         </service>
         <service id="nanbando" class="Nanbando\Core\Nanbando">
-            <argument type="string">%nanbando.name%</argument>
-            <argument type="string">%nanbando.backup%</argument>
-            <argument type="service" id="output"/>
-            <argument type="service" id="plugins"/>
+            <argument>%nanbando.backup%</argument>
             <argument type="service" id="storage"/>
             <argument type="service" id="database_factory"/>
-            <argument type="service" id="nanbando.console_environment"/>
+            <argument type="service" id="event_dispatcher"/>
         </service>
 
         <!-- plugin -->

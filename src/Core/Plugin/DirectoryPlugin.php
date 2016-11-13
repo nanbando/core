@@ -90,8 +90,14 @@ class DirectoryPlugin implements PluginInterface
         foreach ($files as $file) {
             $path = $file['path'];
             $fullPath = $parameter['directory'] . '/' . $file['path'];
-            if ($destination->has($fullPath) && $destination->hash($fullPath) === $source->hash($path)) {
-                continue;
+            if ($destination->has($fullPath)) {
+                if ($destination->hash($fullPath) === $source->hash($path)) {
+                    $progressBar->advance();
+
+                    continue;
+                }
+
+                $destination->delete($fullPath);
             }
 
             $destination->writeStream($fullPath, $source->readStream($path));
