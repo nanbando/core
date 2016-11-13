@@ -16,8 +16,9 @@ Contents
     installation
     usage
     configuration
-    plugins/index
+    plugins
     cookbook/index
+    extending/index
 
 Indices and tables
 ------------------
