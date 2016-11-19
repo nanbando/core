@@ -21,8 +21,12 @@ class NanbandoExtension extends Extension
         $config = $this->processConfiguration($configuration, $configs);
 
         $container->setParameter('nanbando.name', $config['name']);
+        $container->setParameter('nanbando.application.name', $config['application']['name']);
+        $container->setParameter('nanbando.application.version', $config['application']['version']);
+        $container->setParameter('nanbando.application.options', $config['application']['options']);
         $container->setParameter('nanbando.temp', $config['temp']);
         $container->setParameter('nanbando.backup', $config['backup']);
+        $container->setParameter('nanbando.presets', $config['presets']);
         $container->setParameter('nanbando.storage.local_directory', realpath($config['storage']['local_directory']));
 
         if (array_key_exists('remote_service', $config['storage'])

@@ -5,6 +5,7 @@ namespace Nanbando\Unit\Bundle\Command;
 use Nanbando\Bundle\Command\CheckCommand;
 use Nanbando\Core\Plugin\PluginInterface;
 use Nanbando\Core\Plugin\PluginRegistry;
+use Nanbando\Core\Presets\PresetStore;
 use Prophecy\Argument;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
@@ -23,17 +24,31 @@ class CheckCommandTest extends \PHPUnit_Framework_TestCase
      */
     private $plugins;
 
+    /**
+     * @var PresetStore
+     */
+    private $presetStore;
+
     protected function setUp()
     {
         $this->container = $this->prophesize(ContainerInterface::class);
         $this->plugins = $this->prophesize(PluginRegistry::class);
+        $this->presetStore = $this->prophesize(PresetStore::class);
+        $this->presetStore->getPreset(Argument::cetera())->willReturn([]);
     }
 
     private function getCommandTester($remote = false, $backup = [])
     {
         $this->container->getParameter('nanbando.storage.local_directory')->willReturn('/User/test/nanbando');
         $this->container->getParameter('nanbando.backup')->willReturn($backup);
+        $this->container->hasParameter('nanbando.application.name')->willReturn(true);
+        $this->container->getParameter('nanbando.application.name')->willReturn('sulu');
+        $this->container->hasParameter('nanbando.application.version')->willReturn(true);
+        $this->container->getParameter('nanbando.application.version')->willReturn('1.3');
+        $this->container->hasParameter('nanbando.application.options')->willReturn(true);
+        $this->container->getParameter('nanbando.application.options')->willReturn([]);
         $this->container->has('filesystem.remote')->willReturn($remote);
+        $this->container->get('presets')->willReturn($this->presetStore->reveal());
 
         $this->container->get('plugins')->willReturn($this->plugins->reveal());
 
@@ -95,8 +110,7 @@ class CheckCommandTest extends \PHPUnit_Framework_TestCase
         );
         $commandTester->execute([]);
 
-
-        $this->assertRegExp('/test-1[-\s]*OK/', $commandTester->getDisplay());
+        $this->assertRegExp('/test-1([-\s]*)([^-]*)OK/', $commandTester->getDisplay());
         $this->assertRegExp('/test-2[-\s]*\[WARNING\] Plugin "my-plugin-2" not found/', $commandTester->getDisplay());
     }
 
@@ -147,7 +161,7 @@ class CheckCommandTest extends \PHPUnit_Framework_TestCase
         $commandTester->execute([]);
 
         $this->assertRegExp('/test-1[-\s]*\[WARNING\] Parameter not valid/', $commandTester->getDisplay());
-        $this->assertRegExp('/test-2[-\s]*OK/', $commandTester->getDisplay());
+        $this->assertRegExp('/test-2([-\s]*)([^-]*)OK/', $commandTester->getDisplay());
     }
 
     public function testExecuteOK()
@@ -194,7 +208,7 @@ class CheckCommandTest extends \PHPUnit_Framework_TestCase
         );
         $commandTester->execute([]);
 
-        $this->assertRegExp('/test-1[-\s]*OK/', $commandTester->getDisplay());
-        $this->assertRegExp('/test-2[-\s]*OK/', $commandTester->getDisplay());
+        $this->assertRegExp('/test-1([-\s]*)([^-]*)OK/', $commandTester->getDisplay());
+        $this->assertRegExp('/test-2([-\s]*)([^-]*)OK/', $commandTester->getDisplay());
     }
 }

@@ -43,6 +43,7 @@ class DirectoryPluginTest extends \PHPUnit_Framework_TestCase
         $destination = $this->prophesize(Filesystem::class);
         $database = $this->prophesize(Database::class);
 
+        $source->has('test')->wilLReturn(true);
         $source->listFiles('test', true)->willReturn(
             [
                 [

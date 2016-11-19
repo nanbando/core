@@ -51,5 +51,15 @@
             <tag name="kernel.event_listener" event="%nanbando.events.pre_restore%" method="onPreRestore" priority="100"/>
             <tag name="kernel.event_listener" event="%nanbando.events.restore%" method="onRestoreStarted" priority="100"/>
         </service>
+
+        <service id="nanbando.event_listener.preset" class="Nanbando\Core\EventListener\PresetListener">
+            <argument type="string">%nanbando.application.name%</argument>
+            <argument type="string">%nanbando.application.version%</argument>
+            <argument type="string">%nanbando.application.options%</argument>
+            <argument type="service" id="presets"/>
+
+            <tag name="kernel.event_listener" event="%nanbando.events.pre_backup%" method="onPreBackup" priority="110"/>
+            <tag name="kernel.event_listener" event="%nanbando.events.pre_restore%" method="onPreRestore" priority="110"/>
+        </service>
     </services>
 </container>

@@ -37,7 +37,8 @@
         "padraic/phar-updater": "^1.0",
         "cocur/slugify": "^2.1",
         "neutron/temporary-filesystem": "^2.2",
-        "emgag/flysystem-hash": "^1.0"
+        "emgag/flysystem-hash": "^1.0",
+        "composer/semver": "^1.4"
     },
     "require-dev": {
         "phpunit/phpunit": "^5.3",

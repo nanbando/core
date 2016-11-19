@@ -10,3 +10,4 @@ of the following possibilities to extend nanbando.
     bundle
     plugins
     events
+    presets

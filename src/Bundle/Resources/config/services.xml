@@ -40,6 +40,11 @@
             <argument type="service" id="filesystem.remote" on-invalid="null"/>
         </service>
 
+        <!-- presets -->
+        <service id="presets" class="Nanbando\Core\Presets\PresetStore">
+            <argument>%nanbando.presets%</argument>
+        </service>
+
         <!-- database -->
         <service id="database_factory" class="Nanbando\Core\Database\DatabaseFactory"/>
 
