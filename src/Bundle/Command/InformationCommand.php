@@ -45,7 +45,9 @@ EOT
 
         $helper = $this->getHelper('question');
         $question = new ChoiceQuestion('Which backup', $localFiles);
+        $question->setMultiselect(true);
         $question->setErrorMessage('Backup %s is invalid.');
+        $question->setAutocompleterValues([]);
 
         $input->setArgument('file', $helper->ask($input, $output, $question));
         $output->writeln('');

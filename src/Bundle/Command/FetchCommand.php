@@ -65,10 +65,11 @@ EOT
 
         $helper = $this->getHelper('question');
         $question = new ChoiceQuestion(
-            'Which backup', array_diff($remoteFiles, $localFiles)
+            'Which backup', array_values(array_diff($remoteFiles, $localFiles))
         );
         $question->setMultiselect(true);
         $question->setErrorMessage('Backup %s is invalid.');
+        $question->setAutocompleterValues([]);
 
         $input->setArgument('files', $helper->ask($input, $output, $question));
     }
