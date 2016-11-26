@@ -195,7 +195,21 @@ class LocalStorageTest extends \PHPUnit_Framework_TestCase
         $file = '123-123-123';
         $path = sprintf('%s/%s.zip', $this->name, $file);
         $this->localFilesystem->readStream($path)->willReturn(file_get_contents($zipPath));
+        $this->remoteFilesystem->has($path)->willReturn(false);
         $this->remoteFilesystem->putStream($path, Argument::any())->shouldBeCalled();
+
+        $this->storage->push($file);
+    }
+
+    public function testPushExistsRemote()
+    {
+        $zipPath = Path::join([DATAFIXTURES_DIR, 'backups', '13-21-2016-05-29_success.zip']);
+
+        $file = '123-123-123';
+        $path = sprintf('%s/%s.zip', $this->name, $file);
+        $this->localFilesystem->readStream($path)->willReturn(file_get_contents($zipPath));
+        $this->remoteFilesystem->has($path)->willReturn(true);
+        $this->remoteFilesystem->putStream($path, Argument::any())->shouldNotBeCalled();
 
         $this->storage->push($file);
     }
