@@ -192,8 +192,7 @@ class LocalStorage implements StorageInterface
         }
 
         $path = sprintf('%s/%s.zip', $this->name, $file);
-
-        if (false === ($stream = $this->localFilesystem->readStream($path))) {
+        if (false === ($stream = $this->localFilesystem->readStream($path)) || $this->remoteFilesystem->has($path)) {
             return;
         }
 
