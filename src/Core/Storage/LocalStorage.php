@@ -8,7 +8,11 @@ use League\Flysystem\Plugin\ListFiles;
 use League\Flysystem\ZipArchive\ZipArchiveAdapter;
 use Nanbando\Core\Flysystem\ReadonlyAdapter;
 use Neutron\TemporaryFilesystem\TemporaryFilesystemInterface;
+use Symfony\Component\Filesystem\Filesystem as SymfonyFilesystem;
 
+/**
+ * Implement the storage interface for local usage.
+ */
 class LocalStorage implements StorageInterface
 {
     /**
@@ -37,9 +41,15 @@ class LocalStorage implements StorageInterface
     private $slugify;
 
     /**
+     * @var SymfonyFilesystem
+     */
+    private $filesystem;
+
+    /**
      * @param string $name
      * @param TemporaryFilesystemInterface $temporaryFileSystem
      * @param SlugifyInterface $slugify
+     * @param SymfonyFilesystem $filesystem
      * @param Filesystem $localFilesystem
      * @param Filesystem $remoteFilesystem
      */
@@ -47,14 +57,16 @@ class LocalStorage implements StorageInterface
         $name,
         TemporaryFilesystemInterface $temporaryFileSystem,
         SlugifyInterface $slugify,
+        SymfonyFilesystem $filesystem,
         Filesystem $localFilesystem,
         Filesystem $remoteFilesystem = null
     ) {
         $this->name = $name;
         $this->temporaryFileSystem = $temporaryFileSystem;
+        $this->slugify = $slugify;
+        $this->filesystem = $filesystem;
         $this->localFilesystem = $localFilesystem;
         $this->remoteFilesystem = $remoteFilesystem;
-        $this->slugify = $slugify;
     }
 
     /**
@@ -68,6 +80,17 @@ class LocalStorage implements StorageInterface
         $filesystem->addPlugin(new ListFiles());
 
         return $filesystem;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function cancel(Filesystem $filesystem)
+    {
+        /** @var \ZipArchive $archive */
+        $archive = $filesystem->getAdapter()->getArchive();
+
+        $this->filesystem->remove($archive->filename);
     }
 
     /**

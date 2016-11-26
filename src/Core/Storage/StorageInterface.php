@@ -13,6 +13,11 @@ interface StorageInterface
 
     /**
      * @param Filesystem $filesystem
+     */
+    public function cancel(Filesystem $filesystem);
+
+    /**
+     * @param Filesystem $filesystem
      * @param string|null $label
      *
      * @return string

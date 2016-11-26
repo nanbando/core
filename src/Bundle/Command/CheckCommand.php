@@ -3,13 +3,18 @@
 namespace Nanbando\Bundle\Command;
 
 use Nanbando\Core\Plugin\PluginRegistry;
+use Nanbando\Core\Presets\PresetStore;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\OptionsResolver\Exception\InvalidArgumentException;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Yaml\Yaml;
 
+/**
+ * This command provides functionality to check configuration.
+ */
 class CheckCommand extends ContainerAwareCommand
 {
     /**
@@ -17,10 +22,7 @@ class CheckCommand extends ContainerAwareCommand
      */
     protected function configure()
     {
-        $this
-            ->setName('check')
-            ->setDescription('Checks configuration issues')
-            ->setHelp(
+        $this->setName('check')->setDescription('Checks configuration issues')->setHelp(
                 <<<EOT
 The <info>{$this->getName()}</info> command looks for configuration issues
 
@@ -41,19 +43,23 @@ EOT
 
         if (!$this->getContainer()->has('filesystem.remote')) {
             $io->warning(
-                'No remote storage configuration found. This leads into disabled "fetch" and "push" commands.' .
-                'Please follow the documentation for global configuration.' . PHP_EOL . PHP_EOL .
-                'http://nanbando.readthedocs.io/en/latest/configuration.html#global-configuration'
+                'No remote storage configuration found. This leads into disabled "fetch" and "push" commands.'
+                . 'Please follow the documentation for global configuration.'
+                . PHP_EOL
+                . PHP_EOL
+                . 'http://nanbando.readthedocs.io/en/latest/configuration.html#global-configuration'
             );
         } else {
             $io->writeln('Remote Storage: YES');
         }
 
-        $backups = $this->getContainer()->getParameter('nanbando.backup');
+        $backups = $this->getBackups();
         if (0 === count($backups)) {
             $io->warning(
-                'No backup configuration found. Please follow the documentation for local configuration.' . PHP_EOL . PHP_EOL .
-                'http://nanbando.readthedocs.io/en/latest/configuration.html#local-configuration'
+                'No backup configuration found. Please follow the documentation for local configuration.'
+                . PHP_EOL
+                . PHP_EOL
+                . 'http://nanbando.readthedocs.io/en/latest/configuration.html#local-configuration'
             );
         }
 
@@ -100,15 +106,59 @@ EOT
         $plugins->getPlugin($backup['plugin'])->configureOptionsResolver($optionsResolver);
 
         try {
-            $optionsResolver->resolve($backup['parameter']);
+            $parameter = $optionsResolver->resolve($backup['parameter']);
         } catch (InvalidArgumentException $e) {
             $io->warning(sprintf('Parameter not valid' . PHP_EOL . PHP_EOL . 'Message: "%s"', $e->getMessage()));
 
             return false;
         }
 
+        $io->write('Parameter:');
+        $messages = array_filter(explode("\r\n", Yaml::dump($parameter)));
+        $io->block($messages, null, null, '  ');
+
         $io->writeln('OK');
 
         return true;
+    }
+
+    /**
+     * Returns backup configuration and merge it with preset if exists.
+     *
+     * @return array
+     */
+    private function getBackups()
+    {
+        $backups = $this->getContainer()->getParameter('nanbando.backup');
+
+        $preset = [];
+        if ($name = $this->getParameter('nanbando.application.name')) {
+            /** @var PresetStore $presetStore */
+            $presetStore = $this->getContainer()->get('presets');
+            $preset = $presetStore->getPreset(
+                $name,
+                $this->getParameter('nanbando.application.version'),
+                $this->getParameter('nanbando.application.options')
+            );
+        }
+
+        return array_merge($preset, $backups);
+    }
+
+    /**
+     * Returns container parameter or default value.
+     *
+     * @param string $name
+     * @param mixed $default
+     *
+     * @return mixed
+     */
+    public function getParameter($name, $default = null)
+    {
+        if (!$this->getContainer()->hasParameter($name)) {
+            return $default;
+        }
+
+        return $this->getContainer()->getParameter($name);
     }
 }

@@ -36,7 +36,7 @@ Put this configuration into ``~/.nanbando.yml``.
 
 .. note::
 
-    The configuration  documentation for the ``oneup_flysystem`` can be found on github `OneupFlysystemBundle`_.
+    The configuration documentation for the ``oneup_flysystem`` can be found on github `OneupFlysystemBundle`_.
 
 For nanbando you have to define the local directory, where the backup command can place the backup archives, and the
 remote filesystem-service which can be configured in the ``oneup_flysystem`` extension.
@@ -48,7 +48,7 @@ will be disabled.
 Local Configuration
 -------------------
 
-The local configuration contains the name, backup configuration and the additional :doc:`plugins/index`.
+The local configuration contains the name, backup configuration and the additional :doc:`plugins`.
 
 .. code:: json
 

@@ -1,7 +1,11 @@
 How to backup a Sulu application?
 =================================
 
-You can use the following configuration to backup the application using jackrabbit as phpcr data storage.
+.. note::
+
+    To simplify the backup configuration for sulu-applications you can use the `Sulu Plugin`_.
+
+You can use the following configuration to backup the application using jackrabbit as phpcr backend.
 
 .. code::
 
@@ -95,3 +99,5 @@ of the backup.
             "nanbando/mysql": "dev-master"
         }
     }
+
+.. _`Sulu Plugin`: https://github.com/nanbando/sulu

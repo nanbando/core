@@ -46,8 +46,20 @@ class DirectoryPlugin implements PluginInterface
      */
     public function backup(Filesystem $source, Filesystem $destination, Database $database, array $parameter)
     {
+        if (0 === $source->has($parameter['directory'])) {
+            $this->output->writeln(sprintf('  Directory "%s" not found.', $parameter['directory']));
+
+            return;
+        }
+
         // TODO make it smoother
         $files = $source->listFiles($parameter['directory'], true);
+
+        if (0 === count($files)) {
+            $this->output->writeln(sprintf('  No files found in directory "%s".', $parameter['directory']));
+
+            return;
+        }
 
         $progressBar = new ProgressBar($this->output, count($files));
         $progressBar->setOverwrite(true);
@@ -90,8 +102,14 @@ class DirectoryPlugin implements PluginInterface
         foreach ($files as $file) {
             $path = $file['path'];
             $fullPath = $parameter['directory'] . '/' . $file['path'];
-            if ($destination->has($fullPath) && $destination->hash($fullPath) === $source->hash($path)) {
-                continue;
+            if ($destination->has($fullPath)) {
+                if ($destination->hash($fullPath) === $source->hash($path)) {
+                    $progressBar->advance();
+
+                    continue;
+                }
+
+                $destination->delete($fullPath);
             }
 
             $destination->writeStream($fullPath, $source->readStream($path));

@@ -11,6 +11,7 @@ use Nanbando\Core\Storage\RemoteStorageNotConfiguredException;
 use Nanbando\Core\Storage\StorageInterface;
 use Neutron\TemporaryFilesystem\TemporaryFilesystemInterface;
 use Prophecy\Argument;
+use Symfony\Component\Filesystem\Filesystem as SymfonyFilesystem;
 use Webmozart\PathUtil\Path;
 
 class LocalStorageTest extends \PHPUnit_Framework_TestCase
@@ -41,6 +42,11 @@ class LocalStorageTest extends \PHPUnit_Framework_TestCase
     private $slugify;
 
     /**
+     * @var SymfonyFilesystem
+     */
+    private $filesystem;
+
+    /**
      * @var StorageInterface
      */
     private $storage;
@@ -51,11 +57,13 @@ class LocalStorageTest extends \PHPUnit_Framework_TestCase
         $this->localFilesystem = $this->prophesize(Filesystem::class);
         $this->remoteFilesystem = $this->prophesize(Filesystem::class);
         $this->slugify = $this->prophesize(SlugifyInterface::class);
+        $this->filesystem = $this->prophesize(SymfonyFilesystem::class);
 
         $this->storage = new LocalStorage(
             $this->name,
             $this->temporaryFileSystem->reveal(),
             $this->slugify->reveal(),
+            $this->filesystem->reveal(),
             $this->localFilesystem->reveal(),
             $this->remoteFilesystem->reveal()
         );
@@ -73,6 +81,17 @@ class LocalStorageTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($tempFile, $filesystem->getAdapter()->getArchive()->filename);
 
         return $filesystem;
+    }
+
+    public function testCancel()
+    {
+        $filesystem = $this->testStart();
+
+        /** @var \ZipArchive $archive */
+        $archive = $filesystem->getAdapter()->getArchive();
+        $this->filesystem->remove($archive->filename);
+
+        $this->storage->cancel($filesystem);
     }
 
     public function testClose()
@@ -199,6 +218,7 @@ class LocalStorageTest extends \PHPUnit_Framework_TestCase
             $this->name,
             $this->temporaryFileSystem->reveal(),
             $this->slugify->reveal(),
+            $this->filesystem->reveal(),
             $this->localFilesystem->reveal()
         );
 
@@ -213,6 +233,7 @@ class LocalStorageTest extends \PHPUnit_Framework_TestCase
             $this->name,
             $this->temporaryFileSystem->reveal(),
             $this->slugify->reveal(),
+            $this->filesystem->reveal(),
             $this->localFilesystem->reveal()
         );
 
@@ -227,6 +248,7 @@ class LocalStorageTest extends \PHPUnit_Framework_TestCase
             $this->name,
             $this->temporaryFileSystem->reveal(),
             $this->slugify->reveal(),
+            $this->filesystem->reveal(),
             $this->localFilesystem->reveal()
         );
 
