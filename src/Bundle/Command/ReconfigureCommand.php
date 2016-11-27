@@ -103,7 +103,7 @@ EOT
      */
     protected function rebuild(InputInterface $input, OutputInterface $output)
     {
-        $puli = new Puli(Path::join([getcwd(), '.nanbando']));
+        $puli = new Puli(Path::join([getcwd(), NANBANDO_DIR]));
         $puli->start();
 
         /** @var EmbeddedComposerInterface $embeddedComposer */
@@ -134,7 +134,7 @@ EOT
         }
 
         $filesystem = new Filesystem();
-        $filesystem->remove(Path::join([getcwd(), '.nanbando', '.puli']));
+        $filesystem->remove(Path::join([getcwd(), NANBANDO_DIR, '.puli']));
 
         $discoveryManager = $puli->getDiscoveryManager();
         if (!$discoveryManager->hasRootTypeDescriptor('nanbando/bundle')) {
@@ -145,6 +145,6 @@ EOT
         $discoveryManager->buildDiscovery();
 
         $filesystem = new Filesystem();
-        $filesystem->remove(Path::join([getcwd(), '.nanbando', 'app', 'cache']));
+        $filesystem->remove(Path::join([getcwd(), NANBANDO_DIR, 'app', 'cache']));
     }
 }

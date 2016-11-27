@@ -21,6 +21,7 @@ use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpKernel\Config\FileLocator;
 use Symfony\Component\HttpKernel\Kernel as SymfonyKernel;
+use Webmozart\PathUtil\Path;
 
 class Kernel extends SymfonyKernel
 {
@@ -114,7 +115,7 @@ class Kernel extends SymfonyKernel
      */
     public function getCacheDir()
     {
-        $cacheDir = getcwd() . '/.nanbando/app/cache';
+        $cacheDir = Path::join([getcwd(), NANBANDO_DIR, 'app', 'cache']);
 
         $filesystem = new Filesystem();
         $filesystem->mkdir($cacheDir);
@@ -127,7 +128,7 @@ class Kernel extends SymfonyKernel
      */
     public function getLogDir()
     {
-        $logDir = getcwd() . '/.nanbando/app/log';
+        $logDir = Path::join([getcwd(), NANBANDO_DIR, 'app', 'log']);
 
         $filesystem = new Filesystem();
         $filesystem->mkdir($logDir);
