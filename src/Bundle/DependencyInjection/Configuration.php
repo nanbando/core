@@ -20,6 +20,7 @@ class Configuration implements ConfigurationInterface
             ->children()
                 ->scalarNode('name')->defaultValue('nanbando')->end()
                 ->arrayNode('application')
+                    ->addDefaultsIfNotSet()
                     ->children()
                         ->scalarNode('name')->defaultNull()->end()
                         ->scalarNode('version')->defaultNull()->end()

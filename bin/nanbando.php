@@ -2,6 +2,8 @@
 
 set_time_limit(0);
 
+define('NANBANDO_DIR', getenv('NANBANDO_DIR') ?: '.nanbando');
+
 use Dflydev\EmbeddedComposer\Core\EmbeddedComposerBuilder;
 use Nanbando\Application\Application;
 use Nanbando\Application\Kernel;
@@ -23,12 +25,12 @@ if ($projectDir = $input->getParameterOption('--root-dir')) {
     chdir($projectDir);
 }
 
-$discovery = new JsonDiscovery(Path::join([getcwd(), '.nanbando', '.puli', 'bindings.json']));
+$discovery = new JsonDiscovery(Path::join([getcwd(), NANBANDO_DIR, '.puli', 'bindings.json']));
 
 $embeddedComposerBuilder = new EmbeddedComposerBuilder($classLoader);
 $embeddedComposer = $embeddedComposerBuilder
     ->setComposerFilename('nanbando.json')
-    ->setVendorDirectory('.nanbando')
+    ->setVendorDirectory(NANBANDO_DIR)
     ->build();
 $embeddedComposer->processAdditionalAutoloads();
 

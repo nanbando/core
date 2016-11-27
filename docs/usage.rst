@@ -53,6 +53,11 @@ After you have created this file you can run following command to configure the 
 configuration. If you have added requirements to the configuration the application will install them into the folder
 ``.nanbando``.
 
+.. note::
+
+    For readonly filesystems you can overwrite the folder ``.nanando`` by setting the environment variable
+    ``NANBANDO_DIR``.
+
 .. code:: bash
 
     php nanbando.phar reconfigure
