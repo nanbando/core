@@ -1,16 +1,31 @@
 # Change Log
 
-## [Unreleased](https://github.com/nanbando/core/tree/HEAD)
+## [0.3.0](https://github.com/nanbando/core/tree/0.3.0) (2016-12-01)
+[Full Changelog](https://github.com/nanbando/core/compare/0.2.0...0.3.0)
 
-[Full Changelog](https://github.com/nanbando/core/compare/0.2.0...HEAD)
+**Implemented enhancements:**
+
+- Disable auto-completion in `fetch` command [\#47](https://github.com/nanbando/core/issues/47)
+- Update doc to fit sulu 1.3 workspace configuration [\#37](https://github.com/nanbando/core/issues/37)
 
 **Fixed bugs:**
 
 - PHAR package doesn't work with relative local\_directory values  [\#32](https://github.com/nanbando/core/issues/32)
 
+**Closed issues:**
+
+- Sulu Preset [\#45](https://github.com/nanbando/core/issues/45)
+- Presets backup [\#41](https://github.com/nanbando/core/issues/41)
+
 **Merged pull requests:**
 
+- Fixed multi-select questions [\#51](https://github.com/nanbando/core/pull/51) ([wachterjohannes](https://github.com/wachterjohannes))
+- Added environment variable for nanbando dir [\#50](https://github.com/nanbando/core/pull/50) ([wachterjohannes](https://github.com/wachterjohannes))
+- Check existance of remote-backup before upload [\#49](https://github.com/nanbando/core/pull/49) ([wachterjohannes](https://github.com/wachterjohannes))
+- Disabled auto-completition [\#48](https://github.com/nanbando/core/pull/48) ([wachterjohannes](https://github.com/wachterjohannes))
+- Implemented event-architecture [\#43](https://github.com/nanbando/core/pull/43) ([wachterjohannes](https://github.com/wachterjohannes))
 - Added realpath call to resolve local-directory [\#39](https://github.com/nanbando/core/pull/39) ([wachterjohannes](https://github.com/wachterjohannes))
+- Added sulu 1.3 configuration [\#38](https://github.com/nanbando/core/pull/38) ([wachterjohannes](https://github.com/wachterjohannes))
 
 ## [0.2.0](https://github.com/nanbando/core/tree/0.2.0) (2016-09-23)
 [Full Changelog](https://github.com/nanbando/core/compare/0.1.1...0.2.0)
