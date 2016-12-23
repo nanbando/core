@@ -8,6 +8,13 @@
         }
     ],
     "require": {
+        "php": "^5.6 || ^7.0",
+
+        "ext-xml": "*",
+        "ext-curl": "*",
+        "ext-mbstring": "*",
+        "ext-zip": "*",
+
         "dflydev/embedded-composer": "dev-master",
         "composer/composer": "^1.2",
         "symfony/console": "^3.0",
