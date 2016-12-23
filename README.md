@@ -38,6 +38,14 @@ nanbando self-update
 
 The executable is signed with a OpenSSL private key.
 
+## Requirements
+
+* php ^5.6 || ^7.0
+* ext-xml
+* ext-curl
+* ext-mbstring
+* ext-zip
+
 ## Documentation
 
 See the official documentation on [nanbando.readthedocs.io](http://nanbando.readthedocs.io/en/latest/).
