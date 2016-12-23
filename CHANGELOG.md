@@ -1,5 +1,15 @@
 # Change Log
 
+## [Unreleased](https://github.com/nanbando/core/tree/HEAD)
+
+[Full Changelog](https://github.com/nanbando/core/compare/0.3.0...HEAD)
+
+**Merged pull requests:**
+
+- Added path to information-command [\#57](https://github.com/nanbando/core/pull/57) ([wachterjohannes](https://github.com/wachterjohannes))
+- Added latest option to information-command [\#56](https://github.com/nanbando/core/pull/56) ([wachterjohannes](https://github.com/wachterjohannes))
+- Added requirements to documentation [\#55](https://github.com/nanbando/core/pull/55) ([wachterjohannes](https://github.com/wachterjohannes))
+
 ## [0.3.0](https://github.com/nanbando/core/tree/0.3.0) (2016-12-01)
 [Full Changelog](https://github.com/nanbando/core/compare/0.2.0...0.3.0)
 
