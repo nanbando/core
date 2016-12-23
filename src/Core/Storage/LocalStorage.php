@@ -167,6 +167,19 @@ class LocalStorage implements StorageInterface
     /**
      * {@inheritdoc}
      */
+    public function path(Filesystem $filesystem)
+    {
+        /** @var ReadonlyAdapter $firstAdapter */
+        $firstAdapter = $filesystem->getAdapter();
+        /** @var ZipArchiveAdapter $adapter */
+        $adapter = $firstAdapter->getAdapter();
+
+        return $adapter->getArchive()->filename;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function fetch($file)
     {
         if (!$this->remoteFilesystem) {
