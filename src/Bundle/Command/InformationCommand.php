@@ -50,7 +50,7 @@ EOT
         }
 
         if ($input->getOption('latest')) {
-            $input->setArgument('file', reset($localFiles));
+            return $input->setArgument('file', end($localFiles));
         }
 
         $helper = $this->getHelper('question');
