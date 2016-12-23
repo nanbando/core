@@ -49,6 +49,15 @@ interface StorageInterface
     public function size(Filesystem $filesystem);
 
     /**
+     * Returns path for given backup.
+     *
+     * @param Filesystem $filesystem
+     *
+     * @return string
+     */
+    public function path(Filesystem $filesystem);
+
+    /**
      * @param string $file
      */
     public function push($file);

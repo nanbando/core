@@ -78,5 +78,6 @@ EOT
         $output->writeln(sprintf(' * started:  %s', $database->get('started')));
         $output->writeln(sprintf(' * finished: %s', $database->get('finished')));
         $output->writeln(sprintf(' * size:     %s', (new ByteFormatter())->format($storage->size($backupFilesystem))));
+        $output->writeln(sprintf(' * path:     %s', $storage->path($backupFilesystem)));
     }
 }
