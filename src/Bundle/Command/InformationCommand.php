@@ -8,6 +8,7 @@ use ScriptFUSION\Byte\ByteFormatter;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ChoiceQuestion;
 
@@ -22,6 +23,7 @@ class InformationCommand extends ContainerAwareCommand
             ->setName('information')
             ->setDescription('Fetches backup archives from remote storage.')
             ->addArgument('file', InputArgument::OPTIONAL, 'Defines which file should be used to display information.')
+            ->addOption('latest', null, InputOption::VALUE_NONE, 'Uses latest file.')
             ->setHelp(
                 <<<EOT
 The <info>{$this->getName()}</info> displays information for given backup archive.
@@ -42,6 +44,14 @@ EOT
         /** @var StorageInterface $storage */
         $storage = $this->getContainer()->get('storage');
         $localFiles = $storage->localListing();
+
+        if (empty($localFiles)) {
+            throw new \Exception('No local backup available.');
+        }
+
+        if ($input->getOption('latest')) {
+            $input->setArgument('file', reset($localFiles));
+        }
 
         $helper = $this->getHelper('question');
         $question = new ChoiceQuestion('Which backup', $localFiles);
