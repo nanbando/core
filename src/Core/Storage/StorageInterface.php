@@ -42,20 +42,22 @@ interface StorageInterface
     public function remoteListing();
 
     /**
-     * @param Filesystem $filesystem
+     * Returns size for given backup.
+     *
+     * @param string $name
      *
      * @return int
      */
-    public function size(Filesystem $filesystem);
+    public function size($name);
 
     /**
      * Returns path for given backup.
      *
-     * @param Filesystem $filesystem
+     * @param string $name
      *
      * @return string
      */
-    public function path(Filesystem $filesystem);
+    public function path($name);
 
     /**
      * @param string $file

@@ -37,6 +37,7 @@
             <argument type="service" id="slugify"/>
             <argument type="service" id="filesystem"/>
             <argument type="service" id="filesystem.local"/>
+            <argument type="string">%nanbando.storage.local_directory%</argument>
             <argument type="service" id="filesystem.remote" on-invalid="null"/>
         </service>
 

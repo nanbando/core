@@ -31,6 +31,11 @@ class LocalStorage implements StorageInterface
     private $localFilesystem;
 
     /**
+     * @var string
+     */
+    private $localDirectory;
+
+    /**
      * @var Filesystem
      */
     private $remoteFilesystem;
@@ -51,6 +56,7 @@ class LocalStorage implements StorageInterface
      * @param SlugifyInterface $slugify
      * @param SymfonyFilesystem $filesystem
      * @param Filesystem $localFilesystem
+     * @param string $localDirectory
      * @param Filesystem $remoteFilesystem
      */
     public function __construct(
@@ -59,6 +65,7 @@ class LocalStorage implements StorageInterface
         SlugifyInterface $slugify,
         SymfonyFilesystem $filesystem,
         Filesystem $localFilesystem,
+        $localDirectory,
         Filesystem $remoteFilesystem = null
     ) {
         $this->name = $name;
@@ -66,6 +73,7 @@ class LocalStorage implements StorageInterface
         $this->slugify = $slugify;
         $this->filesystem = $filesystem;
         $this->localFilesystem = $localFilesystem;
+        $this->localDirectory = $localDirectory;
         $this->remoteFilesystem = $remoteFilesystem;
     }
 
@@ -154,27 +162,17 @@ class LocalStorage implements StorageInterface
     /**
      * {@inheritdoc}
      */
-    public function size(Filesystem $filesystem)
+    public function size($name)
     {
-        /** @var ReadonlyAdapter $firstAdapter */
-        $firstAdapter = $filesystem->getAdapter();
-        /** @var ZipArchiveAdapter $adapter */
-        $adapter = $firstAdapter->getAdapter();
-
-        return filesize($adapter->getArchive()->filename);
+        return $this->localFilesystem->getSize($this->generatePath($name));
     }
 
     /**
      * {@inheritdoc}
      */
-    public function path(Filesystem $filesystem)
+    public function path($name)
     {
-        /** @var ReadonlyAdapter $firstAdapter */
-        $firstAdapter = $filesystem->getAdapter();
-        /** @var ZipArchiveAdapter $adapter */
-        $adapter = $firstAdapter->getAdapter();
-
-        return $adapter->getArchive()->filename;
+        return sprintf('%s/%s', rtrim($this->localDirectory, '/'), ltrim($this->generatePath($name), '/'));
     }
 
     /**
@@ -219,7 +217,7 @@ class LocalStorage implements StorageInterface
      */
     protected function listing(Filesystem $filesystem)
     {
-        return array_filter(
+        $result = array_filter(
             array_map(
                 function ($item) {
                     return $item['filename'];
@@ -227,5 +225,29 @@ class LocalStorage implements StorageInterface
                 $filesystem->listFiles($this->name)
             )
         );
+
+        usort(
+            $result,
+            function ($a, $b) {
+                $aDate = \DateTime::createFromFormat('H-i-s-Y-m-d', explode('_', $a)[0]);
+                $bDate = \DateTime::createFromFormat('H-i-s-Y-m-d', explode('_', $b)[0]);
+
+                return $aDate->getTimestamp() - $bDate->getTimestamp();
+            }
+        );
+
+        return $result;
+    }
+
+    /**
+     * Returns name for given backup.
+     *
+     * @param string $name
+     *
+     * @return string
+     */
+    protected function generatePath($name)
+    {
+        return sprintf('%s/%s.zip', $this->name, $name);
     }
 }

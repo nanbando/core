@@ -65,6 +65,7 @@ class LocalStorageTest extends \PHPUnit_Framework_TestCase
             $this->slugify->reveal(),
             $this->filesystem->reveal(),
             $this->localFilesystem->reveal(),
+            Path::join([DATAFIXTURES_DIR, 'backups']),
             $this->remoteFilesystem->reveal()
         );
     }
@@ -143,27 +144,52 @@ class LocalStorageTest extends \PHPUnit_Framework_TestCase
     public function testLocalListing()
     {
         $this->localFilesystem->listFiles($this->name)
-            ->willReturn([['filename' => 'test-1'], ['filename' => 'test-2']]);
+            ->willReturn(
+                [
+                    ['filename' => '09-23-38-2016-12-24'],
+                    ['filename' => '17-24-51-2016-12-01'],
+                    ['filename' => '17-40-15-2016-12-01'],
+                ]
+            );
 
-        $this->assertEquals(['test-1', 'test-2'], $this->storage->localListing());
+        $this->assertEquals(
+            ['17-24-51-2016-12-01', '17-40-15-2016-12-01', '09-23-38-2016-12-24'],
+            $this->storage->localListing()
+        );
     }
 
     public function testRemoteListing()
     {
         $this->remoteFilesystem->listFiles($this->name)
-            ->willReturn([['filename' => 'test-1'], ['filename' => 'test-2']]);
+            ->willReturn(
+                [
+                    ['filename' => '09-23-38-2016-12-24_test-1'],
+                    ['filename' => '17-24-51-2016-12-01_test-2'],
+                    ['filename' => '17-40-15-2016-12-01_test-3'],
+                ]
+            );
 
-        $this->assertEquals(['test-1', 'test-2'], $this->storage->remoteListing());
+        $this->assertEquals(
+            ['17-24-51-2016-12-01_test-2', '17-40-15-2016-12-01_test-3', '09-23-38-2016-12-24_test-1'],
+            $this->storage->remoteListing()
+        );
     }
 
     public function testSize()
     {
         $path = Path::join([DATAFIXTURES_DIR, 'backups', '13-21-2016-05-29_success.zip']);
 
-        $adapter = new ZipArchiveAdapter($path);
-        $filesystem = new Filesystem(new ReadonlyAdapter($adapter));
+        $this->localFilesystem->getSize(Path::join(['test', '13-21-2016-05-29_success.zip']))
+            ->willReturn(filesize($path));
 
-        $this->assertEquals(filesize($path), $this->storage->size($filesystem));
+        $this->assertEquals(filesize($path), $this->storage->size('13-21-2016-05-29_success'));
+    }
+
+    public function testPath()
+    {
+        $path = Path::join([DATAFIXTURES_DIR, 'backups', 'test', '13-21-2016-05-29_success.zip']);
+
+        $this->assertEquals($path, $this->storage->path('13-21-2016-05-29_success'));
     }
 
     public function testFetch()
@@ -233,8 +259,9 @@ class LocalStorageTest extends \PHPUnit_Framework_TestCase
             $this->temporaryFileSystem->reveal(),
             $this->slugify->reveal(),
             $this->filesystem->reveal(),
-            $this->localFilesystem->reveal()
-        );
+            $this->localFilesystem->reveal(),
+            Path::join([DATAFIXTURES_DIR, 'backups'])
+     );
 
         $storage->push('test');
     }
@@ -247,8 +274,8 @@ class LocalStorageTest extends \PHPUnit_Framework_TestCase
             $this->name,
             $this->temporaryFileSystem->reveal(),
             $this->slugify->reveal(),
-            $this->filesystem->reveal(),
-            $this->localFilesystem->reveal()
+            $this->filesystem->reveal(), $this->localFilesystem->reveal(),
+            Path::join([DATAFIXTURES_DIR, 'backups'])
         );
 
         $storage->fetch('test');
@@ -263,7 +290,8 @@ class LocalStorageTest extends \PHPUnit_Framework_TestCase
             $this->temporaryFileSystem->reveal(),
             $this->slugify->reveal(),
             $this->filesystem->reveal(),
-            $this->localFilesystem->reveal()
+            $this->localFilesystem->reveal(),
+            Path::join([DATAFIXTURES_DIR, 'backups'])
         );
 
         $storage->remoteListing();
