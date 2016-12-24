@@ -67,9 +67,11 @@ EOT
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $file = $input->getArgument('file');
+
         /** @var StorageInterface $storage */
         $storage = $this->getContainer()->get('storage');
-        $backupFilesystem = $storage->open($input->getArgument('file'));
+        $backupFilesystem = $storage->open($file);
 
         $database = new ReadonlyDatabase(json_decode($backupFilesystem->read('database/system.json'), true));
 
@@ -77,7 +79,7 @@ EOT
         $output->writeln(sprintf(' * message:  %s', $database->get('message')));
         $output->writeln(sprintf(' * started:  %s', $database->get('started')));
         $output->writeln(sprintf(' * finished: %s', $database->get('finished')));
-        $output->writeln(sprintf(' * size:     %s', (new ByteFormatter())->format($storage->size($backupFilesystem))));
-        $output->writeln(sprintf(' * path:     %s', $storage->path($backupFilesystem)));
+        $output->writeln(sprintf(' * size:     %s', (new ByteFormatter())->format($storage->size($file))));
+        $output->writeln(sprintf(' * path:     %s', $storage->path($file)));
     }
 }
