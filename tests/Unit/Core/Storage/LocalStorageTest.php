@@ -141,6 +141,21 @@ class LocalStorageTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($tempFile, $filesystem->getAdapter()->getAdapter()->getArchive()->filename);
     }
 
+    public function testOpenAbsolutePath()
+    {
+        $path = Path::join([DATAFIXTURES_DIR, 'backups', '13-21-2016-05-29_success.zip']);
+
+        $this->temporaryFileSystem->createTemporaryFile()->shouldNotBeCalled();
+        $this->localFilesystem->readStream(Argument::any())->shouldNotBeCalled();
+
+        $filesystem = $this->storage->open($path);
+
+        $this->assertInstanceOf(Filesystem::class, $filesystem);
+        $this->assertInstanceOf(ReadonlyAdapter::class, $filesystem->getAdapter());
+        $this->assertInstanceOf(ZipArchiveAdapter::class, $filesystem->getAdapter()->getAdapter());
+        $this->assertEquals($path, $filesystem->getAdapter()->getAdapter()->getArchive()->filename);
+    }
+
     public function testLocalListing()
     {
         $this->localFilesystem->listFiles($this->name)
