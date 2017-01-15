@@ -22,7 +22,11 @@ class RestoreCommand extends ContainerAwareCommand
         $this
             ->setName('restore')
             ->setDescription('Restore a backup archive.')
-            ->addArgument('file', InputArgument::OPTIONAL, 'Defines which file should be restored.')
+            ->addArgument(
+                'file',
+                InputArgument::OPTIONAL,
+                'Defines which file should be restored (backup-name or absolute path to zip file).'
+            )
             ->setHelp(
                 <<<EOT
 The <info>{$this->getName()}</info> restores a backup archive.
