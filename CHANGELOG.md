@@ -1,11 +1,19 @@
 # Change Log
 
-## [Unreleased](https://github.com/nanbando/core/tree/HEAD)
+## [0.4.0](https://github.com/nanbando/core/tree/0.4.0) (2017-01-15)
+[Full Changelog](https://github.com/nanbando/core/compare/0.3.0...0.4.0)
 
-[Full Changelog](https://github.com/nanbando/core/compare/0.3.0...HEAD)
+**Implemented enhancements:**
+
+- Restore absolute path not working [\#52](https://github.com/nanbando/core/issues/52)
+
+**Fixed bugs:**
+
+- Fixed restore absolute path [\#61](https://github.com/nanbando/core/pull/61) ([wachterjohannes](https://github.com/wachterjohannes))
 
 **Merged pull requests:**
 
+- Improved storage-interface [\#58](https://github.com/nanbando/core/pull/58) ([wachterjohannes](https://github.com/wachterjohannes))
 - Added path to information-command [\#57](https://github.com/nanbando/core/pull/57) ([wachterjohannes](https://github.com/wachterjohannes))
 - Added latest option to information-command [\#56](https://github.com/nanbando/core/pull/56) ([wachterjohannes](https://github.com/wachterjohannes))
 - Added requirements to documentation [\#55](https://github.com/nanbando/core/pull/55) ([wachterjohannes](https://github.com/wachterjohannes))
