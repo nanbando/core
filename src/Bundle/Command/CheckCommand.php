@@ -39,6 +39,8 @@ EOT
 
         $io->title('Configuration Check Report');
 
+        $io->writeln('Name:            ' . $this->getContainer()->getParameter('nanbando.name'));
+        $io->writeln('Environment:     ' . $this->getContainer()->getParameter('nanbando.environment'));
         $io->writeln('Local directory: ' . $this->getContainer()->getParameter('nanbando.storage.local_directory'));
 
         if (!$this->getContainer()->has('filesystem.remote')) {

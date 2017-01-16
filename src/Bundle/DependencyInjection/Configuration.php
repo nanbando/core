@@ -8,6 +8,8 @@ use Webmozart\PathUtil\Path;
 
 class Configuration implements ConfigurationInterface
 {
+    const ENV_ENVIRONMENT = 'NANBANDO_ENVIRONMENT';
+
     /**
      * {@inheritdoc}
      */
@@ -19,7 +21,9 @@ class Configuration implements ConfigurationInterface
         $rootNode
             ->children()
                 ->scalarNode('name')->defaultValue('nanbando')->end()
-                ->enumNode('environment')->values(['prod', 'dev', 'stage'])->defaultNull()->end()
+                ->scalarNode('environment')
+                    ->defaultValue('%env(' . self::ENV_ENVIRONMENT . ')%')
+                ->end()
                 ->arrayNode('application')
                     ->addDefaultsIfNotSet()
                     ->children()
