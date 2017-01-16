@@ -16,6 +16,9 @@ use Webmozart\PathUtil\Path;
 
 class LocalStorageTest extends \PHPUnit_Framework_TestCase
 {
+    const BACKUP_SUCCESS = '2016-05-29-13-21-37_success';
+    const BACKUP_FAIL = '2016-05-29-13-20-37_failed';
+
     /**
      * @var string
      */
@@ -99,7 +102,7 @@ class LocalStorageTest extends \PHPUnit_Framework_TestCase
     {
         $filesystem = $this->testStart();
 
-        $name = date('H-i-s-Y-m-d');
+        $name = date(LocalStorage::FILE_NAME_PATTERN);
         $this->localFilesystem->putStream('test/' . $name . '.zip', Argument::any())->shouldBeCalled();
 
         $result = $this->storage->close($filesystem);
@@ -113,7 +116,7 @@ class LocalStorageTest extends \PHPUnit_Framework_TestCase
     {
         $filesystem = $this->testStart();
 
-        $name = date('H-i-s-Y-m-d');
+        $name = date(LocalStorage::FILE_NAME_PATTERN);
         $this->localFilesystem->putStream('test/' . $name . '_test.zip', Argument::any())->shouldBeCalled();
         $this->slugify->slugify('test')->willReturn('test');
 
@@ -125,7 +128,7 @@ class LocalStorageTest extends \PHPUnit_Framework_TestCase
     public function testOpen()
     {
         $name = $this->testClose();
-        $path = Path::join([DATAFIXTURES_DIR, 'backups', '13-21-2016-05-29_success.zip']);
+        $path = Path::join([DATAFIXTURES_DIR, 'backups', self::BACKUP_SUCCESS . '.zip']);
 
         $tempFile = tempnam('/tmp', 'nanbando');
         $this->temporaryFileSystem->createTemporaryFile()->willReturn($tempFile);
@@ -143,7 +146,7 @@ class LocalStorageTest extends \PHPUnit_Framework_TestCase
 
     public function testOpenAbsolutePath()
     {
-        $path = Path::join([DATAFIXTURES_DIR, 'backups', '13-21-2016-05-29_success.zip']);
+        $path = Path::join([DATAFIXTURES_DIR, 'backups', self::BACKUP_SUCCESS . '.zip']);
 
         $this->temporaryFileSystem->createTemporaryFile()->shouldNotBeCalled();
         $this->localFilesystem->readStream(Argument::any())->shouldNotBeCalled();
@@ -161,14 +164,14 @@ class LocalStorageTest extends \PHPUnit_Framework_TestCase
         $this->localFilesystem->listFiles($this->name)
             ->willReturn(
                 [
-                    ['filename' => '09-23-38-2016-12-24'],
-                    ['filename' => '17-24-51-2016-12-01'],
-                    ['filename' => '17-40-15-2016-12-01'],
+                    ['filename' => '2016-12-24-09-23-38'],
+                    ['filename' => '2016-12-01-17-24-51'],
+                    ['filename' => '2016-12-01-17-40-15'],
                 ]
             );
 
         $this->assertEquals(
-            ['17-24-51-2016-12-01', '17-40-15-2016-12-01', '09-23-38-2016-12-24'],
+            ['2016-12-01-17-24-51', '2016-12-01-17-40-15', '2016-12-24-09-23-38'],
             $this->storage->localListing()
         );
     }
@@ -178,38 +181,58 @@ class LocalStorageTest extends \PHPUnit_Framework_TestCase
         $this->remoteFilesystem->listFiles($this->name)
             ->willReturn(
                 [
-                    ['filename' => '09-23-38-2016-12-24_test-1'],
-                    ['filename' => '17-24-51-2016-12-01_test-2'],
-                    ['filename' => '17-40-15-2016-12-01_test-3'],
+                    ['filename' => '2016-12-24-09-23-38_test-1'],
+                    ['filename' => '2016-12-01-17-24-51_test-2'],
+                    ['filename' => '2016-12-01-17-40-15_test-3'],
                 ]
             );
 
         $this->assertEquals(
-            ['17-24-51-2016-12-01_test-2', '17-40-15-2016-12-01_test-3', '09-23-38-2016-12-24_test-1'],
+            ['2016-12-01-17-24-51_test-2', '2016-12-01-17-40-15_test-3', '2016-12-24-09-23-38_test-1'],
+            $this->storage->remoteListing()
+        );
+    }
+
+    /**
+     * @deprecated this test the BC break for 1.4 and will be removed in 1.0-RC1.
+     */
+    public function testRemoteListingBC()
+    {
+        $this->remoteFilesystem->listFiles($this->name)
+            ->willReturn(
+                [
+                    ['filename' => '09-23-38-2016-12-24_test-1'],
+                    ['filename' => '17-24-51-2016-12-01'],
+                    ['filename' => '2016-12-01-17-40-15_test-3'],
+                ]
+            );
+
+        $this->assertEquals(
+            ['17-24-51-2016-12-01', '2016-12-01-17-40-15_test-3', '09-23-38-2016-12-24_test-1'],
             $this->storage->remoteListing()
         );
     }
 
     public function testSize()
     {
-        $path = Path::join([DATAFIXTURES_DIR, 'backups', '13-21-2016-05-29_success.zip']);
+        $path = Path::join([DATAFIXTURES_DIR, 'backups', self::BACKUP_SUCCESS . '.zip']);
 
-        $this->localFilesystem->getSize(Path::join(['test', '13-21-2016-05-29_success.zip']))
+        $this->localFilesystem->getSize(Path::join(['test', self::BACKUP_SUCCESS . '.zip']))
             ->willReturn(filesize($path));
 
-        $this->assertEquals(filesize($path), $this->storage->size('13-21-2016-05-29_success'));
+        $this->assertEquals(filesize($path), $this->storage->size(self::BACKUP_SUCCESS));
     }
 
     public function testPath()
     {
-        $path = Path::join([DATAFIXTURES_DIR, 'backups', 'test', '13-21-2016-05-29_success.zip']);
+        $path = Path::join([DATAFIXTURES_DIR, 'backups', 'test', self::BACKUP_SUCCESS . '.zip']);
 
-        $this->assertEquals($path, $this->storage->path('13-21-2016-05-29_success'));
+        $this->assertEquals($path, $this->storage->path(self::BACKUP_SUCCESS));
     }
 
     public function testFetch()
     {
-        $zipPath = Path::join([DATAFIXTURES_DIR, 'backups', '13-21-2016-05-29_success.zip']);
+        $zipPath = Path::join([DATAFIXTURES_DIR, 'backups', self::BACKUP_SUCCESS . '.zip']);
 
         $file = '123-123-123';
         $path = sprintf('%s/%s.zip', $this->name, $file);
@@ -231,7 +254,7 @@ class LocalStorageTest extends \PHPUnit_Framework_TestCase
 
     public function testPush()
     {
-        $zipPath = Path::join([DATAFIXTURES_DIR, 'backups', '13-21-2016-05-29_success.zip']);
+        $zipPath = Path::join([DATAFIXTURES_DIR, 'backups', self::BACKUP_SUCCESS . '.zip']);
 
         $file = '123-123-123';
         $path = sprintf('%s/%s.zip', $this->name, $file);
@@ -244,7 +267,7 @@ class LocalStorageTest extends \PHPUnit_Framework_TestCase
 
     public function testPushExistsRemote()
     {
-        $zipPath = Path::join([DATAFIXTURES_DIR, 'backups', '13-21-2016-05-29_success.zip']);
+        $zipPath = Path::join([DATAFIXTURES_DIR, 'backups', self::BACKUP_SUCCESS . '.zip']);
 
         $file = '123-123-123';
         $path = sprintf('%s/%s.zip', $this->name, $file);

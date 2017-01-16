@@ -17,6 +17,7 @@ use Nanbando\Core\Events\PreRestoreEvent;
 use Nanbando\Core\Events\RestoreEvent;
 use Nanbando\Core\Nanbando;
 use Nanbando\Core\Storage\StorageInterface;
+use Nanbando\Tests\Unit\Core\Storage\LocalStorageTest;
 use Prophecy\Argument;
 use Symfony\Component\EventDispatcher\Event;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -110,7 +111,7 @@ class NanbandoTest extends \PHPUnit_Framework_TestCase
 
     public function testRestore()
     {
-        $path = Path::join([DATAFIXTURES_DIR, 'backups', '13-21-2016-05-29_success.zip']);
+        $path = Path::join([DATAFIXTURES_DIR, 'backups', LocalStorageTest::BACKUP_SUCCESS . '.zip']);
         $nanbando = $this->getNanbando(
             [
                 'uploads' => [
