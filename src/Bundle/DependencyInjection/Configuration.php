@@ -19,6 +19,7 @@ class Configuration implements ConfigurationInterface
         $rootNode
             ->children()
                 ->scalarNode('name')->defaultValue('nanbando')->end()
+                ->enumNode('environment')->values(['prod', 'dev', 'stage'])->defaultNull()->end()
                 ->arrayNode('application')
                     ->addDefaultsIfNotSet()
                     ->children()

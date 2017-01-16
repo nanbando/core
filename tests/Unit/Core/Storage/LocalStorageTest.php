@@ -25,6 +25,11 @@ class LocalStorageTest extends \PHPUnit_Framework_TestCase
     private $name = 'test';
 
     /**
+     * @var string
+     */
+    private $environment = 'prod';
+
+    /**
      * @var TemporaryFilesystemInterface
      */
     private $temporaryFileSystem;
@@ -63,7 +68,7 @@ class LocalStorageTest extends \PHPUnit_Framework_TestCase
         $this->filesystem = $this->prophesize(SymfonyFilesystem::class);
 
         $this->storage = new LocalStorage(
-            $this->name,
+            $this->name, $this->environment,
             $this->temporaryFileSystem->reveal(),
             $this->slugify->reveal(),
             $this->filesystem->reveal(),
@@ -103,11 +108,14 @@ class LocalStorageTest extends \PHPUnit_Framework_TestCase
         $filesystem = $this->testStart();
 
         $name = date(LocalStorage::FILE_NAME_PATTERN);
-        $this->localFilesystem->putStream('test/' . $name . '.zip', Argument::any())->shouldBeCalled();
+        $this->localFilesystem
+            ->putStream('test/' . $name . '_' . $this->environment . '.zip', Argument::any())
+            ->shouldBeCalled();
+        $this->slugify->slugify($this->environment)->willReturn($this->environment);
 
         $result = $this->storage->close($filesystem);
 
-        $this->assertEquals($name, $result);
+        $this->assertEquals($name . '_' . $this->environment, $result);
 
         return $name;
     }
@@ -117,10 +125,71 @@ class LocalStorageTest extends \PHPUnit_Framework_TestCase
         $filesystem = $this->testStart();
 
         $name = date(LocalStorage::FILE_NAME_PATTERN);
-        $this->localFilesystem->putStream('test/' . $name . '_test.zip', Argument::any())->shouldBeCalled();
+        $this->localFilesystem
+            ->putStream('test/' . $name . '_' . $this->environment . '_test.zip', Argument::any())
+            ->shouldBeCalled();
         $this->slugify->slugify('test')->willReturn('test');
+        $this->slugify->slugify($this->environment)->willReturn($this->environment);
 
         $result = $this->storage->close($filesystem, 'test');
+
+        $this->assertEquals($name . '_' . $this->environment . '_test', $result);
+    }
+
+    public function testCloseNoEnvironment()
+    {
+        $storage = new LocalStorage(
+            $this->name,
+            null,
+            $this->temporaryFileSystem->reveal(),
+            $this->slugify->reveal(),
+            $this->filesystem->reveal(),
+            $this->localFilesystem->reveal(),
+            Path::join([DATAFIXTURES_DIR, 'backups'])
+        );
+
+        $tempFile = tempnam('/tmp', 'nanbando');
+        $this->temporaryFileSystem->createTemporaryFile()->willReturn($tempFile);
+
+        $filesystem = $storage->start();
+
+        $name = date(LocalStorage::FILE_NAME_PATTERN);
+        $this->localFilesystem
+            ->putStream('test/' . $name . '.zip', Argument::any())
+            ->shouldBeCalled();
+        $this->slugify->slugify('test')->willReturn('test');
+        $this->slugify->slugify($this->environment)->willReturn($this->environment);
+
+        $result = $storage->close($filesystem);
+
+        $this->assertEquals($name, $result);
+    }
+
+    public function testCloseNoEnvironmentWithLabel()
+    {
+        $storage = new LocalStorage(
+            $this->name,
+            null,
+            $this->temporaryFileSystem->reveal(),
+            $this->slugify->reveal(),
+            $this->filesystem->reveal(),
+            $this->localFilesystem->reveal(),
+            Path::join([DATAFIXTURES_DIR, 'backups'])
+        );
+
+        $tempFile = tempnam('/tmp', 'nanbando');
+        $this->temporaryFileSystem->createTemporaryFile()->willReturn($tempFile);
+
+        $filesystem = $storage->start();
+
+        $name = date(LocalStorage::FILE_NAME_PATTERN);
+        $this->localFilesystem
+            ->putStream('test/' . $name . '_test.zip', Argument::any())
+            ->shouldBeCalled();
+        $this->slugify->slugify('test')->willReturn('test');
+        $this->slugify->slugify($this->environment)->willReturn($this->environment);
+
+        $result = $storage->close($filesystem, 'test');
 
         $this->assertEquals($name . '_test', $result);
     }
@@ -294,6 +363,7 @@ class LocalStorageTest extends \PHPUnit_Framework_TestCase
 
         $storage = new LocalStorage(
             $this->name,
+            $this->environment,
             $this->temporaryFileSystem->reveal(),
             $this->slugify->reveal(),
             $this->filesystem->reveal(),
@@ -310,6 +380,7 @@ class LocalStorageTest extends \PHPUnit_Framework_TestCase
 
         $storage = new LocalStorage(
             $this->name,
+            $this->environment,
             $this->temporaryFileSystem->reveal(),
             $this->slugify->reveal(),
             $this->filesystem->reveal(), $this->localFilesystem->reveal(),
@@ -325,6 +396,7 @@ class LocalStorageTest extends \PHPUnit_Framework_TestCase
 
         $storage = new LocalStorage(
             $this->name,
+            $this->environment,
             $this->temporaryFileSystem->reveal(),
             $this->slugify->reveal(),
             $this->filesystem->reveal(),

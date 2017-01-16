@@ -33,6 +33,7 @@
         <!-- storage -->
         <service id="storage" class="Nanbando\Core\Storage\LocalStorage">
             <argument type="string">%nanbando.name%</argument>
+            <argument type="string">%nanbando.environment%</argument>
             <argument type="service" id="temporary_files"/>
             <argument type="service" id="slugify"/>
             <argument type="service" id="filesystem"/>

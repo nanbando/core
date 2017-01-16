@@ -23,6 +23,11 @@ class LocalStorage implements StorageInterface
     private $name;
 
     /**
+     * @var string
+     */
+    private $environment;
+
+    /**
      * @var TemporaryFilesystemInterface
      */
     private $temporaryFileSystem;
@@ -54,6 +59,7 @@ class LocalStorage implements StorageInterface
 
     /**
      * @param string $name
+     * @param $environment
      * @param TemporaryFilesystemInterface $temporaryFileSystem
      * @param SlugifyInterface $slugify
      * @param SymfonyFilesystem $filesystem
@@ -63,6 +69,7 @@ class LocalStorage implements StorageInterface
      */
     public function __construct(
         $name,
+        $environment,
         TemporaryFilesystemInterface $temporaryFileSystem,
         SlugifyInterface $slugify,
         SymfonyFilesystem $filesystem,
@@ -71,6 +78,7 @@ class LocalStorage implements StorageInterface
         Filesystem $remoteFilesystem = null
     ) {
         $this->name = $name;
+        $this->environment = $environment;
         $this->temporaryFileSystem = $temporaryFileSystem;
         $this->slugify = $slugify;
         $this->filesystem = $filesystem;
@@ -116,9 +124,10 @@ class LocalStorage implements StorageInterface
         $adapter->getArchive()->close();
 
         $path = sprintf(
-            '%s/%s%s.zip',
+            '%s/%s%s%s.zip',
             $this->name,
             date(self::FILE_NAME_PATTERN),
+            (!empty($this->environment) ? ('_' . $this->slugify->slugify($this->environment)) : ''),
             (!empty($label) ? ('_' . $this->slugify->slugify($label)) : '')
         );
         $this->localFilesystem->putStream($path, fopen($filename, 'r'));

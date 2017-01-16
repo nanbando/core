@@ -21,6 +21,7 @@ class NanbandoExtension extends Extension
         $config = $this->processConfiguration($configuration, $configs);
 
         $container->setParameter('nanbando.name', $config['name']);
+        $container->setParameter('nanbando.environment', $config['environment']);
         $container->setParameter('nanbando.application.name', $config['application']['name']);
         $container->setParameter('nanbando.application.version', $config['application']['version']);
         $container->setParameter('nanbando.application.options', $config['application']['options']);
