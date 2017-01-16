@@ -1,5 +1,21 @@
 # Change Log
 
+## [0.5.0](https://github.com/nanbando/core/tree/0.5.0) (2017-01-16)
+[Full Changelog](https://github.com/nanbando/core/compare/0.4.0...0.5.0)
+
+**Implemented enhancements:**
+
+- Changed filename of backup [\#62](https://github.com/nanbando/core/pull/62) ([wachterjohannes](https://github.com/wachterjohannes))
+
+**Closed issues:**
+
+- Change names of backup [\#59](https://github.com/nanbando/core/issues/59)
+- Environment variables [\#53](https://github.com/nanbando/core/issues/53)
+
+**Merged pull requests:**
+
+- Added environment to generate filename [\#63](https://github.com/nanbando/core/pull/63) ([wachterjohannes](https://github.com/wachterjohannes))
+
 ## [0.4.0](https://github.com/nanbando/core/tree/0.4.0) (2017-01-15)
 [Full Changelog](https://github.com/nanbando/core/compare/0.3.0...0.4.0)
 
