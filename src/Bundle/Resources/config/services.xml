@@ -2,6 +2,10 @@
 <container xmlns="http://symfony.com/schema/dic/services"
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+    <parameters>
+        <parameter key="env(NANBANDO_ENVIRONMENT)"></parameter>
+    </parameters>
+
     <services>
         <!-- kernel -->
         <service id="event_dispatcher" class="Symfony\Component\EventDispatcher\ContainerAwareEventDispatcher">
@@ -33,6 +37,7 @@
         <!-- storage -->
         <service id="storage" class="Nanbando\Core\Storage\LocalStorage">
             <argument type="string">%nanbando.name%</argument>
+            <argument type="string">%nanbando.environment%</argument>
             <argument type="service" id="temporary_files"/>
             <argument type="service" id="slugify"/>
             <argument type="service" id="filesystem"/>

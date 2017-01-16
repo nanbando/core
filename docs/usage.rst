@@ -63,7 +63,15 @@ configuration. If you have added requirements to the configuration the applicati
     php nanbando.phar reconfigure
     php nanbando.phar backup
 
-The second command will create a new backup zip in the local folder ``~/nanbando/local/application/<date>.zip``.
+The second command will create a new backup zip in the local folder
+``~/nanbando/local/application/<date>_<environment>_<label>.zip``. The environment and the label are optional and will
+be omitted if not exists (e.g. without environment ``<date>_<label>.zip`` or without label and environment
+``<date>.zip``).
+
+.. note::
+
+    The environment can be set via the config file ``"environment"`` or env-variable ``NANBANDO_ENVIRONMENT``.
+    Example: ``NANBANDO_ENVIRONMENT=prod php nanbando.phar backup``.
 
 After this steps you can do following steps:
 

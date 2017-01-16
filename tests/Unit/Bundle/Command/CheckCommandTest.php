@@ -39,6 +39,10 @@ class CheckCommandTest extends \PHPUnit_Framework_TestCase
 
     private function getCommandTester($remote = false, $backup = [])
     {
+        $this->container->hasParameter('nanbando.name')->willReturn(true);
+        $this->container->getParameter('nanbando.name')->willReturn('test');
+        $this->container->hasParameter('nanbando.environment')->willReturn(true);
+        $this->container->getParameter('nanbando.environment')->willReturn('prod');
         $this->container->getParameter('nanbando.storage.local_directory')->willReturn('/User/test/nanbando');
         $this->container->getParameter('nanbando.backup')->willReturn($backup);
         $this->container->hasParameter('nanbando.application.name')->willReturn(true);
