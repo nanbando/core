@@ -234,14 +234,35 @@ class LocalStorage implements StorageInterface
         usort(
             $result,
             function ($a, $b) {
-                $aDate = \DateTime::createFromFormat(self::FILE_NAME_PATTERN, explode('_', $a)[0]);
-                $bDate = \DateTime::createFromFormat(self::FILE_NAME_PATTERN, explode('_', $b)[0]);
+                $aDate = $this->parseDateFromFilename($a);
+                $bDate = $this->parseDateFromFilename($b);
 
                 return $aDate->getTimestamp() - $bDate->getTimestamp();
             }
         );
 
         return $result;
+    }
+
+    /**
+     * Parse date from given filename.
+     *
+     * @param string $filename
+     *
+     * @return \DateTime
+     *
+     * @deprecated This function contains deprecated parts
+     */
+    protected function parseDateFromFilename($filename)
+    {
+        if ($date = \DateTime::createFromFormat(self::FILE_NAME_PATTERN, explode('_', $filename)[0])) {
+            return $date;
+        }
+
+        /**
+         * @deprecated handle BC break of PR #62. will be remove in 1.0-RC1.
+         */
+        return \DateTime::createFromFormat('H-i-s-Y-m-d', explode('_', $filename)[0]);
     }
 
     /**

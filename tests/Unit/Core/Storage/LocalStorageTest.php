@@ -193,6 +193,26 @@ class LocalStorageTest extends \PHPUnit_Framework_TestCase
         );
     }
 
+    /**
+     * @deprecated this test the BC break for 1.4 and will be removed in 1.0-RC1.
+     */
+    public function testRemoteListingBC()
+    {
+        $this->remoteFilesystem->listFiles($this->name)
+            ->willReturn(
+                [
+                    ['filename' => '09-23-38-2016-12-24_test-1'],
+                    ['filename' => '17-24-51-2016-12-01'],
+                    ['filename' => '2016-12-01-17-40-15_test-3'],
+                ]
+            );
+
+        $this->assertEquals(
+            ['17-24-51-2016-12-01', '2016-12-01-17-40-15_test-3', '09-23-38-2016-12-24_test-1'],
+            $this->storage->remoteListing()
+        );
+    }
+
     public function testSize()
     {
         $path = Path::join([DATAFIXTURES_DIR, 'backups', self::BACKUP_SUCCESS . '.zip']);
