@@ -37,6 +37,7 @@ configuration and later also the dependencies for this backup-project.
 
     {
         "name": "application",
+        "environment": "prod", # [optional] or "stage" or "dev" will be used to generate filename.
         "backup": {
             "data": {
                 "plugin": "directory",
@@ -63,7 +64,10 @@ configuration. If you have added requirements to the configuration the applicati
     php nanbando.phar reconfigure
     php nanbando.phar backup
 
-The second command will create a new backup zip in the local folder ``~/nanbando/local/application/<date>.zip``.
+The second command will create a new backup zip in the local folder
+``~/nanbando/local/application/<date>_<environment>_<label>.zip``. The environment and the label are optional and will
+be omitted if not exists (e.g. without environment ``<date>_<label>.zip`` or without label and environment
+``<date>.zip``).
 
 After this steps you can do following steps:
 
