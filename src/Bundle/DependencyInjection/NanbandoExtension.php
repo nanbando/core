@@ -40,7 +40,11 @@ class NanbandoExtension extends Extension
             'oneup_flysystem',
             [
                 'adapters' => [
-                    'local' => ['local' => ['directory' => $config['storage']['local_directory']]],
+                    'local' => [
+                        'local' => [
+                            'directory' => $container->getParameter('nanbando.storage.local_directory'),
+                        ],
+                    ],
                 ],
                 'filesystems' => [
                     'local' => [
