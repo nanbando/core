@@ -1,5 +1,12 @@
 # Change Log
 
+## [0.5.1](https://github.com/nanbando/core/tree/0.5.1) (2017-01-26)
+[Full Changelog](https://github.com/nanbando/core/compare/0.5.0...0.5.1)
+
+**Merged pull requests:**
+
+- Fixed relative paths for local-directoryy [\#65](https://github.com/nanbando/core/pull/65) ([wachterjohannes](https://github.com/wachterjohannes))
+
 ## [0.5.0](https://github.com/nanbando/core/tree/0.5.0) (2017-01-16)
 [Full Changelog](https://github.com/nanbando/core/compare/0.4.0...0.5.0)
 
