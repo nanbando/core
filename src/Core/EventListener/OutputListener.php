@@ -21,10 +21,10 @@ class OutputListener
      * @var string[]
      */
     const STATE_MESSAGES = [
-            BackupStatus::STATE_SUCCESS => '<info>successfully</info>',
-            BackupStatus::STATE_FAILED => '<error>failed</error>',
-            BackupStatus::STATE_PARTIALLY => '<comment>partially</comment>',
-        ];
+        BackupStatus::STATE_SUCCESS => '<info>successfully</info>',
+        BackupStatus::STATE_FAILED => '<error>failed</error>',
+        BackupStatus::STATE_PARTIALLY => '<comment>partially</comment>',
+    ];
 
     /**
      * @var string
@@ -87,10 +87,10 @@ class OutputListener
      */
     public function onPostBackup(PostBackupEvent $event)
     {
-        $this->output->writeln('');
         $this->output->writeln(
             sprintf('Backup "%s" finished %s', $event->getName(), self::STATE_MESSAGES[$event->getStatus()])
         );
+        $this->output->writeln('Cleanup temporary files ...');
     }
 
     /**
