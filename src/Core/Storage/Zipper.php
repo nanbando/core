@@ -68,7 +68,7 @@ class Zipper
 
         $files = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($directory));
         foreach ($files as $filePath => $file) {
-            $relative = '/' . Path::makeRelative($filePath, $directory);
+            $relative = Path::makeRelative($filePath, $directory);
             if (is_dir($filePath)) {
                 $zip->addEmptyDir($relative);
 
