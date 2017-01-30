@@ -48,6 +48,12 @@ EOT
         $storage = $this->getContainer()->get('storage');
         $localFiles = $storage->localListing();
 
+        if (count($localFiles) === 1) {
+            $input->setArgument('file', $localFiles[0]);
+
+            return;
+        }
+
         $helper = $this->getHelper('question');
         $question = new ChoiceQuestion('Which backup', $localFiles);
         $question->setErrorMessage('Backup %s is invalid.');

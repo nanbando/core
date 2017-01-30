@@ -6,6 +6,7 @@ use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Config\Resource\FileResource;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader;
+use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 
 class NanbandoExtension extends Extension
@@ -19,6 +20,9 @@ class NanbandoExtension extends Extension
     {
         $configuration = new Configuration();
         $config = $this->processConfiguration($configuration, $configs);
+
+        $filesystem = new Filesystem();
+        $filesystem->mkdir($config['storage']['local_directory']);
 
         $container->setParameter('nanbando.name', $config['name']);
         $container->setParameter('nanbando.environment', $config['environment']);
