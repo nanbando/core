@@ -145,9 +145,7 @@ class LocalStorage implements StorageInterface
     {
         $fileName = $name;
         if (!is_file($name)) {
-            $stream = $this->localFilesystem->readStream(sprintf('%s/%s.zip', $this->name, $name));
-            $fileName = $this->temporaryFileSystem->createTemporaryFile();
-            file_put_contents($fileName, $stream);
+            $fileName = $this->path($name);
         }
 
         $filesystem = new Filesystem(new ReadonlyAdapter(new ZipArchiveAdapter($fileName)));
