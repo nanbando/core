@@ -1,5 +1,18 @@
 # Change Log
 
+## [0.6.0](https://github.com/nanbando/core/tree/0.6.0) (2017-02-03)
+[Full Changelog](https://github.com/nanbando/core/compare/0.5.1...0.6.0)
+
+**Implemented enhancements:**
+
+- Changed open zip file to original file [\#70](https://github.com/nanbando/core/pull/70) ([wachterjohannes](https://github.com/wachterjohannes))
+- Removed slash prefix from zip file names [\#69](https://github.com/nanbando/core/pull/69) ([wachterjohannes](https://github.com/wachterjohannes))
+
+**Merged pull requests:**
+
+- Improved selection of restore-command [\#68](https://github.com/nanbando/core/pull/68) ([wachterjohannes](https://github.com/wachterjohannes))
+- Changed way to generate zip-file [\#66](https://github.com/nanbando/core/pull/66) ([wachterjohannes](https://github.com/wachterjohannes))
+
 ## [0.5.1](https://github.com/nanbando/core/tree/0.5.1) (2017-01-26)
 [Full Changelog](https://github.com/nanbando/core/compare/0.5.0...0.5.1)
 
