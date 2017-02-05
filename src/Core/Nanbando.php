@@ -128,6 +128,8 @@ class Nanbando
 
         $this->eventDispatcher->dispatch(Events::POST_BACKUP_EVENT, new PostBackupEvent($name, $status));
 
+        echo(memory_get_peak_usage() / (1024 * 1024));
+
         return $status;
     }
 

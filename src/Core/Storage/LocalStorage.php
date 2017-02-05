@@ -8,6 +8,7 @@ use League\Flysystem\Filesystem;
 use League\Flysystem\Plugin\ListFiles;
 use League\Flysystem\ZipArchive\ZipArchiveAdapter;
 use Nanbando\Core\Flysystem\ReadonlyAdapter;
+use Nanbando\Core\Flysystem\ZipAdapter;
 use Neutron\TemporaryFilesystem\TemporaryFilesystemInterface;
 use Symfony\Component\Filesystem\Filesystem as SymfonyFilesystem;
 
@@ -101,8 +102,9 @@ class LocalStorage implements StorageInterface
      */
     public function start()
     {
-        $directory = $this->temporaryFileSystem->createTemporaryDirectory();
-        $filesystem = new Filesystem(new Local($directory));
+        $filename = $this->temporaryFileSystem->createTemporaryFile();
+        $adapter = new ZipAdapter($filename);
+        $filesystem = new Filesystem($adapter);
         $filesystem->addPlugin(new ListFiles());
 
         return $filesystem;
@@ -124,16 +126,17 @@ class LocalStorage implements StorageInterface
      */
     public function close(Filesystem $filesystem, $label = null)
     {
-        $fileName = sprintf(
-            '%s%s%s',
-            date(self::FILE_NAME_PATTERN),
-            (!empty($this->environment) ? ('_' . $this->slugify->slugify($this->environment)) : ''),
+        /** @var ZipAdapter $adapter */
+        $adapter = $filesystem->getAdapter();
+        $filename = $adapter->close();
+
+        $path = sprintf(
+            '%s/%s%s.zip',
+            $this->name,
+            date('H-i-s-Y-m-d'),
             (!empty($label) ? ('_' . $this->slugify->slugify($label)) : '')
         );
-
-        /** @var Local $adapter */
-        $adapter = $filesystem->getAdapter();
-        $path = $this->zipper->zip($adapter->getPathPrefix(), $fileName);
+        $this->localFilesystem->putStream($path, fopen($filename, 'r'));
 
         return pathinfo($path, PATHINFO_FILENAME);
     }
