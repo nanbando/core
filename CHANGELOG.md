@@ -1,5 +1,12 @@
 # Change Log
 
+## [0.7.0](https://github.com/nanbando/core/tree/0.7.0) (2017-02-10)
+[Full Changelog](https://github.com/nanbando/core/compare/0.6.0...0.7.0)
+
+**Merged pull requests:**
+
+- Improved performance of restore by generating hash on backup [\#72](https://github.com/nanbando/core/pull/72) ([wachterjohannes](https://github.com/wachterjohannes))
+
 ## [0.6.0](https://github.com/nanbando/core/tree/0.6.0) (2017-02-03)
 [Full Changelog](https://github.com/nanbando/core/compare/0.5.1...0.6.0)
 
