@@ -5,6 +5,7 @@ namespace Nanbando\Tests\Unit\Core\Plugin;
 use League\Flysystem\Filesystem;
 use Nanbando\Core\Database\Database;
 use Nanbando\Core\Plugin\DirectoryPlugin;
+use Prophecy\Argument;
 use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -52,10 +53,15 @@ class DirectoryPluginTest extends \PHPUnit_Framework_TestCase
             ]
         );
 
-        $source->readStream('test/test.json')->willReturn('file resource');
-        $destination->writeStream('test.json', 'file resource')->shouldBeCalled();
+        $stream = fopen('php://temp', 'w+b');
+        fwrite($stream, 'file resource');
+        rewind($stream);
+
+        $source->readStream('test/test.json')->willReturn($stream);
+        $destination->writeStream('test.json', $stream)->shouldBeCalled();
 
         $this->plugin->backup($source->reveal(), $destination->reveal(), $database->reveal(), ['directory' => 'test']);
+        $this->assertFalse(is_resource($stream));
     }
 
     public function testRestore()
@@ -72,12 +78,19 @@ class DirectoryPluginTest extends \PHPUnit_Framework_TestCase
             ]
         );
 
-        $source->readStream('test.json')->willReturn('file resource');
+        $stream = fopen('php://temp', 'w+b');
+        fwrite($stream, 'file resource');
+        rewind($stream);
+
+        $source->readStream('test.json')->willReturn($stream);
 
         $destination->has('test/test.json')->willReturn(false);
-        $destination->writeStream('test/test.json', 'file resource')->shouldBeCalled();
+        $destination->writeStream('test/test.json', $stream)->shouldBeCalled();
+
+        $database->getWithDefault('metadata', [])->willReturn(['test.json' => ['hash' => '123-123-123']]);
 
         $this->plugin->restore($source->reveal(), $destination->reveal(), $database->reveal(), ['directory' => 'test']);
+        $this->assertFalse(is_resource($stream));
     }
 
     public function testRestoreExistingFile()
@@ -94,12 +107,14 @@ class DirectoryPluginTest extends \PHPUnit_Framework_TestCase
             ]
         );
 
-        $source->readStream('test.json')->willReturn('file resource');
-        $source->hash('test.json')->willReturn('123-123-123');
+        $source->readStream('test.json')->shouldNotBeCalled();
+        $source->hash('test.json')->shouldNotBeCalled();
 
         $destination->has('test/test.json')->willReturn(true);
         $destination->hash('test/test.json')->willReturn('123-123-123');
-        $destination->writeStream('test/test.json', 'file resource')->shouldNotBeCalled();
+        $destination->writeStream('test/test.json', Argument::any())->shouldNotBeCalled();
+
+        $database->getWithDefault('metadata', [])->willReturn(['test.json' => ['hash' => '123-123-123']]);
 
         $this->plugin->restore($source->reveal(), $destination->reveal(), $database->reveal(), ['directory' => 'test']);
     }
@@ -118,15 +133,22 @@ class DirectoryPluginTest extends \PHPUnit_Framework_TestCase
             ]
         );
 
-        $source->readStream('test.json')->willReturn('file resource');
-        $source->hash('test.json')->willReturn('xxx');
+        $stream = fopen('php://temp', 'w+b');
+        fwrite($stream, 'file resource');
+        rewind($stream);
+
+        $source->readStream('test.json')->willReturn($stream);
+        $source->hash('test.json')->shouldNotBeCalled();
 
         $destination->has('test/test.json')->willReturn(true);
         $destination->delete('test/test.json')->willReturn(true);
         $destination->hash('test/test.json')->willReturn('123-123-123');
-        $destination->writeStream('test/test.json', 'file resource')->shouldBeCalled();
+        $destination->writeStream('test/test.json', $stream)->shouldBeCalled();
+
+        $database->getWithDefault('metadata', [])->willReturn(['test.json' => ['hash' => 'abc-abc-abc']]);
 
         $this->plugin->restore($source->reveal(), $destination->reveal(), $database->reveal(), ['directory' => 'test']);
+        $this->assertFalse(is_resource($stream));
     }
 }
 

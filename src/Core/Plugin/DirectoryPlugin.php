@@ -66,13 +66,23 @@ class DirectoryPlugin implements PluginInterface
         $progressBar->setFormat(' %current%/%max% [%bar%] %percent:3s%% %elapsed:6s%/%estimated:-6s% %memory:6s%');
         $progressBar->start();
 
+        $metadata = [];
         foreach ($files as $file) {
-            $destination->writeStream(
-                Path::makeRelative($file['path'], $parameter['directory']),
-                $source->readStream($file['path'])
-            );
+            $path = Path::makeRelative($file['path'], $parameter['directory']);
+            $stream = $source->readStream($file['path']);
+            if (!$stream) {
+                continue;
+            }
+
+            $metadata[$path] = array_merge(['hash' => $this->getHash($stream)], $file);
+
+            $destination->writeStream($path, $stream);
+            fclose($stream);
+
             $progressBar->advance();
         }
+
+        $database->set('metadata', $metadata);
 
         $progressBar->finish();
     }
@@ -99,11 +109,14 @@ class DirectoryPlugin implements PluginInterface
         $progressBar->setFormat(' %current%/%max% [%bar%] %percent:3s%% %elapsed:6s%/%estimated:-6s% %memory:6s%');
         $progressBar->start();
 
+        $metadata = $database->getWithDefault('metadata', []);
+
         foreach ($files as $file) {
             $path = $file['path'];
-            $fullPath = $parameter['directory'] . '/' . $file['path'];
+            $fullPath = $parameter['directory'] . '/' . $path;
+            $fileMetadata = array_key_exists($path, $metadata) ? $metadata[$path] : ['hash' => null];
             if ($destination->has($fullPath)) {
-                if ($destination->hash($fullPath) === $source->hash($path)) {
+                if ($fileMetadata['hash'] !== null && $destination->hash($fullPath) === $fileMetadata['hash']) {
                     $progressBar->advance();
 
                     continue;
@@ -112,10 +125,33 @@ class DirectoryPlugin implements PluginInterface
                 $destination->delete($fullPath);
             }
 
-            $destination->writeStream($fullPath, $source->readStream($path));
+            $stream = $source->readStream($path);
+            if (!$stream) {
+                continue;
+            }
+
+            $destination->writeStream($fullPath, $stream);
+            fclose($stream);
+
             $progressBar->advance();
         }
 
         $progressBar->finish();
+    }
+
+    /**
+     * Returns hash for resource.
+     *
+     * @param resource $stream
+     * @param string $algorithm
+     *
+     * @return string
+     */
+    private function getHash($stream, $algorithm = 'sha256')
+    {
+        $hash = hash_init($algorithm);
+        hash_update_stream($hash, $stream);
+
+        return hash_final($hash);
     }
 }
