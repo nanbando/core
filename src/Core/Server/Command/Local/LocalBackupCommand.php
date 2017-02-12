@@ -64,10 +64,10 @@ class LocalBackupCommand implements CommandInterface
     /**
      * {@inheritdoc}
      */
-    public function execute(array $options)
+    public function execute(array $options = [])
     {
-        $label = $options['label'];
-        $message = $options['message'];
+        $label = array_key_exists('label', $options) ? $options['label'] : '';
+        $message = array_key_exists('message', $options) ? $options['message'] : '';
 
         $destination = $this->storage->start();
 

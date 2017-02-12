@@ -14,5 +14,5 @@ interface CommandInterface
      *
      * @return mixed
      */
-    public function execute(array $options);
+    public function execute(array $options = []);
 }

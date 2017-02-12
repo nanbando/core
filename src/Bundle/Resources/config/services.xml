@@ -81,6 +81,7 @@
         <!-- server registry -->
         <service id="nanbando.server_registry" class="Nanbando\Core\Server\ServerRegistry">
             <argument type="collection"/>
+            <argument type="collection"/>
         </service>
     </services>
 </container>

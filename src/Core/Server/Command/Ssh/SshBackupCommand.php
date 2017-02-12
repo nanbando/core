@@ -49,7 +49,7 @@ class SshBackupCommand implements CommandInterface
     /**
      * {@inheritdoc}
      */
-    public function execute(array $options)
+    public function execute(array $options = [])
     {
         $result = '';
         $this->ssh->exec(

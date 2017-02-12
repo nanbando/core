@@ -62,7 +62,7 @@ class LocalRestoreCommand implements CommandInterface
     /**
      * {@inheritdoc}
      */
-    public function execute(array $options)
+    public function execute(array $options = [])
     {
         $name = $options['name'];
 

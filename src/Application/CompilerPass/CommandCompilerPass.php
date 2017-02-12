@@ -22,13 +22,16 @@ class CommandCompilerPass implements CompilerPassInterface
     public function process(ContainerBuilder $container)
     {
         $references = [];
+        $servers = [];
         foreach ($container->findTaggedServiceIds(self::TAG_NAME) as $id => $tags) {
             foreach ($tags as $attributes) {
                 $index = $attributes[self::SERVER_ATTRIBUTE] . '::' . $attributes[self::COMMAND_ATTRIBUTE];
                 $references[$index] = new Reference($id);
+                $servers[] = $attributes[self::SERVER_ATTRIBUTE];
             }
         }
 
-        $container->getDefinition(self::SERVICE_ID)->replaceArgument(0, $references);
+        $servers = array_unique($servers);
+        $container->getDefinition(self::SERVICE_ID)->replaceArgument(0, $references)->replaceArgument(1, $servers);
     }
 }

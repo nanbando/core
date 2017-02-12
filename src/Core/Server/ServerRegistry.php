@@ -12,13 +12,20 @@ class ServerRegistry
     /**
      * @var CommandInterface[]
      */
+    private $commands;
+
+    /**
+     * @var array
+     */
     private $servers;
 
     /**
-     * @param CommandInterface[] $servers
+     * @param CommandInterface[] $commands
+     * @param array $servers
      */
-    public function __construct(array $servers)
+    public function __construct(array $commands, array $servers)
     {
+        $this->commands = $commands;
         $this->servers = $servers;
     }
 
@@ -35,10 +42,14 @@ class ServerRegistry
     public function getCommand($serverName, $commandName)
     {
         $index = $serverName . '::' . $commandName;
-        if (!array_key_exists($index, $this->servers)) {
-            throw new \Exception();
+        if (!array_key_exists($index, $this->commands)) {
+            if (!in_array($serverName, $this->servers)) {
+                throw new MissingServerException($serverName);
+            }
+
+            throw new MissingCommandException($serverName, $commandName);
         }
 
-        return $this->servers[$index];
+        return $this->commands[$index];
     }
 }
