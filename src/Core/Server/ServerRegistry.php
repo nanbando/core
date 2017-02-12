@@ -4,6 +4,9 @@ namespace Nanbando\Core\Server;
 
 use Nanbando\Core\Server\Command\CommandInterface;
 
+/**
+ * Registry for known commands.
+ */
 class ServerRegistry
 {
     /**

@@ -8,6 +8,9 @@ use phpseclib\Net\SCP;
 use phpseclib\Net\SSH2;
 use Symfony\Component\Console\Output\OutputInterface;
 
+/**
+ * Load a backup from a ssh connected server.
+ */
 class SshLoadCommand implements CommandInterface
 {
     /**

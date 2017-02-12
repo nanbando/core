@@ -8,6 +8,9 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
+/**
+ * Load given backup from another server.
+ */
 class LoadCommand extends ContainerAwareCommand
 {
     /**
@@ -17,11 +20,14 @@ class LoadCommand extends ContainerAwareCommand
     {
         $this
             ->setName('load')
-            ->addArgument('from', InputArgument::REQUIRED, '???')
-            ->addArgument('name', InputArgument::REQUIRED, '???')
-            ->setDescription('Backup data into local archive.')
+            ->addArgument('source-server', InputArgument::REQUIRED, 'Source of backup which should be loaded.')
+            ->addArgument('name', InputArgument::REQUIRED, 'Name of loading backup.')
+            ->setDescription('Load given backup from another server.')
             ->setHelp(
                 <<<EOT
+The <info>{$this->getName()}</info> command load a backup archive 
+from another server and store it locally.
+
 EOT
             );
     }
@@ -33,7 +39,7 @@ EOT
     {
         /** @var ServerRegistry $serverRegistry */
         $serverRegistry = $this->getContainer()->get('nanbando.server_registry');
-        $command = $serverRegistry->getCommand($input->getArgument('from'), 'load');
+        $command = $serverRegistry->getCommand($input->getArgument('source-server'), 'load');
 
         // TODO server does not provide load command
 

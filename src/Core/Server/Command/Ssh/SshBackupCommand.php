@@ -7,6 +7,9 @@ use Nanbando\Core\Server\Command\CommandInterface;
 use phpseclib\Net\SSH2;
 use Symfony\Component\Console\Output\OutputInterface;
 
+/**
+ * Create a new backup on a ssh connected server.
+ */
 class SshBackupCommand implements CommandInterface
 {
     /**

@@ -16,6 +16,9 @@ use Nanbando\Core\Storage\StorageInterface;
 use Symfony\Component\EventDispatcher\Event;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
+/**
+ * Restore a backup-archive.
+ */
 class LocalRestoreCommand implements CommandInterface
 {
     /**

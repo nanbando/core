@@ -29,7 +29,7 @@ class RestoreCommand extends ContainerAwareCommand
                 InputArgument::OPTIONAL,
                 'Defines which file should be restored (backup-name or absolute path to zip file).'
             )
-            ->addOption('server', 's', InputOption::VALUE_REQUIRED, 'Where should the command be called', 'local')
+            ->addOption('server', 's', InputOption::VALUE_REQUIRED, 'Where should the command be called.', 'local')
             ->setHelp(
                 <<<EOT
 The <info>{$this->getName()}</info> restores a backup archive.

@@ -5,15 +5,29 @@ namespace Nanbando\Core\Server\Command\Ssh;
 use phpseclib\Crypt\RSA;
 use phpseclib\Net\SSH2;
 
+/**
+ * Factory for ssh connections.
+ */
 final class SshFactory
 {
-    public static function create(array $sshConfig)
+    /**
+     * Create a new ssh connection.
+     *
+     * @param $serverName
+     * @param array $sshConfig
+     *
+     * @return SSH2
+     *
+     * @throws SshConfigurationException
+     * @throws SshLoginException
+     */
+    public static function create($serverName, array $sshConfig)
     {
         $ssh = new SSH2($sshConfig['host'], $sshConfig['port'], $sshConfig['timeout']);
 
         if ($sshConfig['password']) {
             if (!$ssh->login($sshConfig['username'], $sshConfig['password'])) {
-                throw new \Exception('Cannot login');
+                throw new SshLoginException($serverName);
             }
 
             return $ssh;
@@ -27,15 +41,18 @@ final class SshFactory
             $key->loadKey(file_get_contents($sshConfig['rsakey']['file']));
 
             if (!$ssh->login($sshConfig['username'], $key)) {
-                throw new \Exception('Cannot login');
+                throw new SshLoginException($serverName);
             }
 
             return $ssh;
         }
 
-        throw new \Exception('Cannot create ssh');
+        throw new SshConfigurationException($serverName);
     }
 
+    /**
+     * Factory class should not be constructed.
+     */
     private function __construct()
     {
     }

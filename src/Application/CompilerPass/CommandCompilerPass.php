@@ -6,6 +6,9 @@ use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Reference;
 
+/**
+ * Collect command services.
+ */
 class CommandCompilerPass implements CompilerPassInterface
 {
     const SERVICE_ID = 'nanbando.server_registry';

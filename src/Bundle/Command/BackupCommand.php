@@ -20,7 +20,7 @@ class BackupCommand extends ContainerAwareCommand
             ->setName('backup')
             ->addArgument('label', InputArgument::OPTIONAL, 'This label will be used to generate the filename for the backup.')
             ->addOption('message', 'm', InputOption::VALUE_REQUIRED, 'An additional message to identify the backup.')
-            ->addOption('server', 's', InputOption::VALUE_REQUIRED, 'Where should the command be called', 'local')
+            ->addOption('server', 's', InputOption::VALUE_REQUIRED, 'Where should the command be called.', 'local')
             ->setDescription('Backup data into local archive.')
             ->setHelp(
                 <<<EOT

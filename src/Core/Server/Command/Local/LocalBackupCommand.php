@@ -18,6 +18,9 @@ use Nanbando\Core\Server\Command\CommandInterface;
 use Nanbando\Core\Storage\StorageInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
+/**
+ * Create a new local backup-archive.
+ */
 class LocalBackupCommand implements CommandInterface
 {
     /**
