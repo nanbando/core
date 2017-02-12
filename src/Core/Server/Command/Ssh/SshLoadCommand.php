@@ -75,5 +75,7 @@ class SshLoadCommand implements CommandInterface
 
         // Try to display progress somehow.
         $this->scp->get($remotePath, $localPath);
+
+        $this->output->writeln(PHP_EOL . sprintf('Backup "%s" loaded successfully', $name));
     }
 }
