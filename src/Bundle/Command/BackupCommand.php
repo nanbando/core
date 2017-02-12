@@ -2,6 +2,7 @@
 
 namespace Nanbando\Bundle\Command;
 
+use Nanbando\Core\Server\ServerRegistry;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -18,8 +19,9 @@ class BackupCommand extends ContainerAwareCommand
         $this
             ->setName('backup')
             ->addArgument('label', InputArgument::OPTIONAL, 'This label will be used to generate the filename for the backup.')
-            ->addOption('message', 'm', InputOption::VALUE_OPTIONAL, 'An additional message to identify the backup.')
-            ->setDescription('Backup data into local archive')
+            ->addOption('message', 'm', InputOption::VALUE_REQUIRED, 'An additional message to identify the backup.')
+            ->addOption('server', 's', InputOption::VALUE_REQUIRED, 'Where should the command be called', 'local')
+            ->setDescription('Backup data into local archive.')
             ->setHelp(
                 <<<EOT
 The <info>{$this->getName()}</info> command reads a nanbando.json formatted file 
@@ -37,6 +39,10 @@ EOT
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->getContainer()->get('nanbando')->backup($input->getArgument('label'), $input->getOption('message'));
+        /** @var ServerRegistry $serverRegistry */
+        $serverRegistry = $this->getContainer()->get('nanbando.server_registry');
+        $command = $serverRegistry->getCommand($input->getOption('server'), 'backup');
+
+        $command->execute(['label' => $input->getArgument('label'), 'message' => $input->getOption('message')]);
     }
 }

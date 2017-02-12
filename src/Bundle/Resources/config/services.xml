@@ -68,12 +68,6 @@
             <argument type="service" id="output"/>
             <argument type="service" id="input"/>
         </service>
-        <service id="nanbando" class="Nanbando\Core\Nanbando">
-            <argument>%nanbando.backup%</argument>
-            <argument type="service" id="storage"/>
-            <argument type="service" id="database_factory"/>
-            <argument type="service" id="event_dispatcher"/>
-        </service>
 
         <!-- plugin -->
         <service id="plugins.directory" class="Nanbando\Core\Plugin\DirectoryPlugin">

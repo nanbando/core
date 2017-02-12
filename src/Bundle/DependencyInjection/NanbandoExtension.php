@@ -63,6 +63,7 @@ class NanbandoExtension extends Extension
         $loader = new Loader\XmlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
         $loader->load('services.xml');
         $loader->load('event-listener.xml');
+        $loader->load('server-commands.xml');
 
         // ensure container rebuild after puli bindings changes
         if (file_exists('.puli/bindings.json')) {
