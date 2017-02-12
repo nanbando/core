@@ -21,7 +21,7 @@ class SshServerCompilerPass implements CompilerPassInterface
     public function process(ContainerBuilder $container)
     {
         $abstractServices = $container->findTaggedServiceIds('nanbando.ssh.abstract_server_command');
-        foreach ($container->setParameter('nanbando.servers') as $serverName => $serverConfig) {
+        foreach ($container->getParameter('nanbando.servers') as $serverName => $serverConfig) {
             $sshId = 'nanbando.server.' . $serverName . '.ssh';
             $container->setDefinition($sshId, $this->createSshDefinition($serverName, $serverConfig['ssh']));
 
