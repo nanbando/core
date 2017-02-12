@@ -1,0 +1,67 @@
+<?php
+
+namespace Nanbando\Core\Server\Command\Ssh;
+
+use Nanbando\Core\BackupStatus;
+use Nanbando\Core\Server\Command\CommandInterface;
+use phpseclib\Net\SSH2;
+use Symfony\Component\Console\Output\OutputInterface;
+
+class SshBackupCommand implements CommandInterface
+{
+    /**
+     * @var SSH2
+     */
+    private $ssh;
+
+    /**
+     * @var OutputInterface
+     */
+    private $output;
+
+    /**
+     * @var string
+     */
+    private $folder;
+
+    /**
+     * @var string
+     */
+    private $executable = 'nanbando';
+
+    /**
+     * @param SSH2 $ssh
+     * @param string $folder
+     * @param string $executable
+     * @param OutputInterface $output
+     */
+    public function __construct(SSH2 $ssh, $folder, $executable, OutputInterface $output)
+    {
+        $this->ssh = $ssh;
+        $this->folder = $folder;
+        $this->executable = $executable;
+        $this->output = $output;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function execute(array $options)
+    {
+        $result = '';
+        $this->ssh->exec(
+            sprintf('cd %s; %s backup %s %s', $this->folder, $this->executable, $options['label'], $options['message']),
+            function ($line) use (&$result) {
+                $this->output->write($line);
+
+                $result .= $line;
+            }
+        );
+
+        preg_match('/"(?<name>[0-9-]*)"/', $result, $matches);
+        $name = $matches['name'];
+
+        // TODO extract result from result
+        return BackupStatus::STATE_SUCCESS;
+    }
+}

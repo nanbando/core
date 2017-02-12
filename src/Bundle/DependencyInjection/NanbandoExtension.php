@@ -2,12 +2,18 @@
 
 namespace Nanbando\Bundle\DependencyInjection;
 
+use Nanbando\Core\Server\Command\Ssh\SshFactory;
+use phpseclib\Net\SSH2;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Config\Resource\FileResource;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Definition;
+use Symfony\Component\DependencyInjection\DefinitionDecorator;
 use Symfony\Component\DependencyInjection\Loader;
+use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
+use Webmozart\PathUtil\Path;
 
 class NanbandoExtension extends Extension
 {
@@ -63,11 +69,42 @@ class NanbandoExtension extends Extension
         $loader = new Loader\XmlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
         $loader->load('services.xml');
         $loader->load('event-listener.xml');
-        $loader->load('server-commands.xml');
+        $loader->load('local-commands.xml');
+        $loader->load('ssh-commands.xml');
+
+        $abstractServices = $container->findTaggedServiceIds('nanbando.ssh.abstract_server_command');
+        foreach ($config['servers'] as $serverName => $serverConfig) {
+            $sshId = 'nanbando.server.' . $serverName . '.ssh';
+            $sshDefinition = new Definition(SSH2::class, [$serverConfig['ssh']]);
+            $sshDefinition->setLazy(true);
+            $sshDefinition->setFactory([SshFactory::class, 'create']);
+            $container->setDefinition($sshId, $sshDefinition);
+
+            foreach ($abstractServices as $id => $tags) {
+                $abstractCommandDefinition = $container->getDefinition($id);
+
+                $commandDefinition = new DefinitionDecorator($id);
+                $commandDefinition->setClass($abstractCommandDefinition->getClass());
+                $commandDefinition->setLazy(true);
+                $commandDefinition->replaceArgument(0, new Reference($sshId));
+                $commandDefinition->replaceArgument(1, $serverConfig['directory']);
+                $commandDefinition->replaceArgument(2, $serverConfig['executable']);
+                $commandDefinition->addTag(
+                    'nanbando.server_command',
+                    ['server' => $serverName, 'command' => $tags[0]['command']]
+                );
+
+                $container->setDefinition(
+                    'nanbando.server.' . $serverName . '.' . $tags[0]['command'],
+                    $commandDefinition
+                );
+            }
+        }
 
         // ensure container rebuild after puli bindings changes
-        if (file_exists('.puli/bindings.json')) {
-            $container->addResource(new FileResource('.puli/bindings.json'));
+        $puliFile = Path::join([getcwd(), NANBANDO_DIR, '.puli']);
+        if (file_exists($puliFile)) {
+            $container->addResource(new FileResource($puliFile));
         }
     }
 }

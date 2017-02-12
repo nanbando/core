@@ -1,0 +1,29 @@
+<?xml version="1.0" ?>
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+    <services>
+        <service id="nanbando.server.abstract_ssh.backup"
+                 class="Nanbando\Core\Server\Command\Ssh\SshBackupCommand"
+                 abstract="true">
+            <argument type="service"><!-- ssh --></argument>
+            <argument><!-- folder --></argument>
+            <argument><!-- executable --></argument>
+            <argument type="service" id="output"/>
+
+            <tag name="nanbando.ssh.abstract_server_command" command="backup"/>
+        </service>
+
+        <service id="nanbando.server.abstract_ssh.load"
+                 class="Nanbando\Core\Server\Command\Ssh\SshLoadCommand"
+                 abstract="true">
+            <argument type="service"><!-- ssh --></argument>
+            <argument><!-- folder --></argument>
+            <argument><!-- executable --></argument>
+            <argument type="service" id="storage"/>
+            <argument type="service" id="output"/>
+
+            <tag name="nanbando.ssh.abstract_server_command" command="load"/>
+        </service>
+    </services>
+</container>
