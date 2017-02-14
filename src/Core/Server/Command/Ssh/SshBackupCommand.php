@@ -61,10 +61,17 @@ class SshBackupCommand implements CommandInterface
             }
         );
 
-        preg_match('/"(?<name>[0-9-]*)"/', $result, $matches);
-        $name = $matches['name'];
+        $match = preg_match('/"(?<name>[0-9-]*)".*(?<status>(successfully|failed|partially)*).*/', $result, $matches);
+        if ($match) {
+            return BackupStatus::STATE_FAILED;
+        }
 
-        // TODO extract result from result
+        if ($matches['status'] === 'failed') {
+            return BackupStatus::STATE_SUCCESS;
+        } elseif ($matches['status'] === 'partially') {
+            return BackupStatus::STATE_SUCCESS;
+        }
+
         return BackupStatus::STATE_SUCCESS;
     }
 }
