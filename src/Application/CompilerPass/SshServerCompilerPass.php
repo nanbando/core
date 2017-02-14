@@ -55,7 +55,7 @@ class SshServerCompilerPass implements CompilerPassInterface
     {
         $sshDefinition = new Definition(SSH2::class, [$serverName, $sshConfig]);
         $sshDefinition->setLazy(true);
-        $sshDefinition->setFactory([SshFactory::class, 'create']);
+        $sshDefinition->setFactory([new Reference('nanbando.ssh_factory'), 'create']);
 
         return $sshDefinition;
     }
