@@ -2,7 +2,6 @@
 
 namespace Nanbando\Application\CompilerPass;
 
-use Nanbando\Core\Server\Command\Ssh\SshFactory;
 use phpseclib\Net\SSH2;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -23,7 +22,15 @@ class SshServerCompilerPass implements CompilerPassInterface
         $abstractServices = $container->findTaggedServiceIds('nanbando.ssh.abstract_server_command');
         foreach ($container->getParameter('nanbando.servers') as $serverName => $serverConfig) {
             $sshId = 'nanbando.server.' . $serverName . '.ssh';
-            $container->setDefinition($sshId, $this->createSshDefinition($serverName, $serverConfig['ssh']));
+            $container->setDefinition(
+                $sshId,
+                $this->createSshDefinition(
+                    $serverName,
+                    $serverConfig['ssh'],
+                    $serverConfig['directory'],
+                    $serverConfig['executable']
+                )
+            );
 
             foreach ($abstractServices as $id => $tags) {
                 $commandDefinition = $container->getDefinition($id);
@@ -48,12 +55,14 @@ class SshServerCompilerPass implements CompilerPassInterface
      *
      * @param string $serverName
      * @param array $sshConfig
+     * @param string $directory
+     * @param string $executable
      *
      * @return Definition
      */
-    private function createSshDefinition($serverName, array $sshConfig)
+    private function createSshDefinition($serverName, array $sshConfig, $directory, $executable)
     {
-        $sshDefinition = new Definition(SSH2::class, [$serverName, $sshConfig]);
+        $sshDefinition = new Definition(SSH2::class, [$serverName, $sshConfig, $directory, $executable]);
         $sshDefinition->setLazy(true);
         $sshDefinition->setFactory([new Reference('nanbando.ssh_factory'), 'create']);
 

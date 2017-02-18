@@ -14,6 +14,13 @@ use Symfony\Component\Console\Question\Question;
  */
 final class SshFactory
 {
+    const TEST_COMMAND = <<<'EOT'
+%s
+if [ %s ]; then
+  echo "exists"
+fi
+EOT;
+
     /**
      * @var InputInterface
      */
@@ -23,6 +30,11 @@ final class SshFactory
      * @var OutputInterface
      */
     private $output;
+
+    /**
+     * @var array
+     */
+    private $sshs = [];
 
     /**
      * @param InputInterface $input
@@ -37,15 +49,35 @@ final class SshFactory
     /**
      * Create a new ssh connection.
      *
-     * @param $serverName
+     * @param string $serverName
      * @param array $sshConfig
+     * @param string $directory
+     * @param string $executable
      *
      * @return SSH2
      *
-     * @throws SshConfigurationException
-     * @throws SshLoginException
+     * @throws SshException
      */
-    public function create($serverName, array $sshConfig)
+    public function create($serverName, array $sshConfig, $directory, $executable)
+    {
+        if (array_key_exists($serverName, $this->sshs)) {
+            if ($this->sshs[$serverName] instanceof SshException) {
+                throw $this->sshs[$serverName];
+            }
+
+            return $this->sshs[$serverName];
+        }
+
+        try {
+            return $this->sshs[$serverName] = $this->doCreate($serverName, $sshConfig, $directory, $executable);
+        } catch (SshException $ex) {
+            $this->sshs[$serverName] = $ex;
+
+            throw $ex;
+        }
+    }
+
+    private function doCreate($serverName, array $sshConfig, $directory, $executable)
     {
         $ssh = new SSH2($sshConfig['host'], $sshConfig['port'], $sshConfig['timeout']);
 
@@ -58,6 +90,8 @@ final class SshFactory
             if (!$ssh->login($sshConfig['username'], $password)) {
                 throw new SshLoginException($serverName);
             }
+
+            $this->validateSsh($ssh, $directory, $executable);
 
             return $ssh;
         }
@@ -73,10 +107,48 @@ final class SshFactory
                 throw new SshLoginException($serverName);
             }
 
+            $this->validateSsh($ssh, $directory, $executable);
+
             return $ssh;
         }
 
         throw new SshConfigurationException($serverName);
+    }
+
+    /**
+     * Validates ssh connection.
+     *
+     * @param SSH2 $ssh
+     * @param string $directory
+     * @param string $executable
+     *
+     * @throws SshValidateException
+     */
+    private function validateSsh(SSH2 $ssh, $directory, $executable)
+    {
+        if (!$this->testServer($ssh, sprintf('-d "%s"', $directory))) {
+            throw new SshValidateException('Directory does not exists');
+        }
+
+        if (!$this->testServer($ssh, sprintf('-x "%s"', $executable), $directory)) {
+            throw new SshValidateException('Executable does not exists');
+        }
+    }
+
+    /**
+     * Executes an if-statement on the server.
+     *
+     * @param SSH2 $ssh
+     * @param string $test
+     * @param string $directory
+     *
+     * @return bool
+     */
+    private function testServer(SSH2 $ssh, $test, $directory = null)
+    {
+        $result = $ssh->exec(sprintf(self::TEST_COMMAND, $directory ? 'cd ' . $directory : '', $test));
+
+        return 1 === preg_match('/exists.*/', $result);
     }
 
     /**
@@ -92,7 +164,7 @@ final class SshFactory
     {
         $questionHelper = new QuestionHelper();
 
-        $question = new Question('Password for ' . $username . '@' . $host . ':' . $port.': ');
+        $question = new Question('Password for ' . $username . '@' . $host . ':' . $port . ': ');
         $question->setHidden(true);
         $question->setHiddenFallback(false);
 

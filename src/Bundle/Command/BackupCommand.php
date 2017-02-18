@@ -2,6 +2,7 @@
 
 namespace Nanbando\Bundle\Command;
 
+use Nanbando\Core\Server\Command\Ssh\SshException;
 use Nanbando\Core\Server\ServerRegistry;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
@@ -16,8 +17,7 @@ class BackupCommand extends ContainerAwareCommand
      */
     protected function configure()
     {
-        $this
-            ->setName('backup')
+        $this->setName('backup')
             ->addArgument('label', InputArgument::OPTIONAL, 'This label will be used to generate the filename for the backup.')
             ->addOption('message', 'm', InputOption::VALUE_REQUIRED, 'An additional message to identify the backup.')
             ->addOption('server', 's', InputOption::VALUE_REQUIRED, 'Where should the command be called.', 'local')
@@ -39,9 +39,13 @@ EOT
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        /** @var ServerRegistry $serverRegistry */
-        $serverRegistry = $this->getContainer()->get('nanbando.server_registry');
-        $command = $serverRegistry->getCommand($input->getOption('server'), 'backup');
+        try {
+            /** @var ServerRegistry $serverRegistry */
+            $serverRegistry = $this->getContainer()->get('nanbando.server_registry');
+            $command = $serverRegistry->getCommand($input->getOption('server'), 'backup');
+        } catch (SshException $exception) {
+            throw $exception;
+        }
 
         $command->execute(['label' => $input->getArgument('label'), 'message' => $input->getOption('message')]);
     }

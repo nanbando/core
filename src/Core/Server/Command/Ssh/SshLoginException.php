@@ -5,7 +5,7 @@ namespace Nanbando\Core\Server\Command\Ssh;
 /**
  * Indicates ssh login exception.
  */
-class SshLoginException extends \Exception
+class SshLoginException extends SshException
 {
     /**
      * @var string
