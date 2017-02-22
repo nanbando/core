@@ -64,6 +64,14 @@ class LocalBackupCommand implements CommandInterface
     /**
      * {@inheritdoc}
      */
+    public function interact()
+    {
+        // do nothing
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function execute(array $options = [])
     {
         $label = array_key_exists('label', $options) ? $options['label'] : '';

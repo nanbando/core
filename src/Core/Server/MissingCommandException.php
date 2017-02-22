@@ -23,7 +23,7 @@ class MissingCommandException extends \Exception
      */
     public function __construct($serverName, $commandName)
     {
-        parent::__construct(sprintf('Missing command "%s" for server "%s".', $commandName, $serverName));
+        parent::__construct(sprintf('Command "%s" for server "%s" not supported.', $commandName, $serverName));
 
         $this->serverName = $serverName;
         $this->commandName = $commandName;

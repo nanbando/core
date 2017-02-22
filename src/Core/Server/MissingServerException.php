@@ -17,7 +17,7 @@ class MissingServerException extends \Exception
      */
     public function __construct($serverName)
     {
-        parent::__construct(sprintf('Server "%s" not found', $serverName));
+        parent::__construct(sprintf('Server "%s" not found.', $serverName));
 
         $this->serverName = $serverName;
     }

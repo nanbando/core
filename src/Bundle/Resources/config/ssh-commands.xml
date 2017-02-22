@@ -7,8 +7,6 @@
                  class="Nanbando\Core\Server\Command\Ssh\SshBackupCommand"
                  abstract="true">
             <argument type="service"><!-- ssh --></argument>
-            <argument><!-- folder --></argument>
-            <argument><!-- executable --></argument>
             <argument type="service" id="output"/>
 
             <tag name="nanbando.ssh.abstract_server_command" command="backup"/>
@@ -18,12 +16,19 @@
                  class="Nanbando\Core\Server\Command\Ssh\SshLoadCommand"
                  abstract="true">
             <argument type="service"><!-- ssh --></argument>
-            <argument><!-- folder --></argument>
-            <argument><!-- executable --></argument>
             <argument type="service" id="storage"/>
             <argument type="service" id="output"/>
 
             <tag name="nanbando.ssh.abstract_server_command" command="load"/>
+        </service>
+
+        <service id="nanbando.server.abstract_ssh.load"
+                 class="Nanbando\Core\Server\Command\Ssh\SshInformationCommand"
+                 abstract="true">
+            <argument type="service"><!-- ssh --></argument>
+            <argument type="service" id="output"/>
+
+            <tag name="nanbando.ssh.abstract_server_command" command="information"/>
         </service>
     </services>
 </container>

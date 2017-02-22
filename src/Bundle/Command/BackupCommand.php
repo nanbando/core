@@ -2,15 +2,14 @@
 
 namespace Nanbando\Bundle\Command;
 
-use Nanbando\Core\Server\Command\Ssh\SshException;
-use Nanbando\Core\Server\ServerRegistry;
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Output\OutputInterface;
 
-class BackupCommand extends ContainerAwareCommand
+/**
+ * Command creates a new backup.
+ */
+class BackupCommand extends BaseServerCommand
 {
     /**
      * {@inheritdoc}
@@ -37,16 +36,16 @@ EOT
     /**
      * {@inheritdoc}
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function getServerName(InputInterface $input)
     {
-        try {
-            /** @var ServerRegistry $serverRegistry */
-            $serverRegistry = $this->getContainer()->get('nanbando.server_registry');
-            $command = $serverRegistry->getCommand($input->getOption('server'), 'backup');
-        } catch (SshException $exception) {
-            throw $exception;
-        }
+        return $input->getOption('server');
+    }
 
-        $command->execute(['label' => $input->getArgument('label'), 'message' => $input->getOption('message')]);
+    /**
+     * {@inheritdoc}
+     */
+    protected function getCommandOptions(InputInterface $input)
+    {
+        return ['label' => $input->getArgument('label'), 'message' => $input->getOption('message')];
     }
 }

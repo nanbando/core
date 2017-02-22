@@ -8,6 +8,11 @@ namespace Nanbando\Core\Server\Command;
 interface CommandInterface
 {
     /**
+     * Interact with user.
+     */
+    public function interact();
+
+    /**
      * Executes command.
      *
      * @param array $options

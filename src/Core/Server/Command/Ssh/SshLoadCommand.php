@@ -4,8 +4,6 @@ namespace Nanbando\Core\Server\Command\Ssh;
 
 use Nanbando\Core\Server\Command\CommandInterface;
 use Nanbando\Core\Storage\StorageInterface;
-use phpseclib\Net\SCP;
-use phpseclib\Net\SSH2;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
@@ -14,14 +12,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 class SshLoadCommand implements CommandInterface
 {
     /**
-     * @var SSH2
+     * @var SshConnection
      */
-    private $ssh;
-
-    /**
-     * @var SCP
-     */
-    private $scp;
+    private $connection;
 
     /**
      * @var StorageInterface
@@ -34,30 +27,23 @@ class SshLoadCommand implements CommandInterface
     private $output;
 
     /**
-     * @var string
-     */
-    private $folder;
-
-    /**
-     * @var string
-     */
-    private $executable = 'nanbando';
-
-    /**
-     * @param SSH2 $ssh
+     * @param SshConnection $connection
      * @param StorageInterface $storage
      * @param OutputInterface $output
-     * @param string $folder
-     * @param string $executable
      */
-    public function __construct(SSH2 $ssh, $folder, $executable, StorageInterface $storage, OutputInterface $output)
+    public function __construct(SshConnection $connection, StorageInterface $storage, OutputInterface $output)
     {
-        $this->ssh = $ssh;
-        $this->scp = new SCP($ssh);
-        $this->folder = $folder;
-        $this->executable = $executable;
+        $this->connection = $connection;
         $this->storage = $storage;
         $this->output = $output;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function interact()
+    {
+        // do nothing
     }
 
     /**
@@ -67,7 +53,7 @@ class SshLoadCommand implements CommandInterface
     {
         $name = $options['name'];
 
-        $information = $this->ssh->exec(sprintf('cd %s; %s information %s', $this->folder, $this->executable, $name));
+        $information = $this->connection->executeNanbando('information', [$name]);
         $this->output->writeln($information);
 
         preg_match('/path:\s*(?<path>\/([^\/\0]+(\/)?)+)\n/', $information, $matches);
@@ -77,8 +63,10 @@ class SshLoadCommand implements CommandInterface
         $this->output->writeln(PHP_EOL . '$ scp ' . $remotePath . ' ' . $localPath);
 
         // Try to display progress somehow.
-        $this->scp->get($remotePath, $localPath);
+        $this->connection->get($remotePath, $localPath);
 
         $this->output->writeln(PHP_EOL . sprintf('Backup "%s" loaded successfully', $name));
+
+        return $name;
     }
 }

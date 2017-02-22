@@ -2,6 +2,8 @@
 
 namespace Nanbando\Application\CompilerPass;
 
+use Nanbando\Core\Server\Command\Ssh\SshConnection;
+use phpseclib\Net\SCP;
 use phpseclib\Net\SSH2;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -22,13 +24,20 @@ class SshServerCompilerPass implements CompilerPassInterface
         $abstractServices = $container->findTaggedServiceIds('nanbando.ssh.abstract_server_command');
         foreach ($container->getParameter('nanbando.servers') as $serverName => $serverConfig) {
             $sshId = 'nanbando.server.' . $serverName . '.ssh';
+            $container->setDefinition($sshId, $this->createSshDefinition($serverConfig['ssh']));
+            $scpId = 'nanbando.server.' . $serverName . '.scp';
+            $container->setDefinition($scpId, $this->createScpDefinition($sshId));
+
+            $connectionId = 'nanbando.server.' . $serverName . '.connection';
             $container->setDefinition(
-                $sshId,
-                $this->createSshDefinition(
+                $connectionId,
+                $this->createSshConnectionDefinition(
+                    $sshId,
+                    $scpId,
                     $serverName,
-                    $serverConfig['ssh'],
                     $serverConfig['directory'],
-                    $serverConfig['executable']
+                    $serverConfig['executable'],
+                    $serverConfig['ssh']
                 )
             );
 
@@ -39,11 +48,10 @@ class SshServerCompilerPass implements CompilerPassInterface
                     $commandId,
                     $this->createCommandDefinition(
                         $id,
-                        $sshId,
+                        $connectionId,
                         $commandDefinition->getClass(),
                         $serverName,
-                        $tags[0]['command'],
-                        $serverConfig
+                        $tags[0]['command']
                     )
                 );
             }
@@ -53,42 +61,85 @@ class SshServerCompilerPass implements CompilerPassInterface
     /**
      * Create a new ssh definition.
      *
-     * @param string $serverName
      * @param array $sshConfig
-     * @param string $directory
-     * @param string $executable
      *
      * @return Definition
      */
-    private function createSshDefinition($serverName, array $sshConfig, $directory, $executable)
+    private function createSshDefinition(array $sshConfig)
     {
-        $sshDefinition = new Definition(SSH2::class, [$serverName, $sshConfig, $directory, $executable]);
-        $sshDefinition->setLazy(true);
-        $sshDefinition->setFactory([new Reference('nanbando.ssh_factory'), 'create']);
+        $sshDefinition = new Definition(SSH2::class, [$sshConfig['host'], $sshConfig['port'], $sshConfig['timeout']]);
 
         return $sshDefinition;
+    }
+
+    /**
+     * Create a new scp definition with given ssh-id.
+     *
+     * @param string $sshId
+     *
+     * @return Definition
+     */
+    private function createScpDefinition($sshId)
+    {
+        $scpDefinition = new Definition(SCP::class, [new Reference($sshId)]);
+
+        return $scpDefinition;
+    }
+
+    /**
+     * Create a new ssh-connection.
+     *
+     * @param string $sshId
+     * @param string $scpId
+     * @param string $serverName
+     * @param string $directory
+     * @param string $executable
+     * @param array $sshConfig
+     *
+     * @return Definition
+     */
+    private function createSshConnectionDefinition(
+        $sshId,
+        $scpId,
+        $serverName,
+        $directory,
+        $executable,
+        array $sshConfig
+    ) {
+        $connectionDefinition = new Definition(
+            SshConnection::class, [
+                new Reference($sshId),
+                new Reference($scpId),
+                new Reference('input'),
+                new Reference('output'),
+                $serverName,
+                $directory,
+                $executable,
+                $sshConfig,
+            ]
+        );
+        $connectionDefinition->setLazy(true);
+
+        return $connectionDefinition;
     }
 
     /**
      * Create a new command definition.
      *
      * @param string $id
-     * @param string $sshId
+     * @param string $connectionId
      * @param string $class
      * @param string $serverName
      * @param string $command
-     * @param array $serverConfig
      *
      * @return DefinitionDecorator
      */
-    private function createCommandDefinition($id, $sshId, $class, $serverName, $command, array $serverConfig)
+    private function createCommandDefinition($id, $connectionId, $class, $serverName, $command)
     {
         $commandDefinition = new DefinitionDecorator($id);
         $commandDefinition->setClass($class);
         $commandDefinition->setLazy(true);
-        $commandDefinition->replaceArgument(0, new Reference($sshId));
-        $commandDefinition->replaceArgument(1, $serverConfig['directory']);
-        $commandDefinition->replaceArgument(2, $serverConfig['executable']);
+        $commandDefinition->replaceArgument(0, new Reference($connectionId));
         $commandDefinition->addTag('nanbando.server_command', ['server' => $serverName, 'command' => $command]);
 
         return $commandDefinition;

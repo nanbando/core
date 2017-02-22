@@ -2,24 +2,20 @@
 
 namespace Nanbando\Bundle\Command;
 
-use Nanbando\Core\Server\ServerRegistry;
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * Load given backup from another server.
  */
-class LoadCommand extends ContainerAwareCommand
+class LoadCommand extends BaseServerCommand
 {
     /**
      * {@inheritdoc}
      */
     protected function configure()
     {
-        $this
-            ->setName('load')
+        $this->setName('load')
             ->addArgument('source-server', InputArgument::REQUIRED, 'Source of backup which should be loaded.')
             ->addArgument('name', InputArgument::REQUIRED, 'Name of loading backup.')
             ->setDescription('Load given backup from another server.')
@@ -35,14 +31,16 @@ EOT
     /**
      * {@inheritdoc}
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function getServerName(InputInterface $input)
     {
-        /** @var ServerRegistry $serverRegistry */
-        $serverRegistry = $this->getContainer()->get('nanbando.server_registry');
-        $command = $serverRegistry->getCommand($input->getArgument('source-server'), 'load');
+        return $input->getArgument('source-server');
+    }
 
-        // TODO server does not provide load command
-
-        $command->execute(['name' => $input->getArgument('name')]);
+    /**
+     * {@inheritdoc}
+     */
+    protected function getCommandOptions(InputInterface $input)
+    {
+        return ['name' => $input->getArgument('name')];
     }
 }

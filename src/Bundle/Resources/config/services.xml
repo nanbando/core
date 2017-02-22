@@ -83,11 +83,5 @@
             <argument type="collection"/>
             <argument type="collection"/>
         </service>
-
-        <!-- ssh-factory -->
-        <service id="nanbando.ssh_factory" class="Nanbando\Core\Server\Command\Ssh\SshFactory">
-            <argument type="service" id="input"/>
-            <argument type="service" id="output"/>
-        </service>
     </services>
 </container>

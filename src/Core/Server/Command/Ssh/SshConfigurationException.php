@@ -3,7 +3,7 @@
 namespace Nanbando\Core\Server\Command\Ssh;
 
 /**
- * Indicates wrong configuration.
+ * Indicates wrong ssh-configuration.
  */
 class SshConfigurationException extends SshException
 {

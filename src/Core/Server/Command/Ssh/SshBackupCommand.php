@@ -4,7 +4,6 @@ namespace Nanbando\Core\Server\Command\Ssh;
 
 use Nanbando\Core\BackupStatus;
 use Nanbando\Core\Server\Command\CommandInterface;
-use phpseclib\Net\SSH2;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
@@ -13,9 +12,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 class SshBackupCommand implements CommandInterface
 {
     /**
-     * @var SSH2
+     * @var SshConnection
      */
-    private $ssh;
+    private $connection;
 
     /**
      * @var OutputInterface
@@ -23,27 +22,21 @@ class SshBackupCommand implements CommandInterface
     private $output;
 
     /**
-     * @var string
-     */
-    private $folder;
-
-    /**
-     * @var string
-     */
-    private $executable = 'nanbando';
-
-    /**
-     * @param SSH2 $ssh
-     * @param string $folder
-     * @param string $executable
+     * @param SshConnection $connection
      * @param OutputInterface $output
      */
-    public function __construct(SSH2 $ssh, $folder, $executable, OutputInterface $output)
+    public function __construct(SshConnection $connection, OutputInterface $output)
     {
-        $this->ssh = $ssh;
-        $this->folder = $folder;
-        $this->executable = $executable;
+        $this->connection = $connection;
         $this->output = $output;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function interact()
+    {
+        // do nothing
     }
 
     /**
@@ -52,8 +45,9 @@ class SshBackupCommand implements CommandInterface
     public function execute(array $options = [])
     {
         $result = '';
-        $this->ssh->exec(
-            sprintf('cd %s; %s backup %s %s', $this->folder, $this->executable, $options['label'], $options['message']),
+        $this->connection->executeNanbando(
+            'backup',
+            [$options['label'], '-m ' => $options['message']],
             function ($line) use (&$result) {
                 $this->output->write($line);
 

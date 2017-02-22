@@ -20,5 +20,12 @@
 
             <tag name="nanbando.server_command" server="local" command="restore"/>
         </service>
+
+        <service id="nanbando.server.local.information" class="Nanbando\Core\Server\Command\Local\LocalInformationCommand">
+            <argument type="service" id="storage"/>
+            <argument type="service" id="output"/>
+
+            <tag name="nanbando.server_command" server="local" command="information"/>
+        </service>
     </services>
 </container>
