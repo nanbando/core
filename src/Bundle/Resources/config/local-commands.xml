@@ -23,6 +23,8 @@
 
         <service id="nanbando.server.local.information" class="Nanbando\Core\Server\Command\Local\LocalInformationCommand">
             <argument type="service" id="storage"/>
+            <argument type="service" id="database_factory"/>
+            <argument type="service" id="input"/>
             <argument type="service" id="output"/>
 
             <tag name="nanbando.server_command" server="local" command="information"/>

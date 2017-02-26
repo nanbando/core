@@ -37,6 +37,9 @@ class LocalBackupCommandTest extends \PHPUnit_Framework_TestCase
      */
     private $eventDispatcher;
 
+    /**
+     * {@inheritdoc}
+     */
     public function setUp()
     {
         $this->storage = $this->prophesize(StorageInterface::class);

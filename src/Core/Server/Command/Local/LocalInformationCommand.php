@@ -2,7 +2,7 @@
 
 namespace Nanbando\Core\Server\Command\Local;
 
-use Nanbando\Core\Database\ReadonlyDatabase;
+use Nanbando\Core\Database\DatabaseFactory;
 use Nanbando\Core\Server\Command\CommandInterface;
 use Nanbando\Core\Storage\StorageInterface;
 use ScriptFUSION\Byte\ByteFormatter;
@@ -22,6 +22,11 @@ class LocalInformationCommand implements CommandInterface
     private $storage;
 
     /**
+     * @var DatabaseFactory
+     */
+    private $databaseFactory;
+
+    /**
      * @var InputInterface
      */
     private $input;
@@ -33,12 +38,18 @@ class LocalInformationCommand implements CommandInterface
 
     /**
      * @param StorageInterface $storage
+     * @param DatabaseFactory $databaseFactory
      * @param InputInterface $input
      * @param OutputInterface $output
      */
-    public function __construct(StorageInterface $storage, InputInterface $input, OutputInterface $output)
-    {
+    public function __construct(
+        StorageInterface $storage,
+        DatabaseFactory $databaseFactory,
+        InputInterface $input,
+        OutputInterface $output
+    ) {
         $this->storage = $storage;
+        $this->databaseFactory = $databaseFactory;
         $this->input = $input;
         $this->output = $output;
     }
@@ -78,7 +89,9 @@ class LocalInformationCommand implements CommandInterface
         $file = $options['file'];
         $backupFilesystem = $this->storage->open($file);
 
-        $database = new ReadonlyDatabase(json_decode($backupFilesystem->read('database/system.json'), true));
+        $database = $this->databaseFactory->createReadonly(
+            json_decode($backupFilesystem->read('database/system.json'), true)
+        );
         $this->output->writeln(sprintf(' * label:    %s', $database->get('label')));
         $this->output->writeln(sprintf(' * message:  %s', $database->get('message')));
         $this->output->writeln(sprintf(' * started:  %s', $database->get('started')));

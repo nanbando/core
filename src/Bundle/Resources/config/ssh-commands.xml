@@ -22,10 +22,11 @@
             <tag name="nanbando.ssh.abstract_server_command" command="load"/>
         </service>
 
-        <service id="nanbando.server.abstract_ssh.load"
+        <service id="nanbando.server.abstract_ssh.information"
                  class="Nanbando\Core\Server\Command\Ssh\SshInformationCommand"
                  abstract="true">
             <argument type="service"><!-- ssh --></argument>
+            <argument type="service" id="input"/>
             <argument type="service" id="output"/>
 
             <tag name="nanbando.ssh.abstract_server_command" command="information"/>
