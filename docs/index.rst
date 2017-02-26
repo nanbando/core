@@ -24,6 +24,7 @@ Contents
 
     installation
     usage
+    connectivity
     configuration
     plugins
     cookbook/index

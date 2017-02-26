@@ -34,6 +34,8 @@ Put this configuration into ``~/.nanbando.yml``.
                 plugins:
                     - filesystem.list_files
 
+# TODO add configuration for servers.
+
 .. note::
 
     The configuration documentation for the ``oneup_flysystem`` can be found on github `OneupFlysystemBundle`_.
@@ -68,6 +70,8 @@ The local configuration contains the name, backup configuration and the addition
         "require": {
         }
     }
+
+# TODO add configuration for servers.
 
 The ``backup`` section can contain as much parts as needed. Each plugin can provide its own ``parameter`` structure.
 
