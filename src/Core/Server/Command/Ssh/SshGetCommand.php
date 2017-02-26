@@ -7,9 +7,9 @@ use Nanbando\Core\Storage\StorageInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
- * Load a backup from a ssh connected server.
+ * Get a backup from a ssh connected server.
  */
-class SshLoadCommand implements CommandInterface
+class SshGetCommand implements CommandInterface
 {
     /**
      * @var SshConnection
@@ -65,7 +65,7 @@ class SshLoadCommand implements CommandInterface
         // Try to display progress somehow.
         $this->connection->get($remotePath, $localPath);
 
-        $this->output->writeln(PHP_EOL . sprintf('Backup "%s" loaded successfully', $name));
+        $this->output->writeln(PHP_EOL . sprintf('Backup "%s" downloaded successfully', $name));
 
         return $name;
     }

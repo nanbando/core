@@ -12,14 +12,14 @@
             <tag name="nanbando.ssh.abstract_server_command" command="backup"/>
         </service>
 
-        <service id="nanbando.server.abstract_ssh.load"
-                 class="Nanbando\Core\Server\Command\Ssh\SshLoadCommand"
+        <service id="nanbando.server.abstract_ssh.get"
+                 class="Nanbando\Core\Server\Command\Ssh\SshGetCommand"
                  abstract="true">
             <argument type="service"><!-- ssh --></argument>
             <argument type="service" id="storage"/>
             <argument type="service" id="output"/>
 
-            <tag name="nanbando.ssh.abstract_server_command" command="load"/>
+            <tag name="nanbando.ssh.abstract_server_command" command="get"/>
         </service>
 
         <service id="nanbando.server.abstract_ssh.information"
