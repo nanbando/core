@@ -58,8 +58,8 @@ You can use the following configuration to backup the application using jackrabb
             }
         },
         "require": {
-            "nanbando/mysql": "dev-master",
-            "nanbando/jackrabbit": "dev-master"
+            "nanbando/mysql": "^0.1",
+            "nanbando/jackrabbit": "^0.1"
         }
     }
 
@@ -96,7 +96,7 @@ of the backup.
             }
         },
         "require": {
-            "nanbando/mysql": "dev-master"
+            "nanbando/mysql": "^0.1"
         }
     }
 
