@@ -1,5 +1,12 @@
 # Change Log
 
+## [0.8.0](https://github.com/nanbando/core/tree/0.8.0) (2017-02-28)
+[Full Changelog](https://github.com/nanbando/core/compare/0.7.0...0.8.0)
+
+**Merged pull requests:**
+
+- Implemented basic ssh-commands [\#54](https://github.com/nanbando/core/pull/54) ([wachterjohannes](https://github.com/wachterjohannes))
+
 ## [0.7.0](https://github.com/nanbando/core/tree/0.7.0) (2017-02-10)
 [Full Changelog](https://github.com/nanbando/core/compare/0.6.0...0.7.0)
 
