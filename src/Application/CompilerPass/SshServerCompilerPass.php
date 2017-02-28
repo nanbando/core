@@ -3,7 +3,6 @@
 namespace Nanbando\Application\CompilerPass;
 
 use Nanbando\Core\Server\Command\Ssh\SshConnection;
-use phpseclib\Net\SCP;
 use phpseclib\Net\SSH2;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -25,15 +24,12 @@ class SshServerCompilerPass implements CompilerPassInterface
         foreach ($container->getParameter('nanbando.servers') as $serverName => $serverConfig) {
             $sshId = 'nanbando.server.' . $serverName . '.ssh';
             $container->setDefinition($sshId, $this->createSshDefinition($serverConfig['ssh']));
-            $scpId = 'nanbando.server.' . $serverName . '.scp';
-            $container->setDefinition($scpId, $this->createScpDefinition($sshId));
 
             $connectionId = 'nanbando.server.' . $serverName . '.connection';
             $container->setDefinition(
                 $connectionId,
                 $this->createSshConnectionDefinition(
                     $sshId,
-                    $scpId,
                     $serverName,
                     $serverConfig['directory'],
                     $serverConfig['executable'],
@@ -73,24 +69,9 @@ class SshServerCompilerPass implements CompilerPassInterface
     }
 
     /**
-     * Create a new scp definition with given ssh-id.
-     *
-     * @param string $sshId
-     *
-     * @return Definition
-     */
-    private function createScpDefinition($sshId)
-    {
-        $scpDefinition = new Definition(SCP::class, [new Reference($sshId)]);
-
-        return $scpDefinition;
-    }
-
-    /**
      * Create a new ssh-connection.
      *
      * @param string $sshId
-     * @param string $scpId
      * @param string $serverName
      * @param string $directory
      * @param string $executable
@@ -100,7 +81,6 @@ class SshServerCompilerPass implements CompilerPassInterface
      */
     private function createSshConnectionDefinition(
         $sshId,
-        $scpId,
         $serverName,
         $directory,
         $executable,
@@ -109,7 +89,6 @@ class SshServerCompilerPass implements CompilerPassInterface
         $connectionDefinition = new Definition(
             SshConnection::class, [
                 new Reference($sshId),
-                new Reference($scpId),
                 new Reference('input'),
                 new Reference('output'),
                 $serverName,

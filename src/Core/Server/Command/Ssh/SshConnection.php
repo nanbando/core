@@ -3,8 +3,9 @@
 namespace Nanbando\Core\Server\Command\Ssh;
 
 use phpseclib\Crypt\RSA;
-use phpseclib\Net\SCP;
 use phpseclib\Net\SSH2;
+use ScriptFUSION\Byte\ByteFormatter;
+use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -28,11 +29,6 @@ EOT;
      * @var SSH2
      */
     private $ssh;
-
-    /**
-     * @var SCP
-     */
-    private $scp;
 
     /**
      * @var InputInterface
@@ -71,7 +67,6 @@ EOT;
 
     /**
      * @param SSH2 $ssh
-     * @param SCP $scp
      * @param InputInterface $input
      * @param OutputInterface $output
      * @param string $name
@@ -81,7 +76,6 @@ EOT;
      */
     public function __construct(
         SSH2 $ssh,
-        SCP $scp,
         InputInterface $input,
         OutputInterface $output,
         $name,
@@ -90,7 +84,6 @@ EOT;
         array $sshConfig
     ) {
         $this->ssh = $ssh;
-        $this->scp = $scp;
         $this->input = $input;
         $this->output = $output;
         $this->name = $name;
@@ -149,8 +142,90 @@ EOT;
     public function get($remoteFile, $localFile)
     {
         $this->login();
+        if (!isset($this->ssh)) {
+            return false;
+        }
 
-        return $this->scp->get($remoteFile, $localFile);
+        if (!$this->ssh->exec('scp -f ' . escapeshellarg($remoteFile), false)) { // -f = from
+            return false;
+        }
+
+        $this->sendPacket("\0");
+
+        if (!preg_match('#(?<perms>[^ ]+) (?<size>\d+) (?<name>.+)#', rtrim($this->receivePacket()), $info)) {
+            return false;
+        }
+
+        $this->sendPacket("\0");
+
+        $size = 0;
+
+        $fp = null;
+        if ($localFile !== false) {
+            $fp = @fopen($localFile, 'wb');
+            if (!$fp) {
+                return false;
+            }
+        }
+
+        $progressBar = new ProgressBar($this->output, $info['size']);
+        $progressBar->setFormat(' %message% [%bar%] %percent:3s%% %elapsed:6s%/%estimated:-6s% %memory:6s%');
+        $progressBar->start();
+
+        $byteFormatter = new ByteFormatter();
+
+        $content = '';
+        while ($size < $info['size']) {
+            $data = $this->receivePacket();
+            // SCP usually seems to split stuff out into 16k chunks
+            $length = strlen($data);
+            $size += $length;
+            $progressBar->advance($length);
+            $progressBar->setMessage(
+                sprintf('%s/%s', $byteFormatter->format($size), $byteFormatter->format($info['size']))
+            );
+
+            if (!$fp) {
+                $content .= $data;
+            } else {
+                fwrite($fp, $data);
+            }
+        }
+
+        $progressBar->finish();
+        $this->output->writeln('');
+
+        $this->closeChannel();
+
+        return true;
+    }
+
+    /**
+     * Receives a packet from an SSH server.
+     *
+     * @return string
+     */
+    public function receivePacket()
+    {
+        return $this->ssh->_get_channel_packet(SSH2::CHANNEL_EXEC, true);
+    }
+
+    /**
+     * Sends a packet to an SSH server.
+     *
+     * @param string $data
+     */
+    private function sendPacket($data)
+    {
+        $this->ssh->_send_channel_packet(SSH2::CHANNEL_EXEC, $data);
+    }
+
+    /**
+     * Closes the connection to an SSH server.
+     */
+    private function closeChannel()
+    {
+        $this->ssh->_close_channel(SSH2::CHANNEL_EXEC, true);
     }
 
     /**
