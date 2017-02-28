@@ -1,34 +1,28 @@
 <?php
 
-namespace Nanbando\Core;
+namespace Nanbando\Core\Server\Command\Local;
 
 use Emgag\Flysystem\Hash\HashPlugin;
 use League\Flysystem\Adapter\Local;
 use League\Flysystem\Filesystem;
 use League\Flysystem\Plugin\ListFiles;
+use Nanbando\Core\BackupStatus;
 use Nanbando\Core\Database\DatabaseFactory;
 use Nanbando\Core\Events\BackupEvent;
 use Nanbando\Core\Events\Events;
 use Nanbando\Core\Events\PostBackupEvent;
 use Nanbando\Core\Events\PreBackupEvent;
-use Nanbando\Core\Events\PreRestoreEvent;
-use Nanbando\Core\Events\RestoreEvent;
 use Nanbando\Core\Flysystem\PrefixAdapter;
 use Nanbando\Core\Flysystem\ReadonlyAdapter;
+use Nanbando\Core\Server\Command\CommandInterface;
 use Nanbando\Core\Storage\StorageInterface;
-use Symfony\Component\EventDispatcher\Event;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
- * Core service.
+ * Create a new local backup-archive.
  */
-class Nanbando
+class LocalBackupCommand implements CommandInterface
 {
-    /**
-     * @var array
-     */
-    private $backup;
-
     /**
      * @var StorageInterface
      */
@@ -45,33 +39,44 @@ class Nanbando
     private $eventDispatcher;
 
     /**
-     * @param array $backup
+     * @var array
+     */
+    private $backup;
+
+    /**
      * @param StorageInterface $storage
      * @param DatabaseFactory $databaseFactory
      * @param EventDispatcherInterface $eventDispatcher
+     * @param array $backup
      */
     public function __construct(
-        array $backup,
         StorageInterface $storage,
         DatabaseFactory $databaseFactory,
-        EventDispatcherInterface $eventDispatcher
+        EventDispatcherInterface $eventDispatcher,
+        array $backup
     ) {
-        $this->backup = $backup;
         $this->storage = $storage;
         $this->databaseFactory = $databaseFactory;
         $this->eventDispatcher = $eventDispatcher;
+        $this->backup = $backup;
     }
 
     /**
-     * Backup process.
-     *
-     * @param string $label
-     * @param string $message
-     *
-     * @return int
+     * {@inheritdoc}
      */
-    public function backup($label = '', $message = '')
+    public function interact()
     {
+        // do nothing
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function execute(array $options = [])
+    {
+        $label = array_key_exists('label', $options) ? $options['label'] : '';
+        $message = array_key_exists('message', $options) ? $options['message'] : '';
+
         $destination = $this->storage->start();
 
         $source = new Filesystem(new ReadonlyAdapter(new Local(realpath('.'))));
@@ -129,45 +134,5 @@ class Nanbando
         $this->eventDispatcher->dispatch(Events::POST_BACKUP_EVENT, new PostBackupEvent($name, $status));
 
         return $status;
-    }
-
-    /**
-     * Restore process.
-     *
-     * @param string $name
-     */
-    public function restore($name)
-    {
-        $source = $this->storage->open($name);
-
-        $destination = new Filesystem(new Local(realpath('.'), LOCK_EX, null));
-        $destination->addPlugin(new ListFiles());
-        $destination->addPlugin(new HashPlugin());
-
-        $systemData = json_decode($source->read('database/system.json'), true);
-        $systemDatabase = $this->databaseFactory->createReadonly($systemData);
-
-        $event = new PreRestoreEvent($this->backup, $systemDatabase, $source, $destination);
-        $this->eventDispatcher->dispatch(Events::PRE_RESTORE_EVENT, $event);
-        if ($event->isCanceled()) {
-            return;
-        }
-
-        $backupConfig = $event->getBackup();
-        foreach ($backupConfig as $backupName => $backup) {
-            $backupSource = new Filesystem(new PrefixAdapter('backup/' . $backupName, $source->getAdapter()));
-            $backupSource->addPlugin(new ListFiles());
-            $backupSource->addPlugin(new HashPlugin());
-
-            $data = json_decode($source->read(sprintf('database/backup/%s.json', $backupName)), true);
-            $database = $this->databaseFactory->createReadonly($data);
-
-            $event = new RestoreEvent(
-                $systemDatabase, $database, $backupSource, $destination, $backupName, $backup
-            );
-            $this->eventDispatcher->dispatch(Events::RESTORE_EVENT, $event);
-        }
-
-        $this->eventDispatcher->dispatch(Events::POST_RESTORE_EVENT, new Event());
     }
 }

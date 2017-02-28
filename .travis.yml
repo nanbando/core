@@ -10,9 +10,11 @@ matrix:
   - php: 5.6
     env:
     - EXECUTE_DEPLOYMENT=true
+    - COMPOSER_FLAGS="--no-interaction --prefer-lowest"
   - php: 7.0
     env:
     - EXECUTE_DEPLOYMENT=false
+    - COMPOSER_FLAGS="--no-interaction"
 before_install:
 - wget https://github.com/puli/cli/releases/download/1.0.0-beta10/puli.phar
 - chmod +x puli.phar
@@ -20,7 +22,7 @@ before_install:
   -in .travis/secrets.tar.enc -out .travis/secrets.tar -d
 - composer self-update
 install:
-- travis_retry composer install --no-interaction
+- travis_retry composer update $COMPOSER_FLAGS
 - composer info -i
 script:
 - ./vendor/bin/phpunit --coverage-clover=coverage.clover

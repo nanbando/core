@@ -3,10 +3,12 @@
 namespace Nanbando\Bundle\Command;
 
 use Nanbando\Core\Nanbando;
+use Nanbando\Core\Server\ServerRegistry;
 use Nanbando\Core\Storage\StorageInterface;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ChoiceQuestion;
 
@@ -27,6 +29,7 @@ class RestoreCommand extends ContainerAwareCommand
                 InputArgument::OPTIONAL,
                 'Defines which file should be restored (backup-name or absolute path to zip file).'
             )
+            ->addOption('server', 's', InputOption::VALUE_REQUIRED, 'Where should the command be called.', 'local')
             ->setHelp(
                 <<<EOT
 The <info>{$this->getName()}</info> restores a backup archive.
@@ -68,8 +71,10 @@ EOT
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        /** @var Nanbando $nanbando */
-        $nanbando = $this->getContainer()->get('nanbando');
-        $nanbando->restore($input->getArgument('file'));
+        /** @var ServerRegistry $serverRegistry */
+        $serverRegistry = $this->getContainer()->get('nanbando.server_registry');
+        $command = $serverRegistry->getCommand($input->getOption('server'), 'restore');
+
+        $command->execute(['name' => $input->getArgument('file')]);
     }
 }

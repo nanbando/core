@@ -34,7 +34,7 @@ class CollectorCompilerPass implements CompilerPassInterface
      * @param string $serviceId
      * @param string $tagName
      * @param string $aliasAttribute
-     * @param int    $argumentNumber
+     * @param int $argumentNumber
      */
     public function __construct($serviceId, $tagName, $aliasAttribute, $argumentNumber = 0)
     {

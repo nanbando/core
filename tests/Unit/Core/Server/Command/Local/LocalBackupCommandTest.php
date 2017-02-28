@@ -1,10 +1,9 @@
 <?php
 
-namespace Nanbando\Tests\Unit\Core;
+namespace Nanbando\Tests\Unit\Core\Server\Command\Local;
 
 use League\Flysystem\Filesystem;
 use League\Flysystem\Memory\MemoryAdapter;
-use League\Flysystem\ZipArchive\ZipArchiveAdapter;
 use Nanbando\Core\BackupStatus;
 use Nanbando\Core\Database\Database;
 use Nanbando\Core\Database\DatabaseFactory;
@@ -13,17 +12,15 @@ use Nanbando\Core\Events\BackupEvent;
 use Nanbando\Core\Events\Events;
 use Nanbando\Core\Events\PostBackupEvent;
 use Nanbando\Core\Events\PreBackupEvent;
-use Nanbando\Core\Events\PreRestoreEvent;
-use Nanbando\Core\Events\RestoreEvent;
-use Nanbando\Core\Nanbando;
+use Nanbando\Core\Server\Command\Local\LocalBackupCommand;
 use Nanbando\Core\Storage\StorageInterface;
-use Nanbando\Tests\Unit\Core\Storage\LocalStorageTest;
 use Prophecy\Argument;
-use Symfony\Component\EventDispatcher\Event;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-use Webmozart\PathUtil\Path;
 
-class NanbandoTest extends \PHPUnit_Framework_TestCase
+/**
+ * Tests for class "LocalBackupCommand".
+ */
+class LocalBackupCommandTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @var StorageInterface
@@ -40,33 +37,47 @@ class NanbandoTest extends \PHPUnit_Framework_TestCase
      */
     private $eventDispatcher;
 
+    /**
+     * {@inheritdoc}
+     */
     public function setUp()
     {
         $this->storage = $this->prophesize(StorageInterface::class);
         $this->databaseFactory = $this->prophesize(DatabaseFactory::class);
         $this->eventDispatcher = $this->prophesize(EventDispatcherInterface::class);
 
-        $this->databaseFactory->create(Argument::any())->will(function ($data) {
-            return new Database(isset($data[0]) ? $data[0] : []);
-        });
-        $this->databaseFactory->createReadonly(Argument::any())->will(function ($data) {
-            return new ReadonlyDatabase(isset($data[0]) ? $data[0] : []);
-        });
+        $this->databaseFactory->create(Argument::any())->will(
+            function ($data) {
+                return new Database(isset($data[0]) ? $data[0] : []);
+            }
+        );
+        $this->databaseFactory->createReadonly(Argument::any())->will(
+            function ($data) {
+                return new ReadonlyDatabase(isset($data[0]) ? $data[0] : []);
+            }
+        );
     }
 
-    protected function getNanbando(array $backup)
+    /**
+     * Create command with given configuration.
+     *
+     * @param array $backup
+     *
+     * @return LocalBackupCommand
+     */
+    private function createCommand(array $backup)
     {
-        return new Nanbando(
-            $backup,
+        return new LocalBackupCommand(
             $this->storage->reveal(),
             $this->databaseFactory->reveal(),
-            $this->eventDispatcher->reveal()
+            $this->eventDispatcher->reveal(),
+            $backup
         );
     }
 
     public function testBackup()
     {
-        $nanbando = $this->getNanbando(
+        $nanbando = $this->createCommand(
             [
                 'uploads' => [
                     'plugin' => 'directory',
@@ -88,7 +99,7 @@ class NanbandoTest extends \PHPUnit_Framework_TestCase
 
         $this->storage->close($filesystem)->shouldBeCalled();
 
-        $this->assertEquals(BackupStatus::STATE_SUCCESS, $nanbando->backup());
+        $this->assertEquals(BackupStatus::STATE_SUCCESS, $nanbando->execute());
 
         $files = $filesystem->listContents('', true);
         $fileNames = array_map(
@@ -109,35 +120,9 @@ class NanbandoTest extends \PHPUnit_Framework_TestCase
         );
     }
 
-    public function testRestore()
-    {
-        $path = Path::join([DATAFIXTURES_DIR, 'backups', LocalStorageTest::BACKUP_SUCCESS . '.zip']);
-        $nanbando = $this->getNanbando(
-            [
-                'uploads' => [
-                    'plugin' => 'directory',
-                    'parameter' => [
-                        'directory' => 'uploads',
-                    ],
-                ],
-            ]
-        );
-
-        $filesystem = new Filesystem(new ZipArchiveAdapter($path));
-        $this->storage->open('13-21-45-2016-05-29')->willReturn($filesystem);
-
-        $this->eventDispatcher->dispatch(Events::PRE_RESTORE_EVENT, Argument::type(PreRestoreEvent::class))
-            ->shouldBeCalled();
-        $this->eventDispatcher->dispatch(Events::RESTORE_EVENT, Argument::type(RestoreEvent::class))->shouldBeCalled();
-        $this->eventDispatcher->dispatch(Events::POST_RESTORE_EVENT, Argument::type(Event::class))
-            ->shouldBeCalled();
-
-        $nanbando->restore('13-21-45-2016-05-29');
-    }
-
     public function testBackupCancelOnPreBackup()
     {
-        $nanbando = $this->getNanbando(
+        $nanbando = $this->createCommand(
             [
                 'uploads' => [
                     'plugin' => 'directory',
@@ -162,12 +147,12 @@ class NanbandoTest extends \PHPUnit_Framework_TestCase
         $this->eventDispatcher->dispatch(Events::POST_BACKUP_EVENT, Argument::type(PostBackupEvent::class))
             ->shouldNotBeCalled();
 
-        $this->assertEquals(BackupStatus::STATE_FAILED, $nanbando->backup());
+        $this->assertEquals(BackupStatus::STATE_FAILED, $nanbando->execute());
     }
 
     public function testBackupCancelOnBackup()
     {
-        $nanbando = $this->getNanbando(
+        $nanbando = $this->createCommand(
             [
                 'uploads' => [
                     'plugin' => 'directory',
@@ -193,12 +178,12 @@ class NanbandoTest extends \PHPUnit_Framework_TestCase
         $this->eventDispatcher->dispatch(Events::POST_BACKUP_EVENT, Argument::type(PostBackupEvent::class))
             ->shouldNotBeCalled();
 
-        $this->assertEquals(BackupStatus::STATE_FAILED, $nanbando->backup());
+        $this->assertEquals(BackupStatus::STATE_FAILED, $nanbando->execute());
     }
 
     public function testBackupCancelOnBackupGoOn()
     {
-        $nanbando = $this->getNanbando(
+        $nanbando = $this->createCommand(
             [
                 'uploads' => [
                     'plugin' => 'directory',
@@ -224,7 +209,7 @@ class NanbandoTest extends \PHPUnit_Framework_TestCase
         $this->eventDispatcher->dispatch(Events::POST_BACKUP_EVENT, Argument::type(PostBackupEvent::class))
             ->shouldBeCalled();
 
-        $this->assertEquals(BackupStatus::STATE_PARTIALLY, $nanbando->backup());
+        $this->assertEquals(BackupStatus::STATE_PARTIALLY, $nanbando->execute());
 
         $files = $filesystem->listContents('', true);
         $fileNames = array_map(

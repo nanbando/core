@@ -4,6 +4,10 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
     <parameters>
         <parameter key="env(NANBANDO_ENVIRONMENT)"></parameter>
+        <parameter key="env(NANBANDO_SSH_USERNAME)"></parameter>
+        <parameter key="env(NANBANDO_SSH_PASSWORD)"></parameter>
+        <parameter key="env(NANBANDO_SSH_RSAKEY_FILE)">%home%/.ssh/id_rsa</parameter>
+        <parameter key="env(NANBANDO_SSH_RSAKEY_PASSWORD)"></parameter>
     </parameters>
 
     <services>
@@ -32,6 +36,11 @@
         <!-- plugins -->
         <service id="plugins" class="Nanbando\Core\Plugin\PluginRegistry">
             <argument type="collection"/>
+        </service>
+        <service id="plugins.directory" class="Nanbando\Core\Plugin\DirectoryPlugin">
+            <argument type="service" id="output"/>
+
+            <tag name="nanbando.plugin" alias="directory"/>
         </service>
 
         <!-- zipper -->
@@ -68,18 +77,11 @@
             <argument type="service" id="output"/>
             <argument type="service" id="input"/>
         </service>
-        <service id="nanbando" class="Nanbando\Core\Nanbando">
-            <argument>%nanbando.backup%</argument>
-            <argument type="service" id="storage"/>
-            <argument type="service" id="database_factory"/>
-            <argument type="service" id="event_dispatcher"/>
-        </service>
 
-        <!-- plugin -->
-        <service id="plugins.directory" class="Nanbando\Core\Plugin\DirectoryPlugin">
-            <argument type="service" id="output"/>
-
-            <tag name="nanbando.plugin" alias="directory"/>
+        <!-- server registry -->
+        <service id="nanbando.server_registry" class="Nanbando\Core\Server\ServerRegistry">
+            <argument type="collection"/>
+            <argument type="collection"/>
         </service>
     </services>
 </container>

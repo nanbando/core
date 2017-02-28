@@ -1,0 +1,33 @@
+<?xml version="1.0" ?>
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+    <services>
+        <service id="nanbando.server.local.backup" class="Nanbando\Core\Server\Command\Local\LocalBackupCommand">
+            <argument type="service" id="storage"/>
+            <argument type="service" id="database_factory"/>
+            <argument type="service" id="event_dispatcher"/>
+            <argument>%nanbando.backup%</argument>
+
+            <tag name="nanbando.server_command" server="local" command="backup"/>
+        </service>
+
+        <service id="nanbando.server.local.restore" class="Nanbando\Core\Server\Command\Local\LocalRestoreCommand">
+            <argument type="service" id="storage"/>
+            <argument type="service" id="database_factory"/>
+            <argument type="service" id="event_dispatcher"/>
+            <argument>%nanbando.backup%</argument>
+
+            <tag name="nanbando.server_command" server="local" command="restore"/>
+        </service>
+
+        <service id="nanbando.server.local.information" class="Nanbando\Core\Server\Command\Local\LocalInformationCommand">
+            <argument type="service" id="storage"/>
+            <argument type="service" id="database_factory"/>
+            <argument type="service" id="input"/>
+            <argument type="service" id="output"/>
+
+            <tag name="nanbando.server_command" server="local" command="information"/>
+        </service>
+    </services>
+</container>

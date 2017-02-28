@@ -9,6 +9,10 @@ use Webmozart\PathUtil\Path;
 class Configuration implements ConfigurationInterface
 {
     const ENV_ENVIRONMENT = 'NANBANDO_ENVIRONMENT';
+    const ENV_SSH_USERNAME = 'NANBANDO_SSH_USERNAME';
+    const ENV_SSH_PASSWORD = 'NANBANDO_SSH_PASSWORD';
+    const ENV_SSH_RSAKEY_FILE = 'NANBANDO_SSH_RSAKEY_FILE';
+    const ENV_SSH_RSAKEY_PASSWORD = 'NANBANDO_SSH_RSAKEY_PASSWORD';
 
     /**
      * {@inheritdoc}
@@ -53,6 +57,39 @@ class Configuration implements ConfigurationInterface
                             ->defaultValue(Path::join([Path::getHomeDirectory(), 'nanbando']))
                         ->end()
                         ->scalarNode('remote_service')->end()
+                    ->end()
+                ->end()
+                ->arrayNode('servers')
+                    ->useAttributeAsKey('name')
+                    ->prototype('array')
+                        ->children()
+                            ->arrayNode('ssh')
+                                ->addDefaultsIfNotSet()
+                                ->children()
+                                    ->scalarNode('username')
+                                        ->defaultValue('%env(' . self::ENV_SSH_USERNAME . ')%')
+                                    ->end()
+                                    ->scalarNode('password')
+                                        ->defaultValue('%env(' . self::ENV_SSH_PASSWORD . ')%')
+                                    ->end()
+                                    ->arrayNode('rsakey')
+                                        ->children()
+                                            ->scalarNode('file')
+                                                ->defaultValue('%env(' . self::ENV_SSH_RSAKEY_FILE . ')%')
+                                            ->end()
+                                            ->scalarNode('password')
+                                                ->defaultValue('%env(' . self::ENV_SSH_RSAKEY_PASSWORD . ')%')
+                                            ->end()
+                                        ->end()
+                                    ->end()
+                                    ->scalarNode('host')->end()
+                                    ->scalarNode('port')->defaultValue(22)->end()
+                                    ->scalarNode('timeout')->defaultValue(10)->end()
+                                ->end()
+                            ->end()
+                            ->scalarNode('directory')->end()
+                            ->scalarNode('executable')->defaultValue('nanbando')->end()
+                        ->end()
                     ->end()
                 ->end()
                 ->arrayNode('require')

@@ -5,6 +5,15 @@ Nanbando is a simple application to automate website backups. It provides an ele
 backup parts. Nanbando has built-in support for various storage's and provides easy to use sync and fetch operations. It
 was built with modularity, extensibility and simplicity in mind.
 
+Features
+--------
+
+* Backup/Restore different systems
+* Extensibility over events, plugins, commands or presets
+* Reuse components of your application to improve your backup
+* Connectivity over ssh-connections or remote-storages
+* Different level of configuration
+
 Requirements
 ------------
 
@@ -24,6 +33,7 @@ Contents
 
     installation
     usage
+    connectivity
     configuration
     plugins
     cookbook/index

@@ -8,7 +8,11 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
+use Webmozart\PathUtil\Path;
 
+/**
+ * Extends container with nanbando.
+ */
 class NanbandoExtension extends Extension
 {
     /**
@@ -32,6 +36,7 @@ class NanbandoExtension extends Extension
         $container->setParameter('nanbando.temp', $config['temp']);
         $container->setParameter('nanbando.backup', $config['backup']);
         $container->setParameter('nanbando.presets', $config['presets']);
+        $container->setParameter('nanbando.servers', $config['servers']);
         $container->setParameter('nanbando.storage.local_directory', realpath($config['storage']['local_directory']));
 
         if (array_key_exists('remote_service', $config['storage'])
@@ -63,10 +68,13 @@ class NanbandoExtension extends Extension
         $loader = new Loader\XmlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
         $loader->load('services.xml');
         $loader->load('event-listener.xml');
+        $loader->load('local-commands.xml');
+        $loader->load('ssh-commands.xml');
 
         // ensure container rebuild after puli bindings changes
-        if (file_exists('.puli/bindings.json')) {
-            $container->addResource(new FileResource('.puli/bindings.json'));
+        $puliFile = Path::join([getcwd(), NANBANDO_DIR, '.puli']);
+        if (file_exists($puliFile)) {
+            $container->addResource(new FileResource($puliFile));
         }
     }
 }
