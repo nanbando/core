@@ -15,4 +15,7 @@ nanbando.phar.version
 .travis/build-key.pem
 .travis/secrets.tar
 
+box.phar
+manifest.json
+
 .DS_Store
