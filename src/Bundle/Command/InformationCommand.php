@@ -5,7 +5,6 @@ namespace Nanbando\Bundle\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * Command prints information for an existing backup.
@@ -29,14 +28,6 @@ The <info>{$this->getName()}</info> displays information for given backup archiv
 
 EOT
             );
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function interact(InputInterface $input, OutputInterface $output)
-    {
-        // TODO extract also to command.
     }
 
     /**
