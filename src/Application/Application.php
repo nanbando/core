@@ -37,6 +37,10 @@ class Application extends SymfonyApplication implements EmbeddedComposerAwareInt
 
         parent::__construct('Nanbando', sprintf('%s - %s', $version, $kernel->getName()));
 
+        if (class_exists('Dropbox\RootCertificates')) {
+            \Dropbox\RootCertificates::useExternalPaths();
+        }
+
         foreach ($kernel->getBundles() as $bundle) {
             $bundle->registerCommands($this);
         }
