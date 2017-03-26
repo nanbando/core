@@ -21,7 +21,8 @@
         "*.xsd",
         "*.yaml",
         "*.yml",
-        "*.json"
+        "*.json",
+        "*.crt"
       ],
       "exclude": [
         "phpunit",
