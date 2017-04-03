@@ -85,6 +85,7 @@ class DirectoryPlugin implements PluginInterface
         $database->set('metadata', $metadata);
 
         $progressBar->finish();
+        $this->output->writeln('');
     }
 
     /**

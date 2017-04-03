@@ -41,7 +41,7 @@ class SshInformationCommand implements CommandInterface
     /**
      * {@inheritdoc}
      */
-    public function interact()
+    public function interact(InputInterface $input, OutputInterface $output)
     {
         // TODO implement interact for ssh connections.
     }

@@ -20,6 +20,7 @@ class BackupCommand extends BaseServerCommand
             ->addArgument('label', InputArgument::OPTIONAL, 'This label will be used to generate the filename for the backup.')
             ->addOption('message', 'm', InputOption::VALUE_REQUIRED, 'An additional message to identify the backup.')
             ->addOption('server', 's', InputOption::VALUE_REQUIRED, 'Where should the command be called.', 'local')
+            ->addOption('process', 'p', InputOption::VALUE_IS_ARRAY | InputOption::VALUE_REQUIRED, 'Defines process names which will be executed.')
             ->setDescription('Backup data into local archive.')
             ->setHelp(
                 <<<EOT
@@ -46,6 +47,10 @@ EOT
      */
     protected function getCommandOptions(InputInterface $input)
     {
-        return ['label' => $input->getArgument('label'), 'message' => $input->getOption('message')];
+        return [
+            'label' => $input->getArgument('label'),
+            'message' => $input->getOption('message'),
+            'process' => $input->getOption('process'),
+        ];
     }
 }

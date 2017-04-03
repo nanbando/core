@@ -47,7 +47,10 @@
         "neutron/temporary-filesystem": "^2.2",
         "emgag/flysystem-hash": "^1.0",
         "composer/semver": "^1.4",
-        "phpseclib/phpseclib": "^2.0"
+        "phpseclib/phpseclib": "^2.0",
+
+        "justinrainbow/json-schema": "^1.6.1",
+        "webmozart/json": "^1.2.2"
     },
     "require-dev": {
         "phpunit/phpunit": "^5.7",

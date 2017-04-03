@@ -57,7 +57,7 @@ class LocalInformationCommand implements CommandInterface
     /**
      * {@inheritdoc}
      */
-    public function interact()
+    public function interact(InputInterface $input, OutputInterface $output)
     {
         if ($this->input->getArgument('file')) {
             return;

@@ -53,7 +53,7 @@ class SshBackupCommandTest extends \PHPUnit_Framework_TestCase
      */
     public function testExecute($output, $status, $label = 'test-label', $message = 'test-message')
     {
-        $this->connection->executeNanbando('backup', [$label, '-m ' => $message], Argument::type('callable'))
+        $this->connection->executeNanbando('backup', [$label, '-m' => '"' . $message . '"'], Argument::type('callable'))
             ->shouldBeCalled()
             ->will(
                 function ($arguments) use ($output) {
@@ -62,6 +62,28 @@ class SshBackupCommandTest extends \PHPUnit_Framework_TestCase
             );
 
         $result = $this->command->execute(['label' => $label, 'message' => $message]);
+
+        $this->assertEquals($status, $result);
+    }
+
+    /**
+     * @dataProvider provideData
+     */
+    public function testExecuteWithProcess($output, $status, $label = 'test-label', $message = 'test-message')
+    {
+        $this->connection->executeNanbando(
+                'backup',
+                [$label, '-m' => '"' . $message . '"', '-p' => ['test-1']],
+                Argument::type('callable')
+            )
+            ->shouldBeCalled()
+            ->will(
+                function ($arguments) use ($output) {
+                    $arguments[2]('"2017-01-01" finished ' . $output);
+                }
+            );
+
+        $result = $this->command->execute(['label' => $label, 'message' => $message, 'process' => ['test-1']]);
 
         $this->assertEquals($status, $result);
     }

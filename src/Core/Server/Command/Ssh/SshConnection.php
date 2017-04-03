@@ -122,7 +122,13 @@ EOT;
 
         $parameterString = [];
         foreach ($parameter as $key => $value) {
-            $parameterString[] = (is_string($key) ? $key . ' ' : '') . $value;
+            if (!is_array($value)) {
+                $value = [$value];
+            }
+
+            foreach ($value as $item) {
+                $parameterString[] = trim((is_string($key) ? $key . ' ' : '') . $item);
+            }
         }
 
         return $this->execute(
