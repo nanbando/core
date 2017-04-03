@@ -76,6 +76,7 @@ class LocalBackupCommand implements CommandInterface
     {
         $label = array_key_exists('label', $options) ? $options['label'] : '';
         $message = array_key_exists('message', $options) ? $options['message'] : '';
+        $process = array_key_exists('process', $options) ? $options['process'] : null;
 
         $destination = $this->storage->start();
 
@@ -88,6 +89,10 @@ class LocalBackupCommand implements CommandInterface
         $systemDatabase->set('message', $message);
         $systemDatabase->set('started', (new \DateTime())->format(\DateTime::RFC3339));
 
+        if ($process) {
+            $systemDatabase->set('process', implode(',', $process));
+        }
+
         $event = new PreBackupEvent($this->backup, $systemDatabase, $source, $destination);
         $this->eventDispatcher->dispatch(Events::PRE_BACKUP_EVENT, $event);
         if ($event->isCanceled()) {
@@ -99,6 +104,13 @@ class LocalBackupCommand implements CommandInterface
         $status = BackupStatus::STATE_SUCCESS;
         $backupConfig = $event->getBackup();
         foreach ($backupConfig as $backupName => $backup) {
+            if (0 !== count($process)
+                && 0 !== count($backup['process'])
+                && 0 === count(array_intersect($backup['process'], $process))
+            ) {
+                continue;
+            }
+
             $backupDestination = new Filesystem(new PrefixAdapter('backup/' . $backupName, $destination->getAdapter()));
             $backupDestination->addPlugin(new ListFiles());
             $backupDestination->addPlugin(new HashPlugin());

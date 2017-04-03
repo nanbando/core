@@ -44,10 +44,18 @@ class SshBackupCommand implements CommandInterface
      */
     public function execute(array $options = [])
     {
+        $parameters = [$options['label']];
+        if (array_key_exists('message', $options) && !empty($options['message'])) {
+            $parameters['-m'] = '"' . $options['message'] . '"';
+        }
+        if (array_key_exists('process', $options)) {
+            $parameters['-p'] = $options['process'];
+        }
+
         $result = '';
         $this->connection->executeNanbando(
             'backup',
-            [$options['label'], '-m ' => $options['message']],
+            $parameters,
             function ($line) use (&$result) {
                 $this->output->write($line);
 

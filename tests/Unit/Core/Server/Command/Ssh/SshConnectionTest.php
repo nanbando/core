@@ -89,13 +89,33 @@ class SshConnectionTest extends \PHPUnit_Framework_TestCase
 
         $this->ssh->login('test', 'test->password')->willReturn(true)->shouldBeCalled();
         $this->ssh->exec(
-            'cd ' . $this->directory . '; ' . $this->executable . ' information 2017-01-01 --latest  -x 1',
+            'cd ' . $this->directory . '; ' . $this->executable . ' information 2017-01-01 --latest -x 1',
             Argument::type('callable')
         )->shouldBeCalled()->willReturn('test-result');
 
         $result = $connection->executeNanbando(
             'information',
             ['2017-01-01', '--latest' => '', '-x' => 1],
+            function () {
+            }
+        );
+
+        $this->assertEquals('test-result', $result);
+    }
+
+    public function testExecuteNanbandoArrayOptions()
+    {
+        $connection = $this->createConnection(['password' => 'test->password', 'username' => 'test']);
+
+        $this->ssh->login('test', 'test->password')->willReturn(true)->shouldBeCalled();
+        $this->ssh->exec(
+            'cd ' . $this->directory . '; ' . $this->executable . ' backup -p test-1 -p test-2',
+            Argument::type('callable')
+        )->shouldBeCalled()->willReturn('test-result');
+
+        $result = $connection->executeNanbando(
+            'backup',
+            ['-p' => ['test-1', 'test-2']],
             function () {
             }
         );

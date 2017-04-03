@@ -89,8 +89,17 @@ class LocalRestoreCommand implements CommandInterface
             return;
         }
 
+        $process = array_filter(explode(',', $systemDatabase->getWithDefault('process', '')));
+
         $backupConfig = $event->getBackup();
         foreach ($backupConfig as $backupName => $backup) {
+            if (0 !== count($process)
+                && 0 !== count($backup['process'])
+                && 0 === count(array_intersect($backup['process'], $process))
+            ) {
+                continue;
+            }
+
             $backupSource = new Filesystem(new PrefixAdapter('backup/' . $backupName, $source->getAdapter()));
             $backupSource->addPlugin(new ListFiles());
             $backupSource->addPlugin(new HashPlugin());

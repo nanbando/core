@@ -229,4 +229,115 @@ class LocalBackupCommandTest extends \PHPUnit_Framework_TestCase
             $fileNames
         );
     }
+
+    public function testBackupProcess()
+    {
+        $nanbando = $this->createCommand(
+            [
+                'uploads' => [
+                    'plugin' => 'directory',
+                    'process' => ['test'],
+                    'parameter' => [
+                        'directory' => 'uploads',
+                    ],
+                ],
+            ]
+        );
+
+        $filesystem = new Filesystem(new MemoryAdapter());
+        $this->storage->start()->willReturn($filesystem);
+
+        $this->eventDispatcher->dispatch(Events::PRE_BACKUP_EVENT, Argument::type(PreBackupEvent::class))
+            ->shouldBeCalled();
+        $this->eventDispatcher->dispatch(Events::BACKUP_EVENT, Argument::type(BackupEvent::class))->shouldBeCalled();
+        $this->eventDispatcher->dispatch(Events::POST_BACKUP_EVENT, Argument::type(PostBackupEvent::class))
+            ->shouldBeCalled();
+
+        $this->storage->close($filesystem)->shouldBeCalled();
+
+        $this->assertEquals(BackupStatus::STATE_SUCCESS, $nanbando->execute(['process' => ['test']]));
+    }
+
+    public function testBackupProcessNoProcessGiven()
+    {
+        $nanbando = $this->createCommand(
+            [
+                'uploads' => [
+                    'plugin' => 'directory',
+                    'process' => ['test'],
+                    'parameter' => [
+                        'directory' => 'uploads',
+                    ],
+                ],
+            ]
+        );
+
+        $filesystem = new Filesystem(new MemoryAdapter());
+        $this->storage->start()->willReturn($filesystem);
+
+        $this->eventDispatcher->dispatch(Events::PRE_BACKUP_EVENT, Argument::type(PreBackupEvent::class))
+            ->shouldBeCalled();
+        $this->eventDispatcher->dispatch(Events::BACKUP_EVENT, Argument::type(BackupEvent::class))->shouldBeCalled();
+        $this->eventDispatcher->dispatch(Events::POST_BACKUP_EVENT, Argument::type(PostBackupEvent::class))
+            ->shouldBeCalled();
+
+        $this->storage->close($filesystem)->shouldBeCalled();
+
+        $this->assertEquals(BackupStatus::STATE_SUCCESS, $nanbando->execute());
+    }
+
+    public function testBackupWrongProcess()
+    {
+        $nanbando = $this->createCommand(
+            [
+                'uploads' => [
+                    'plugin' => 'directory',
+                    'process' => ['test'],
+                    'parameter' => [
+                        'directory' => 'uploads',
+                    ],
+                ],
+            ]
+        );
+
+        $filesystem = new Filesystem(new MemoryAdapter());
+        $this->storage->start()->willReturn($filesystem);
+
+        $this->eventDispatcher->dispatch(Events::PRE_BACKUP_EVENT, Argument::type(PreBackupEvent::class))
+            ->shouldBeCalled();
+        $this->eventDispatcher->dispatch(Events::BACKUP_EVENT, Argument::type(BackupEvent::class))->shouldNotBeCalled();
+        $this->eventDispatcher->dispatch(Events::POST_BACKUP_EVENT, Argument::type(PostBackupEvent::class))
+            ->shouldBeCalled();
+
+        $this->storage->close($filesystem)->shouldBeCalled();
+
+        $this->assertEquals(BackupStatus::STATE_SUCCESS, $nanbando->execute(['process' => ['test-2']]));
+    }
+
+    public function testBackupNoProcess()
+    {
+        $nanbando = $this->createCommand(
+            [
+                'uploads' => [
+                    'plugin' => 'directory',
+                    'parameter' => [
+                        'directory' => 'uploads',
+                    ],
+                ],
+            ]
+        );
+
+        $filesystem = new Filesystem(new MemoryAdapter());
+        $this->storage->start()->willReturn($filesystem);
+
+        $this->eventDispatcher->dispatch(Events::PRE_BACKUP_EVENT, Argument::type(PreBackupEvent::class))
+            ->shouldBeCalled();
+        $this->eventDispatcher->dispatch(Events::BACKUP_EVENT, Argument::type(BackupEvent::class))->shouldBeCalled();
+        $this->eventDispatcher->dispatch(Events::POST_BACKUP_EVENT, Argument::type(PostBackupEvent::class))
+            ->shouldBeCalled();
+
+        $this->storage->close($filesystem)->shouldBeCalled();
+
+        $this->assertEquals(BackupStatus::STATE_SUCCESS, $nanbando->execute(['process' => []]));
+    }
 }

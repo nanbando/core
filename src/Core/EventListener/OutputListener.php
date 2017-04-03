@@ -59,6 +59,11 @@ class OutputListener
         $this->output->writeln(sprintf(' * label:   %s', $systemDatabase->get('label')));
         $this->output->writeln(sprintf(' * message: %s', $systemDatabase->get('message')));
         $this->output->writeln(sprintf(' * started: %s', $systemDatabase->get('started')));
+
+        if ($systemDatabase->exists('process')) {
+            $this->output->writeln(sprintf(' * process: %s', $systemDatabase->get('process')));
+        }
+
         $this->output->writeln('');
     }
 
@@ -106,6 +111,11 @@ class OutputListener
         $this->output->writeln(sprintf(' * label:   %s', $systemDatabase->get('label')));
         $this->output->writeln(sprintf(' * message: %s', $systemDatabase->get('message')));
         $this->output->writeln(sprintf(' * started: %s', $systemDatabase->get('started')));
+
+        if ($systemDatabase->exists('process')) {
+            $this->output->writeln(sprintf(' * process: %s', $systemDatabase->get('process')));
+        }
+
         $this->output->writeln('');
     }
 
