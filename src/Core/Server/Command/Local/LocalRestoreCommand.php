@@ -13,6 +13,10 @@ use Nanbando\Core\Events\RestoreEvent;
 use Nanbando\Core\Flysystem\PrefixAdapter;
 use Nanbando\Core\Server\Command\CommandInterface;
 use Nanbando\Core\Storage\StorageInterface;
+use Symfony\Component\Console\Helper\QuestionHelper;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Question\ChoiceQuestion;
 use Symfony\Component\EventDispatcher\Event;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
@@ -62,9 +66,27 @@ class LocalRestoreCommand implements CommandInterface
     /**
      * {@inheritdoc}
      */
-    public function interact()
+    public function interact(InputInterface $input, OutputInterface $output)
     {
-        // do nothing
+        if ($input->getArgument('file')) {
+            return;
+        }
+
+        $localFiles = $this->storage->localListing();
+
+        if ($input->getOption('latest') && count($localFiles) > 0) {
+            return $input->setArgument('file', end($localFiles));
+        } elseif (count($localFiles) === 1) {
+            return $input->setArgument('file', $localFiles[0]);
+        }
+
+        $helper = new QuestionHelper();
+        $question = new ChoiceQuestion('Which backup', $localFiles);
+        $question->setErrorMessage('Backup %s is invalid.');
+        $question->setAutocompleterValues([]);
+
+        $input->setArgument('file', $helper->ask($input, $output, $question));
+        $output->writeln('');
     }
 
     /**

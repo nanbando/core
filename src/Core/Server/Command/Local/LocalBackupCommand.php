@@ -16,6 +16,8 @@ use Nanbando\Core\Flysystem\PrefixAdapter;
 use Nanbando\Core\Flysystem\ReadonlyAdapter;
 use Nanbando\Core\Server\Command\CommandInterface;
 use Nanbando\Core\Storage\StorageInterface;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
@@ -64,7 +66,7 @@ class LocalBackupCommand implements CommandInterface
     /**
      * {@inheritdoc}
      */
-    public function interact()
+    public function interact(InputInterface $input, OutputInterface $output)
     {
         // do nothing
     }

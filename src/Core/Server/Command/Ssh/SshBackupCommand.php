@@ -4,6 +4,7 @@ namespace Nanbando\Core\Server\Command\Ssh;
 
 use Nanbando\Core\BackupStatus;
 use Nanbando\Core\Server\Command\CommandInterface;
+use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
@@ -34,7 +35,7 @@ class SshBackupCommand implements CommandInterface
     /**
      * {@inheritdoc}
      */
-    public function interact()
+    public function interact(InputInterface $input, OutputInterface $output)
     {
         // do nothing
     }

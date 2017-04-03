@@ -2,27 +2,18 @@
 
 namespace Nanbando\Bundle\Command;
 
-use Nanbando\Core\Nanbando;
-use Nanbando\Core\Server\ServerRegistry;
-use Nanbando\Core\Storage\StorageInterface;
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Question\ChoiceQuestion;
 
-class RestoreCommand extends ContainerAwareCommand
+class RestoreCommand extends BaseServerCommand
 {
     /**
      * {@inheritdoc}
      */
     protected function configure()
     {
-        // TODO add latest option
-
-        $this
-            ->setName('restore')
+        $this->setName('restore')
             ->setDescription('Restore a backup archive.')
             ->addArgument(
                 'file',
@@ -42,40 +33,16 @@ EOT
     /**
      * {@inheritdoc}
      */
-    protected function interact(InputInterface $input, OutputInterface $output)
+    protected function getServerName(InputInterface $input)
     {
-        if ($input->getArgument('file')) {
-            return;
-        }
-
-        /** @var StorageInterface $storage */
-        $storage = $this->getContainer()->get('storage');
-        $localFiles = $storage->localListing();
-
-        if ($input->getOption('latest') && count($localFiles) > 0) {
-            return $input->setArgument('file', end($localFiles));
-        } elseif (count($localFiles) === 1) {
-            return $input->setArgument('file', $localFiles[0]);
-        }
-
-        $helper = $this->getHelper('question');
-        $question = new ChoiceQuestion('Which backup', $localFiles);
-        $question->setErrorMessage('Backup %s is invalid.');
-        $question->setAutocompleterValues([]);
-
-        $input->setArgument('file', $helper->ask($input, $output, $question));
-        $output->writeln('');
+        return $input->getOption('server');
     }
 
     /**
      * {@inheritdoc}
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function getCommandOptions(InputInterface $input)
     {
-        /** @var ServerRegistry $serverRegistry */
-        $serverRegistry = $this->getContainer()->get('nanbando.server_registry');
-        $command = $serverRegistry->getCommand($input->getOption('server'), 'restore');
-
-        $command->execute(['name' => $input->getArgument('file')]);
+        return ['name' => $input->getArgument('file')];
     }
 }

@@ -4,6 +4,7 @@ namespace Nanbando\Core\Server\Command\Ssh;
 
 use Nanbando\Core\Server\Command\CommandInterface;
 use Nanbando\Core\Storage\StorageInterface;
+use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
@@ -41,7 +42,7 @@ class SshGetCommand implements CommandInterface
     /**
      * {@inheritdoc}
      */
-    public function interact()
+    public function interact(InputInterface $input, OutputInterface $output)
     {
         // do nothing
     }

@@ -18,7 +18,7 @@ abstract class BaseServerCommand extends ContainerAwareCommand
      */
     protected function interact(InputInterface $input, OutputInterface $output)
     {
-        $this->getCommand($input)->interact();
+        $this->getCommand($input)->interact($input, $output);
     }
 
     /**
