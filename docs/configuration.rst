@@ -122,4 +122,45 @@ The password is optional in the configuration you will be asked for it when nanb
     ``NANBANDO_SSH_USERNAME``, ``NANBANDO_SSH_PASSWORD``, ``NANBANDO_SSH_RSAKEY_FILE`` and
     ``NANBANDO_SSH_RSAKEY_PASSWORD``.
 
+Process
+-------
+
+Each backup-part has an optional configuration parameter ``process``. The process can be passed (also multiple times) to
+the backup-command ``nanbando backup -p files -p database``. All backup-parts which contains one of the passed processes
+will be executed. The restore process uses the passed parameter (will be stored in the backup file)from the backup call.
+
+.. code:: json
+
+    {
+        "backup": {
+            "uploads": {
+                "plugin": "directory",
+                "process": ["files"],
+                "parameter": {
+                    "directory": "var/uploads"
+                }
+            },
+            "indices": {
+                "plugin": "directory",
+                "process": ["optional"],
+                "parameter": {
+                    "directory": "var/indices"
+                }
+            },
+            "database": {
+                "plugin": "mysql",
+                "process": ["database"],
+                "parameter": {
+                    "username": "%database_user%",
+                    "password": "%database_password%",
+                    "database": "%database_name%"
+                }
+            }
+        }
+    }
+
+As an example you could backup the database each hour and each night also the file in the uploads folder. Therefor you
+could restore user-data in a smaller granularity than the files but the resulting backups will use less disk space and
+the hourly backup will run faster.
+
 .. _`OneupFlysystemBundle`: https://github.com/1up-lab/OneupFlysystemBundle/blob/master/Resources/doc/index.md#step3-configure-your-filesystems
