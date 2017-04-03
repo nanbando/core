@@ -30,6 +30,7 @@ class RestoreCommand extends ContainerAwareCommand
                 'Defines which file should be restored (backup-name or absolute path to zip file).'
             )
             ->addOption('server', 's', InputOption::VALUE_REQUIRED, 'Where should the command be called.', 'local')
+            ->addOption('latest', null, InputOption::VALUE_NONE, 'Loads the latest file.')
             ->setHelp(
                 <<<EOT
 The <info>{$this->getName()}</info> restores a backup archive.
@@ -51,10 +52,10 @@ EOT
         $storage = $this->getContainer()->get('storage');
         $localFiles = $storage->localListing();
 
-        if (count($localFiles) === 1) {
-            $input->setArgument('file', $localFiles[0]);
-
-            return;
+        if ($input->getOption('latest') && count($localFiles) > 0) {
+            return $input->setArgument('file', end($localFiles));
+        } elseif (count($localFiles) === 1) {
+            return $input->setArgument('file', $localFiles[0]);
         }
 
         $helper = $this->getHelper('question');
