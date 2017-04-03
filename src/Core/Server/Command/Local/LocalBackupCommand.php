@@ -6,6 +6,7 @@ use Emgag\Flysystem\Hash\HashPlugin;
 use League\Flysystem\Adapter\Local;
 use League\Flysystem\Filesystem;
 use League\Flysystem\Plugin\ListFiles;
+use Nanbando\Application\Application;
 use Nanbando\Core\BackupStatus;
 use Nanbando\Core\Database\DatabaseFactory;
 use Nanbando\Core\Events\BackupEvent;
@@ -90,6 +91,7 @@ class LocalBackupCommand implements CommandInterface
         $systemDatabase->set('label', $label);
         $systemDatabase->set('message', $message);
         $systemDatabase->set('started', (new \DateTime())->format(\DateTime::RFC3339));
+        $systemDatabase->set('nanbando_version', Application::GIT_VERSION);
 
         if ($process) {
             $systemDatabase->set('process', implode(',', $process));

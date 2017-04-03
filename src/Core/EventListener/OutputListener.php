@@ -56,9 +56,10 @@ class OutputListener
         $systemDatabase = $event->getSystemDatabase();
 
         $this->output->writeln(sprintf('Backup "%s" started:', $this->name));
-        $this->output->writeln(sprintf(' * label:   %s', $systemDatabase->get('label')));
-        $this->output->writeln(sprintf(' * message: %s', $systemDatabase->get('message')));
-        $this->output->writeln(sprintf(' * started: %s', $systemDatabase->get('started')));
+        $this->output->writeln(sprintf(' * label:    %s', $systemDatabase->get('label')));
+        $this->output->writeln(sprintf(' * message:  %s', $systemDatabase->get('message')));
+        $this->output->writeln(sprintf(' * started:  %s', $systemDatabase->get('started')));
+        $this->output->writeln(sprintf(' * nanbando: %s', $systemDatabase->get('nanbando_version')));
 
         if ($systemDatabase->exists('process')) {
             $this->output->writeln(sprintf(' * process: %s', $systemDatabase->get('process')));
