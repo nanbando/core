@@ -31,5 +31,14 @@
 
             <tag name="nanbando.ssh.abstract_server_command" command="information"/>
         </service>
+
+        <service id="nanbando.server.abstract_ssh.list_backups"
+                 class="Nanbando\Core\Server\Command\Ssh\SshListBackupsCommand"
+                 abstract="true">
+            <argument type="service"><!-- ssh --></argument>
+            <argument type="service" id="output"/>
+
+            <tag name="nanbando.ssh.abstract_server_command" command="list:backups"/>
+        </service>
     </services>
 </container>

@@ -29,5 +29,12 @@
 
             <tag name="nanbando.server_command" server="local" command="information"/>
         </service>
+
+        <service id="nanbando.server.local.list_backups" class="Nanbando\Core\Server\Command\Local\LocalListBackupsCommand">
+            <argument type="service" id="storage"/>
+            <argument type="service" id="output"/>
+
+            <tag name="nanbando.server_command" server="local" command="list:backups"/>
+        </service>
     </services>
 </container>
