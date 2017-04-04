@@ -1,6 +1,31 @@
 # Change Log
 
-## [0.8.1](https://github.com/nanbando/core/tree/0.8.1) (2017-03-04)
+## [0.9.0](https://github.com/nanbando/core/tree/0.9.0) (2017-04-04)
+[Full Changelog](https://github.com/nanbando/core/compare/0.8.1...0.9.0)
+
+**Implemented enhancements:**
+
+- Latest option to get command [\#81](https://github.com/nanbando/core/issues/81)
+
+**Fixed bugs:**
+
+- Information command throws currently an eror [\#79](https://github.com/nanbando/core/issues/79)
+- Automated build creates broken phar file [\#76](https://github.com/nanbando/core/issues/76)
+
+**Closed issues:**
+
+- Process definition for backup-steps [\#85](https://github.com/nanbando/core/issues/85)
+- Latest option for restore [\#75](https://github.com/nanbando/core/issues/75)
+
+**Merged pull requests:**
+
+- Implemented list:backups and interact of get command [\#91](https://github.com/nanbando/core/pull/91) ([wachterjohannes](https://github.com/wachterjohannes))
+- Added latest option to restore command [\#88](https://github.com/nanbando/core/pull/88) ([wachterjohannes](https://github.com/wachterjohannes))
+- Added process option to backup [\#87](https://github.com/nanbando/core/pull/87) ([wachterjohannes](https://github.com/wachterjohannes))
+- Call neccesary \Dropbox\RootCertificates::useExternalPaths\(\) [\#86](https://github.com/nanbando/core/pull/86) ([wachterjohannes](https://github.com/wachterjohannes))
+- Fixed info-command interact [\#80](https://github.com/nanbando/core/pull/80) ([wachterjohannes](https://github.com/wachterjohannes))
+
+## [0.8.1](https://github.com/nanbando/core/tree/0.8.1) (2017-03-03)
 [Full Changelog](https://github.com/nanbando/core/compare/0.8.0...0.8.1)
 
 **Merged pull requests:**
