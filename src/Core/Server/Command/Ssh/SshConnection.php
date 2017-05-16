@@ -243,12 +243,10 @@ EOT;
             return;
         }
 
-        if (array_key_exists('password', $this->sshConfig)) {
-            $this->loginWithPassword();
-        }
-
         if (array_key_exists('rsakey', $this->sshConfig)) {
             $this->loginWithRsaKey();
+        } elseif (array_key_exists('password', $this->sshConfig)) {
+            $this->loginWithPassword();
         }
 
         $this->loggedIn = $this->validate();
