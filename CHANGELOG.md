@@ -1,5 +1,16 @@
 # Change Log
 
+## [0.9.1](https://github.com/nanbando/core/tree/0.9.1) (2017-05-16)
+[Full Changelog](https://github.com/nanbando/core/compare/0.9.0...0.9.1)
+
+**Closed issues:**
+
+- SSHConnection with rsa-key [\#92](https://github.com/nanbando/core/issues/92)
+
+**Merged pull requests:**
+
+- Fixed order of password and rsakey check [\#93](https://github.com/nanbando/core/pull/93) ([wachterjohannes](https://github.com/wachterjohannes))
+
 ## [0.9.0](https://github.com/nanbando/core/tree/0.9.0) (2017-04-04)
 [Full Changelog](https://github.com/nanbando/core/compare/0.8.1...0.9.0)
 
