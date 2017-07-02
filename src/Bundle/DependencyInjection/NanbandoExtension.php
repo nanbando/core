@@ -26,7 +26,7 @@ class NanbandoExtension extends Extension
         $config = $this->processConfiguration($configuration, $configs);
 
         $filesystem = new Filesystem();
-        $filesystem->mkdir(Path::join([getcwd(), NANBANDO_DIR, $config['storage']['local_directory']]));
+        $filesystem->mkdir($config['storage']['local_directory']);
 
         $container->setParameter('nanbando.name', $config['name']);
         $container->setParameter('nanbando.environment', $config['environment']);
