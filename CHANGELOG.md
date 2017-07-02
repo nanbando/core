@@ -1,5 +1,12 @@
 # Change Log
 
+## [0.9.2](https://github.com/nanbando/core/tree/0.9.2) (2017-07-02)
+[Full Changelog](https://github.com/nanbando/core/compare/0.9.1...0.9.2)
+
+**Merged pull requests:**
+
+- Fixed creation of local-directory [\#95](https://github.com/nanbando/core/pull/95) ([wachterjohannes](https://github.com/wachterjohannes))
+
 ## [0.9.1](https://github.com/nanbando/core/tree/0.9.1) (2017-05-16)
 [Full Changelog](https://github.com/nanbando/core/compare/0.9.0...0.9.1)
 
