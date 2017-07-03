@@ -1,5 +1,13 @@
 # Change Log
 
+## [0.9.3](https://github.com/nanbando/core/tree/0.9.3) (2017-07-03)
+[Full Changelog](https://github.com/nanbando/core/compare/0.9.2...0.9.3)
+
+**Merged pull requests:**
+
+- Improvement of check command - added process to output [\#97](https://github.com/nanbando/core/pull/97) ([wachterjohannes](https://github.com/wachterjohannes))
+- Fixed configuration for presets and services [\#96](https://github.com/nanbando/core/pull/96) ([wachterjohannes](https://github.com/wachterjohannes))
+
 ## [0.9.2](https://github.com/nanbando/core/tree/0.9.2) (2017-07-02)
 [Full Changelog](https://github.com/nanbando/core/compare/0.9.1...0.9.2)
 
