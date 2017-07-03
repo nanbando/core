@@ -2,6 +2,7 @@
 
 namespace Nanbando\Bundle\DependencyInjection;
 
+use Nanbando\Bundle\DependencyInjection\Factory\AdapterFactoryInterface;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 use Webmozart\PathUtil\Path;
@@ -13,6 +14,19 @@ class Configuration implements ConfigurationInterface
     const ENV_SSH_PASSWORD = 'NANBANDO_SSH_PASSWORD';
     const ENV_SSH_RSAKEY_FILE = 'NANBANDO_SSH_RSAKEY_FILE';
     const ENV_SSH_RSAKEY_PASSWORD = 'NANBANDO_SSH_RSAKEY_PASSWORD';
+
+    /**
+     * @var AdapterFactoryInterface[]
+     */
+    private $factories;
+
+    /**
+     * @param AdapterFactoryInterface[] $factories
+     */
+    public function __construct(array $factories)
+    {
+        $this->factories = $factories;
+    }
 
     /**
      * {@inheritdoc}
@@ -57,10 +71,13 @@ class Configuration implements ConfigurationInterface
                 ->arrayNode('storage')
                     ->addDefaultsIfNotSet()
                     ->children()
-                        ->scalarNode('local_directory')
-                            ->defaultValue(Path::join([Path::getHomeDirectory(), 'nanbando']))
+                        ->arrayNode('local')
+                            ->children()
+                                ->scalarNode('directory')->defaultValue(Path::join([getcwd(), NANBANDO_DIR]))->end()
+                            ->end()
                         ->end()
-                        ->scalarNode('remote_service')->end()
+                        ->scalarNode('default_remote')->defaultValue('default')->end()
+                        ->append($this->getRemotesSection())
                     ->end()
                 ->end()
                 ->arrayNode('servers')
@@ -127,5 +144,21 @@ class Configuration implements ConfigurationInterface
             ->end();
 
         return $treeBuilder;
+    }
+
+    private function getRemotesSection()
+    {
+        $builder = new TreeBuilder();
+        $node = $builder->root('remotes');
+
+        $adapterNodeBuilder = $node->useAttributeAsKey('name')->prototype('array')->children();
+
+        foreach ($this->factories as $factory) {
+            $factoryNode = $adapterNodeBuilder->arrayNode($factory->getKey())->canBeUnset();
+
+            $factory->addConfiguration($factoryNode);
+        }
+
+        return $node;
     }
 }

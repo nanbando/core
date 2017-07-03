@@ -2,6 +2,7 @@
 
 namespace Nanbando\Bundle\DependencyInjection;
 
+use Nanbando\Bundle\DependencyInjection\Factory\LocalFactory;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Config\Resource\FileResource;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -22,11 +23,11 @@ class NanbandoExtension extends Extension
      */
     public function load(array $configs, ContainerBuilder $container)
     {
-        $configuration = new Configuration();
+        $configuration = new Configuration([new LocalFactory()]);
         $config = $this->processConfiguration($configuration, $configs);
 
         $filesystem = new Filesystem();
-        $filesystem->mkdir($config['storage']['local_directory']);
+        $filesystem->mkdir($config['storage']['local']['directory']);
 
         $container->setParameter('nanbando.name', $config['name']);
         $container->setParameter('nanbando.environment', $config['environment']);

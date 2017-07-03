@@ -80,7 +80,7 @@ class Kernel extends SymfonyKernel
     {
         $userConfig = realpath(sprintf('%s/.nanbando.yml', $this->userDir));
         if (is_file($userConfig)) {
-            $loader->load($userConfig);
+            // $loader->load($userConfig);
         }
 
         $applicationConfig = realpath('nanbando.json');
@@ -143,6 +143,9 @@ class Kernel extends SymfonyKernel
     {
         $parameter = parent::getKernelParameters();
 
-        return array_merge($parameter, ['home' => $this->userDir, 'project' => getcwd()]);
+        return array_merge(
+            $parameter,
+            ['home' => $this->userDir, 'project' => getcwd(), 'nanbando.directory' => NANBANDO_DIR]
+        );
     }
 }
