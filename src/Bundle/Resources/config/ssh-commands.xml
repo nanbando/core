@@ -6,7 +6,7 @@
         <service id="nanbando.server.abstract_ssh.backup"
                  class="Nanbando\Core\Server\Command\Ssh\SshBackupCommand"
                  abstract="true">
-            <argument type="service"><!-- ssh --></argument>
+            <argument><!-- ssh --></argument>
             <argument type="service" id="output"/>
 
             <tag name="nanbando.ssh.abstract_server_command" command="backup"/>
@@ -15,7 +15,7 @@
         <service id="nanbando.server.abstract_ssh.get"
                  class="Nanbando\Core\Server\Command\Ssh\SshGetCommand"
                  abstract="true">
-            <argument type="service"><!-- ssh --></argument>
+            <argument><!-- ssh --></argument>
             <argument type="service" id="storage"/>
             <argument type="service" id="output"/>
 
@@ -25,7 +25,7 @@
         <service id="nanbando.server.abstract_ssh.information"
                  class="Nanbando\Core\Server\Command\Ssh\SshInformationCommand"
                  abstract="true">
-            <argument type="service"><!-- ssh --></argument>
+            <argument><!-- ssh --></argument>
             <argument type="service" id="input"/>
             <argument type="service" id="output"/>
 
@@ -35,7 +35,7 @@
         <service id="nanbando.server.abstract_ssh.list_backups"
                  class="Nanbando\Core\Server\Command\Ssh\SshListBackupsCommand"
                  abstract="true">
-            <argument type="service"><!-- ssh --></argument>
+            <argument><!-- ssh --></argument>
             <argument type="service" id="output"/>
 
             <tag name="nanbando.ssh.abstract_server_command" command="list:backups"/>
