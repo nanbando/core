@@ -115,6 +115,13 @@ EOT
             return false;
         }
 
+        $io->write('Process: ');
+        $process = 'All';
+        if (0 < count($backup['process'])) {
+            $process = '["' . implode('", "', $backup['process']) . '""]';
+        }
+        $io->writeln($process);
+
         $io->write('Parameter:');
         $messages = array_filter(explode("\r\n", Yaml::dump($parameter)));
         $io->block($messages, null, null, '  ');

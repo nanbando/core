@@ -39,6 +39,10 @@ class CheckCommandTest extends \PHPUnit_Framework_TestCase
 
     private function getCommandTester($remote = false, $backup = [])
     {
+        foreach ($backup as $name => $backupConfig) {
+            $backup[$name] = array_merge(['plugin' => null, 'process' => [], 'parameter' => []], $backupConfig);
+        }
+
         $this->container->hasParameter('nanbando.name')->willReturn(true);
         $this->container->getParameter('nanbando.name')->willReturn('test');
         $this->container->hasParameter('nanbando.environment')->willReturn(true);
@@ -214,5 +218,25 @@ class CheckCommandTest extends \PHPUnit_Framework_TestCase
 
         $this->assertRegExp('/test-1([-\s]*)([^-]*)OK/', $commandTester->getDisplay());
         $this->assertRegExp('/test-2([-\s]*)([^-]*)OK/', $commandTester->getDisplay());
+    }
+
+    public function testExecuteProcess()
+    {
+        $plugin = $this->prophesize(PluginInterface::class);
+
+        $this->plugins->has('my-plugin')->willReturn(true);
+        $this->plugins->getPlugin('my-plugin')->willReturn($plugin->reveal());
+
+        $commandTester = $this->getCommandTester(
+            true,
+            [
+                'test-1' => ['plugin' => 'my-plugin', 'process' => ['database', 'files']],
+                'test-2' => ['plugin' => 'my-plugin', 'process' => ['files']],
+            ]
+        );
+        $commandTester->execute([]);
+
+        $this->assertRegExp('/test-1([-\s]*)([^-]*)"database", "files"([-\s]*)([^-]*)OK/', $commandTester->getDisplay());
+        $this->assertRegExp('/test-2([-\s]*)([^-]*)"files"([-\s]*)([^-]*)OK/', $commandTester->getDisplay());
     }
 }
