@@ -7,6 +7,10 @@
 
 - Bug in humbug/phar-updater [\#99](https://github.com/nanbando/core/issues/99)
 
+**Merged pull requests:**
+
+- Fixed version of humbug/phar-updater [\#100](https://github.com/nanbando/core/pull/100) ([wachterjohannes](https://github.com/wachterjohannes))
+
 ## [0.9.3](https://github.com/nanbando/core/tree/0.9.3) (2017-07-03)
 [Full Changelog](https://github.com/nanbando/core/compare/0.9.2...0.9.3)
 
