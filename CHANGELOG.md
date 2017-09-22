@@ -1,5 +1,12 @@
 # Change Log
 
+## [0.9.4](https://github.com/nanbando/core/tree/0.9.4) (2017-09-22)
+[Full Changelog](https://github.com/nanbando/core/compare/0.9.3...0.9.4)
+
+**Fixed bugs:**
+
+- Bug in humbug/phar-updater [\#99](https://github.com/nanbando/core/issues/99)
+
 ## [0.9.3](https://github.com/nanbando/core/tree/0.9.3) (2017-07-03)
 [Full Changelog](https://github.com/nanbando/core/compare/0.9.2...0.9.3)
 
