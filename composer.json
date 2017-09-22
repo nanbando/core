@@ -42,7 +42,7 @@
         "league/flysystem-ziparchive": "^1.0",
         "league/flysystem-eventable-filesystem": "^1.0",
         "scriptfusion/byte-formatter": "^3.2",
-        "padraic/phar-updater": "^1.0",
+        "padraic/phar-updater": "~1.0.4",
         "cocur/slugify": "^2.1",
         "neutron/temporary-filesystem": "^2.2",
         "emgag/flysystem-hash": "^1.0",
