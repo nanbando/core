@@ -3,6 +3,7 @@
 namespace Nanbando\Tests\Unit\Core\Config;
 
 use Nanbando\Core\Config\JsonLoader;
+use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
 use Symfony\Component\Config\FileLocatorInterface;
 use Symfony\Component\Config\Loader\LoaderInterface;
@@ -11,7 +12,7 @@ use Symfony\Component\Config\Resource\FileResource;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Webmozart\PathUtil\Path;
 
-class JsonLoaderTest extends \PHPUnit_Framework_TestCase
+class JsonLoaderTest extends TestCase
 {
     /**
      * @var ContainerBuilder

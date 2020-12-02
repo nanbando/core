@@ -4,7 +4,7 @@ namespace Nanbando\Core\Events;
 
 use League\Flysystem\Filesystem;
 use Nanbando\Core\Database\Database;
-use Symfony\Component\EventDispatcher\Event;
+use Symfony\Contracts\EventDispatcher\Event;
 
 /**
  * Event args for backup event.

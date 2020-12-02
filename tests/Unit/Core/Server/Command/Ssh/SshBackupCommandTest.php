@@ -5,13 +5,14 @@ namespace Unit\Core\Server\Command\Ssh;
 use Nanbando\Core\BackupStatus;
 use Nanbando\Core\Server\Command\Ssh\SshBackupCommand;
 use Nanbando\Core\Server\Command\Ssh\SshConnection;
+use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * Tests for class "SshBackupCommand".
  */
-class SshBackupCommandTest extends \PHPUnit_Framework_TestCase
+class SshBackupCommandTest extends TestCase
 {
     /**
      * @var SshConnection

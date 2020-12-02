@@ -4,6 +4,7 @@ namespace Unit\Core\Server\Command\Ssh;
 
 use Nanbando\Core\Server\Command\Ssh\SshConnection;
 use Nanbando\Core\Server\Command\Ssh\SshInformationCommand;
+use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -11,7 +12,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 /**
  * Tests for class "SshInformationCommand".
  */
-class SshInformationCommandTest extends \PHPUnit_Framework_TestCase
+class SshInformationCommandTest extends TestCase
 {
     /**
      * @var SshConnection

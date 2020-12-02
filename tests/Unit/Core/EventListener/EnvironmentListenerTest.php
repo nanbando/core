@@ -9,10 +9,11 @@ use Nanbando\Core\EventListener\EnvironmentListener;
 use Nanbando\Core\Events\BackupEvent;
 use Nanbando\Core\Events\PreRestoreEvent;
 use Nanbando\Core\Events\RestoreEvent;
+use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class EnvironmentListenerTest extends \PHPUnit_Framework_TestCase
+class EnvironmentListenerTest extends TestCase
 {
     /**
      * @var EnvironmentInterface

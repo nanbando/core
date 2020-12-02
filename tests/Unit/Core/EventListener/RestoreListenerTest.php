@@ -9,10 +9,11 @@ use Nanbando\Core\EventListener\RestoreListener;
 use Nanbando\Core\Events\RestoreEvent;
 use Nanbando\Core\Plugin\PluginInterface;
 use Nanbando\Core\Plugin\PluginRegistry;
+use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class RestoreListenerTest extends \PHPUnit_Framework_TestCase
+class RestoreListenerTest extends TestCase
 {
     /**
      * @var PluginRegistry

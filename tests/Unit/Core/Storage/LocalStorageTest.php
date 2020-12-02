@@ -12,11 +12,12 @@ use Nanbando\Core\Storage\RemoteStorageNotConfiguredException;
 use Nanbando\Core\Storage\StorageInterface;
 use Nanbando\Core\Storage\Zipper;
 use Neutron\TemporaryFilesystem\TemporaryFilesystemInterface;
+use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
 use Symfony\Component\Filesystem\Filesystem as SymfonyFilesystem;
 use Webmozart\PathUtil\Path;
 
-class LocalStorageTest extends \PHPUnit_Framework_TestCase
+class LocalStorageTest extends TestCase
 {
     const BACKUP_SUCCESS = '2016-05-29-13-21-37_success';
     const BACKUP_FAIL = '2016-05-29-13-20-37_failed';
@@ -375,7 +376,7 @@ class LocalStorageTest extends \PHPUnit_Framework_TestCase
 
     public function testPushNoRemote()
     {
-        $this->setExpectedException(RemoteStorageNotConfiguredException::class);
+        $this->expectException(RemoteStorageNotConfiguredException::class);
 
         $storage = new LocalStorage(
             $this->name, $this->environment, $this->zipper->reveal(),
@@ -391,7 +392,7 @@ class LocalStorageTest extends \PHPUnit_Framework_TestCase
 
     public function testFetchNoRemote()
     {
-        $this->setExpectedException(RemoteStorageNotConfiguredException::class);
+        $this->expectException(RemoteStorageNotConfiguredException::class);
 
         $storage = new LocalStorage(
             $this->name, $this->environment, $this->zipper->reveal(),
@@ -406,7 +407,7 @@ class LocalStorageTest extends \PHPUnit_Framework_TestCase
 
     public function testRemoteListingNoRemote()
     {
-        $this->setExpectedException(RemoteStorageNotConfiguredException::class);
+        $this->expectException(RemoteStorageNotConfiguredException::class);
 
         $storage = new LocalStorage(
             $this->name, $this->environment, $this->zipper->reveal(),

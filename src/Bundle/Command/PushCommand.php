@@ -3,19 +3,25 @@
 namespace Nanbando\Bundle\Command;
 
 use Nanbando\Core\Storage\StorageInterface;
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\DependencyInjection\ContainerAwareInterface;
+use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 
-class PushCommand extends ContainerAwareCommand
+class PushCommand extends Command implements ContainerAwareInterface
 {
+    use ContainerAwareTrait;
+
+    protected static $defaultName = 'push';
+
     /**
      * {@inheritdoc}
      */
     protected function configure()
     {
         $this
-            ->setName('push')
+            ->setName(self::$defaultName)
             ->setDescription('Pushes all backup archives to the remote storage.')
             ->setHelp(
                 <<<EOT
@@ -31,11 +37,13 @@ EOT
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         /** @var StorageInterface $storage */
-        $storage = $this->getContainer()->get('storage');
+        $storage = $this->container->get('storage');
 
         foreach ($storage->localListing() as $file) {
             $storage->push($file);
         }
+
+        return 1;
     }
 
     /**
@@ -43,6 +51,6 @@ EOT
      */
     public function isEnabled()
     {
-        return $this->getContainer()->has('filesystem.remote');
+        return $this->container->has('filesystem.remote');
     }
 }

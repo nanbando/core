@@ -17,8 +17,8 @@ use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ChoiceQuestion;
-use Symfony\Component\EventDispatcher\Event;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Contracts\EventDispatcher\Event;
 
 /**
  * Restore a backup-archive.
@@ -106,7 +106,7 @@ class LocalRestoreCommand implements CommandInterface
         $systemDatabase = $this->databaseFactory->createReadonly($systemData);
 
         $event = new PreRestoreEvent($this->backup, $systemDatabase, $source, $destination);
-        $this->eventDispatcher->dispatch(Events::PRE_RESTORE_EVENT, $event);
+        $this->eventDispatcher->dispatch($event, Events::PRE_RESTORE_EVENT);
         if ($event->isCanceled()) {
             return;
         }
@@ -132,9 +132,9 @@ class LocalRestoreCommand implements CommandInterface
             $event = new RestoreEvent(
                 $systemDatabase, $database, $backupSource, $destination, $backupName, $backup
             );
-            $this->eventDispatcher->dispatch(Events::RESTORE_EVENT, $event);
+            $this->eventDispatcher->dispatch($event, Events::RESTORE_EVENT);
         }
 
-        $this->eventDispatcher->dispatch(Events::POST_RESTORE_EVENT, new Event());
+        $this->eventDispatcher->dispatch(new Event(), Events::POST_RESTORE_EVENT);
     }
 }

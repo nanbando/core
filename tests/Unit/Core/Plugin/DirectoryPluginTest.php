@@ -5,12 +5,13 @@ namespace Nanbando\Tests\Unit\Core\Plugin;
 use League\Flysystem\Filesystem;
 use Nanbando\Core\Database\Database;
 use Nanbando\Core\Plugin\DirectoryPlugin;
+use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
 use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class DirectoryPluginTest extends \PHPUnit_Framework_TestCase
+class DirectoryPluginTest extends TestCase
 {
     /**
      * @var OutputInterface

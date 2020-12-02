@@ -3,22 +3,28 @@
 namespace Nanbando\Bundle\Command;
 
 use Nanbando\Core\Storage\StorageInterface;
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ChoiceQuestion;
+use Symfony\Component\DependencyInjection\ContainerAwareInterface;
+use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 
-class FetchCommand extends ContainerAwareCommand
+class FetchCommand extends Command implements ContainerAwareInterface
 {
+    use ContainerAwareTrait;
+
+    protected static $defaultName = 'fetch';
+
     /**
      * {@inheritdoc}
      */
     protected function configure()
     {
         $this
-            ->setName('fetch')
+            ->setName(self::$defaultName)
             ->setDescription('Fetches backup archives from remote storage.')
             ->addArgument('files', InputArgument::IS_ARRAY, 'Defines which file will be downloaded.')
             ->addOption('latest', null, InputOption::VALUE_NONE, 'Loads the latest file.')
@@ -38,7 +44,7 @@ EOT
     protected function interact(InputInterface $input, OutputInterface $output)
     {
         /** @var StorageInterface $storage */
-        $storage = $this->getContainer()->get('storage');
+        $storage = $this->container->get('storage');
         $files = $input->getArgument('files');
 
         if ($input->getOption('latest')) {
@@ -80,11 +86,13 @@ EOT
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         /** @var StorageInterface $storage */
-        $storage = $this->getContainer()->get('storage');
+        $storage = $this->container->get('storage');
 
         foreach ($input->getArgument('files') as $file) {
             $storage->fetch($file);
         }
+
+        return 1;
     }
 
     /**
@@ -92,6 +100,6 @@ EOT
      */
     public function isEnabled()
     {
-        return $this->getContainer()->has('filesystem.remote');
+        return $this->container->has('filesystem.remote');
     }
 }

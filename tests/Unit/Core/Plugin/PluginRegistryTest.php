@@ -5,8 +5,9 @@ namespace Nanbando\Tests\Unit\Core\Plugin;
 use Nanbando\Core\Plugin\PluginInterface;
 use Nanbando\Core\Plugin\PluginNotFoundException;
 use Nanbando\Core\Plugin\PluginRegistry;
+use PHPUnit\Framework\TestCase;
 
-class PluginRegistryTest extends \PHPUnit_Framework_TestCase
+class PluginRegistryTest extends TestCase
 {
     public function testGetPlugin()
     {
@@ -19,7 +20,7 @@ class PluginRegistryTest extends \PHPUnit_Framework_TestCase
 
     public function testGetPluginNotExists()
     {
-        $this->setExpectedException(PluginNotFoundException::class);
+        $this->expectException(PluginNotFoundException::class);
 
         $registry = new PluginRegistry([]);
 

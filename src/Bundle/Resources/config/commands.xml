@@ -1,0 +1,92 @@
+<?xml version="1.0" ?>
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+    <services>
+        <defaults public="true"/>
+
+        <service id="Nanbando\Bundle\Command\BackupCommand">
+            <call method="setContainer">
+                <argument type="service" id="service_container"/>
+            </call>
+
+            <tag name="console.command"/>
+        </service>
+
+        <service id="Nanbando\Bundle\Command\CheckCommand">
+            <call method="setContainer">
+                <argument type="service" id="service_container"/>
+            </call>
+
+            <tag name="console.command"/>
+        </service>
+
+        <service id="Nanbando\Bundle\Command\EventDispatcherDebugCommand">
+            <tag name="console.command"/>
+        </service>
+
+        <service id="Nanbando\Bundle\Command\FetchCommand">
+            <call method="setContainer">
+                <argument type="service" id="service_container"/>
+            </call>
+
+            <tag name="console.command"/>
+        </service>
+
+        <service id="Nanbando\Bundle\Command\GetCommand">
+            <call method="setContainer">
+                <argument type="service" id="service_container"/>
+            </call>
+
+            <tag name="console.command"/>
+        </service>
+
+        <service id="Nanbando\Bundle\Command\InformationCommand">
+            <call method="setContainer">
+                <argument type="service" id="service_container"/>
+            </call>
+
+            <tag name="console.command"/>
+        </service>
+
+        <service id="Nanbando\Bundle\Command\ListBackupsCommand">
+            <call method="setContainer">
+                <argument type="service" id="service_container"/>
+            </call>
+
+            <tag name="console.command"/>
+        </service>
+
+        <service id="Nanbando\Bundle\Command\PushCommand">
+            <call method="setContainer">
+                <argument type="service" id="service_container"/>
+            </call>
+
+            <tag name="console.command"/>
+        </service>
+
+        <service id="Nanbando\Bundle\Command\ReconfigureCommand">
+            <call method="setContainer">
+                <argument type="service" id="service_container"/>
+            </call>
+
+            <tag name="console.command"/>
+        </service>
+
+        <service id="Nanbando\Bundle\Command\RestoreCommand">
+            <call method="setContainer">
+                <argument type="service" id="service_container"/>
+            </call>
+
+            <tag name="console.command"/>
+        </service>
+
+        <service id="Nanbando\Bundle\Command\RollbackCommand">
+            <tag name="console.command"/>
+        </service>
+
+        <service id="Nanbando\Bundle\Command\SelfUpdateCommand">
+            <tag name="console.command"/>
+        </service>
+    </services>
+</container>

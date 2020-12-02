@@ -5,6 +5,7 @@ namespace Unit\Bundle\Command;
 use Nanbando\Bundle\Command\ListBackupsCommand;
 use Nanbando\Core\Server\Command\CommandInterface;
 use Nanbando\Core\Server\ServerRegistry;
+use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Input\InputInterface;
@@ -15,7 +16,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 /**
  * Tests for class "ListBackupsCommand".
  */
-class ListBackupsCommandTest extends \PHPUnit_Framework_TestCase
+class ListBackupsCommandTest extends TestCase
 {
     /**
      * @var ServerRegistry

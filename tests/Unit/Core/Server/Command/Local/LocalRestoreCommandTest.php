@@ -13,15 +13,16 @@ use Nanbando\Core\Events\RestoreEvent;
 use Nanbando\Core\Server\Command\Local\LocalRestoreCommand;
 use Nanbando\Core\Storage\StorageInterface;
 use Nanbando\Tests\Unit\Core\Storage\LocalStorageTest;
+use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
-use Symfony\Component\EventDispatcher\Event;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Contracts\EventDispatcher\Event;
 use Webmozart\PathUtil\Path;
 
 /**
  * Tests for class "LocalRestoreCommand".
  */
-class LocalRestoreCommandTest extends \PHPUnit_Framework_TestCase
+class LocalRestoreCommandTest extends TestCase
 {
     /**
      * @var StorageInterface
@@ -90,10 +91,15 @@ class LocalRestoreCommandTest extends \PHPUnit_Framework_TestCase
         $filesystem = new Filesystem(new ZipArchiveAdapter($path));
         $this->storage->open('13-21-45-2016-05-29')->willReturn($filesystem);
 
-        $this->eventDispatcher->dispatch(Events::PRE_RESTORE_EVENT, Argument::type(PreRestoreEvent::class))
-            ->shouldBeCalled();
-        $this->eventDispatcher->dispatch(Events::RESTORE_EVENT, Argument::type(RestoreEvent::class))->shouldBeCalled();
-        $this->eventDispatcher->dispatch(Events::POST_RESTORE_EVENT, Argument::type(Event::class))->shouldBeCalled();
+        $this->eventDispatcher->dispatch(Argument::type(PreRestoreEvent::class), Events::PRE_RESTORE_EVENT)
+            ->shouldBeCalled()
+            ->willReturn(new \stdClass());
+        $this->eventDispatcher->dispatch(Argument::type(RestoreEvent::class), Events::RESTORE_EVENT)
+            ->shouldBeCalled()
+            ->willReturn(new \stdClass());
+        $this->eventDispatcher->dispatch(Argument::type(Event::class), Events::POST_RESTORE_EVENT)
+            ->shouldBeCalled()
+            ->willReturn(new \stdClass());
 
         $nanbando->execute(['name' => '13-21-45-2016-05-29']);
     }

@@ -10,12 +10,14 @@ use Symfony\Component\Console\Input\InputOption;
  */
 class ListBackupsCommand extends BaseServerCommand
 {
+    protected static $defaultName = 'list:backups';
+
     /**
      * {@inheritdoc}
      */
     protected function configure()
     {
-        $this->setName('list:backups')
+        $this->setName(self::$defaultName)
             ->addOption('server', 's', InputOption::VALUE_REQUIRED, 'Where should the command be called.', 'local')
             ->addOption('remote', 'r', InputOption::VALUE_NONE, 'Lists backups on remote storage.')
             ->setDescription('List all available backups.')

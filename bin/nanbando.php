@@ -7,7 +7,6 @@ define('NANBANDO_DIR', getenv('NANBANDO_DIR') ?: '.nanbando');
 use Dflydev\EmbeddedComposer\Core\EmbeddedComposerBuilder;
 use Nanbando\Application\Application;
 use Nanbando\Application\Kernel;
-use Puli\Discovery\JsonDiscovery;
 use Symfony\Component\Console\Input\ArgvInput;
 use Webmozart\PathUtil\Path;
 
@@ -25,8 +24,6 @@ if ($projectDir = $input->getParameterOption('--root-dir')) {
     chdir($projectDir);
 }
 
-$discovery = new JsonDiscovery(Path::join([getcwd(), NANBANDO_DIR, '.puli', 'bindings.json']));
-
 $embeddedComposerBuilder = new EmbeddedComposerBuilder($classLoader);
 $embeddedComposer = $embeddedComposerBuilder
     ->setComposerFilename('nanbando.json')
@@ -34,7 +31,7 @@ $embeddedComposer = $embeddedComposerBuilder
     ->build();
 $embeddedComposer->processAdditionalAutoloads();
 
-$kernel = new Kernel('prod', true, Path::getHomeDirectory(), $discovery);
+$kernel = new Kernel('prod', false, Path::getHomeDirectory());
 $kernel->boot();
 
 $input = $kernel->getContainer()->get('input');

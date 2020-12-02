@@ -3,7 +3,37 @@ UPGRADE before 1.0-RC1
 
 # Table of Contents
 
+- [Plugins Discovery](#plugin-discovery)
 - [Filename](#filenames)
+
+### Plugin Discovery
+
+**Before**: `puli.json`
+
+```
+{
+    "version": "1.0",
+    "name": "<name>",
+    "bindings": {
+        "<uuid>": {
+            "_class": "Puli\\Discovery\\Binding\\ClassBinding",
+            "class": "<bundle-class>",
+            "type": "nanbando/bundle"
+        }
+    }
+}
+```
+
+**After**: `composer.josn`
+
+```
+{
+    ...
+    "extra": {
+        "nanbando-bundle-class": "<bundle-class>"
+    }
+}
+```
 
 ### Filenames
 

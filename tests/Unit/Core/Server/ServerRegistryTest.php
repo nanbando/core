@@ -6,11 +6,12 @@ use Nanbando\Core\Server\Command\CommandInterface;
 use Nanbando\Core\Server\MissingCommandException;
 use Nanbando\Core\Server\MissingServerException;
 use Nanbando\Core\Server\ServerRegistry;
+use PHPUnit\Framework\TestCase;
 
 /**
  * Tests for class "ServerRegistry".
  */
-class ServerRegistryTest extends \PHPUnit_Framework_TestCase
+class ServerRegistryTest extends TestCase
 {
     public function testGetCommand()
     {
@@ -22,7 +23,7 @@ class ServerRegistryTest extends \PHPUnit_Framework_TestCase
 
     public function testGetCommandMissingServer()
     {
-        $this->setExpectedException(MissingServerException::class);
+        $this->expectException(MissingServerException::class);
 
         $command = $this->prophesize(CommandInterface::class);
 
@@ -32,7 +33,7 @@ class ServerRegistryTest extends \PHPUnit_Framework_TestCase
 
     public function testGetCommandMissingCommand()
     {
-        $this->setExpectedException(MissingCommandException::class);
+        $this->expectException(MissingCommandException::class);
 
         $command = $this->prophesize(CommandInterface::class);
 
