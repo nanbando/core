@@ -21,7 +21,11 @@ Add a ``extra`` configuration inside of the ``composer.json``.
 .. code:: json
 
     "extra": {
-        "nanbando-bundle-class": "<bundle-class>"
+        "nanbando": {
+            "bundle-classes": [
+                "<bundle-class>"
+            ]
+        }
     }
 
 Bundle Class

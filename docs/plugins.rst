@@ -25,7 +25,7 @@ projects in the require section of the file.
             }
         },
         "require": {
-            "nanbando/mysql": "^0.1"
+            "nanbando/mysql": "^0.2"
         }
     }
 

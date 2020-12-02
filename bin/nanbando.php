@@ -2,13 +2,20 @@
 
 set_time_limit(0);
 
-define('NANBANDO_DIR', getenv('NANBANDO_DIR') ?: '.nanbando');
-
 use Dflydev\EmbeddedComposer\Core\EmbeddedComposerBuilder;
 use Nanbando\Application\Application;
 use Nanbando\Application\Kernel;
 use Symfony\Component\Console\Input\ArgvInput;
+use Symfony\Component\Dotenv\Dotenv;
+use Symfony\Component\Filesystem\Filesystem;
 use Webmozart\PathUtil\Path;
+
+$envFile = Path::join([getcwd(), '.env']);
+if (file_exists($envFile)) {
+    (new Dotenv())->bootEnv($envFile);
+}
+
+define('NANBANDO_DIR', getenv('NANBANDO_DIR') ?: '.nanbando');
 
 $input = new ArgvInput();
 if ($projectDir = $input->getParameterOption('--root-dir')) {
@@ -32,6 +39,8 @@ $embeddedComposer = $embeddedComposerBuilder
 $embeddedComposer->processAdditionalAutoloads();
 
 $kernel = new Kernel('prod', false, Path::getHomeDirectory());
+$filesystem = new Filesystem();
+$filesystem->remove($kernel->getCacheDir());
 $kernel->boot();
 
 $input = $kernel->getContainer()->get('input');
