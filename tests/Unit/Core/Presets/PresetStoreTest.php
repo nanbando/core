@@ -3,11 +3,12 @@
 namespace Unit\Core\Presets;
 
 use Nanbando\Core\Presets\PresetStore;
+use PHPUnit\Framework\TestCase;
 
 /**
  * Tests for preset-store.
  */
-class PresetStoreTest extends \PHPUnit_Framework_TestCase
+class PresetStoreTest extends TestCase
 {
     public function presetProvider()
     {

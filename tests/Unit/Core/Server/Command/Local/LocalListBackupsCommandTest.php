@@ -4,12 +4,13 @@ namespace Unit\Core\Server\Command\Local;
 
 use Nanbando\Core\Server\Command\Local\LocalListBackupsCommand;
 use Nanbando\Core\Storage\StorageInterface;
+use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * Tests for class "LocalListBackupsCommand".
  */
-class LocalListBackupsCommandTest extends \PHPUnit_Framework_TestCase
+class LocalListBackupsCommandTest extends TestCase
 {
     /**
      * @var StorageInterface

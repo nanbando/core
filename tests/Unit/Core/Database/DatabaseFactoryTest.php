@@ -5,8 +5,9 @@ namespace Nanbando\Unit\Core\Database;
 use Nanbando\Core\Database\Database;
 use Nanbando\Core\Database\DatabaseFactory;
 use Nanbando\Core\Database\ReadonlyDatabase;
+use PHPUnit\Framework\TestCase;
 
-class DatabaseFactoryTest extends \PHPUnit_Framework_TestCase
+class DatabaseFactoryTest extends TestCase
 {
     public function testCreate()
     {

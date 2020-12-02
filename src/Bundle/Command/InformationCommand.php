@@ -11,13 +11,15 @@ use Symfony\Component\Console\Input\InputOption;
  */
 class InformationCommand extends BaseServerCommand
 {
+    protected static $defaultName = 'information';
+
     /**
      * {@inheritdoc}
      */
     protected function configure()
     {
         $this
-            ->setName('information')
+            ->setName(self::$defaultName)
             ->setDescription('Fetches backup archives from remote storage.')
             ->addArgument('file', InputArgument::OPTIONAL, 'Defines which file should be used to display information.')
             ->addOption('latest', null, InputOption::VALUE_NONE, 'Uses latest file.')

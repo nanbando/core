@@ -5,9 +5,10 @@ namespace Nanbando\Tests\Unit\Core\Flysystem;
 use League\Flysystem\AdapterInterface;
 use League\Flysystem\Config;
 use Nanbando\Core\Flysystem\PrefixAdapter;
+use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
 
-class PrefixAdapterTest extends \PHPUnit_Framework_TestCase
+class PrefixAdapterTest extends TestCase
 {
     /**
      * @var AdapterInterface

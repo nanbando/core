@@ -14,13 +14,14 @@ use Nanbando\Core\Events\PostBackupEvent;
 use Nanbando\Core\Events\PreBackupEvent;
 use Nanbando\Core\Server\Command\Local\LocalBackupCommand;
 use Nanbando\Core\Storage\StorageInterface;
+use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
  * Tests for class "LocalBackupCommand".
  */
-class LocalBackupCommandTest extends \PHPUnit_Framework_TestCase
+class LocalBackupCommandTest extends TestCase
 {
     /**
      * @var StorageInterface
@@ -91,11 +92,15 @@ class LocalBackupCommandTest extends \PHPUnit_Framework_TestCase
         $filesystem = new Filesystem(new MemoryAdapter());
         $this->storage->start()->willReturn($filesystem);
 
-        $this->eventDispatcher->dispatch(Events::PRE_BACKUP_EVENT, Argument::type(PreBackupEvent::class))
-            ->shouldBeCalled();
-        $this->eventDispatcher->dispatch(Events::BACKUP_EVENT, Argument::type(BackupEvent::class))->shouldBeCalled();
-        $this->eventDispatcher->dispatch(Events::POST_BACKUP_EVENT, Argument::type(PostBackupEvent::class))
-            ->shouldBeCalled();
+        $this->eventDispatcher->dispatch(Argument::type(PreBackupEvent::class), Events::PRE_BACKUP_EVENT)
+            ->shouldBeCalled()
+            ->willReturn(new \stdClass());
+        $this->eventDispatcher->dispatch(Argument::type(BackupEvent::class), Events::BACKUP_EVENT)
+            ->shouldBeCalled()
+            ->willReturn(new \stdClass());
+        $this->eventDispatcher->dispatch(Argument::type(PostBackupEvent::class), Events::POST_BACKUP_EVENT)
+            ->shouldBeCalled()
+            ->willReturn(new \stdClass());
 
         $this->storage->close($filesystem)->shouldBeCalled();
 
@@ -137,15 +142,20 @@ class LocalBackupCommandTest extends \PHPUnit_Framework_TestCase
         $this->storage->start()->willReturn($filesystem);
         $this->storage->cancel($filesystem)->shouldBeCalled();
 
-        $this->eventDispatcher->dispatch(Events::PRE_BACKUP_EVENT, Argument::type(PreBackupEvent::class))
+        $this->eventDispatcher->dispatch(Argument::type(PreBackupEvent::class), Events::PRE_BACKUP_EVENT)
             ->will(
                 function ($arguments) {
-                    $arguments[1]->cancel();
+                    $arguments[0]->cancel();
+
+                    return $arguments[0];
                 }
             );
-        $this->eventDispatcher->dispatch(Events::BACKUP_EVENT, Argument::type(BackupEvent::class))->shouldNotBeCalled();
-        $this->eventDispatcher->dispatch(Events::POST_BACKUP_EVENT, Argument::type(PostBackupEvent::class))
-            ->shouldNotBeCalled();
+        $this->eventDispatcher->dispatch(Argument::type(BackupEvent::class), Events::BACKUP_EVENT)
+            ->shouldNotBeCalled()
+            ->willReturn(new \stdClass());
+        $this->eventDispatcher->dispatch(Argument::type(PostBackupEvent::class), Events::POST_BACKUP_EVENT)
+            ->shouldNotBeCalled()
+            ->willReturn(new \stdClass());
 
         $this->assertEquals(BackupStatus::STATE_FAILED, $nanbando->execute());
     }
@@ -167,16 +177,19 @@ class LocalBackupCommandTest extends \PHPUnit_Framework_TestCase
         $this->storage->start()->willReturn($filesystem);
         $this->storage->cancel($filesystem)->shouldBeCalled();
 
-        $this->eventDispatcher->dispatch(Events::PRE_BACKUP_EVENT, Argument::type(PreBackupEvent::class))
+        $this->eventDispatcher->dispatch(Argument::type(PreBackupEvent::class), Events::PRE_BACKUP_EVENT)
             ->shouldBeCalled();
-        $this->eventDispatcher->dispatch(Events::BACKUP_EVENT, Argument::type(BackupEvent::class))
+        $this->eventDispatcher->dispatch(Argument::type(BackupEvent::class), Events::BACKUP_EVENT)
             ->will(
                 function ($arguments) {
-                    $arguments[1]->cancel();
+                    $arguments[0]->cancel();
+
+                    return $arguments[0];
                 }
             );
-        $this->eventDispatcher->dispatch(Events::POST_BACKUP_EVENT, Argument::type(PostBackupEvent::class))
-            ->shouldNotBeCalled();
+        $this->eventDispatcher->dispatch(Argument::type(PostBackupEvent::class), Events::POST_BACKUP_EVENT)
+            ->shouldNotBeCalled()
+            ->willReturn(new \stdClass());
 
         $this->assertEquals(BackupStatus::STATE_FAILED, $nanbando->execute());
     }
@@ -198,16 +211,20 @@ class LocalBackupCommandTest extends \PHPUnit_Framework_TestCase
         $this->storage->start()->willReturn($filesystem);
         $this->storage->close($filesystem)->shouldBeCalled();
 
-        $this->eventDispatcher->dispatch(Events::PRE_BACKUP_EVENT, Argument::type(PreBackupEvent::class))
-            ->shouldBeCalled();
-        $this->eventDispatcher->dispatch(Events::BACKUP_EVENT, Argument::type(BackupEvent::class))
+        $this->eventDispatcher->dispatch(Argument::type(PreBackupEvent::class), Events::PRE_BACKUP_EVENT)
+            ->shouldBeCalled()
+            ->willReturn(new \stdClass());
+        $this->eventDispatcher->dispatch(Argument::type(BackupEvent::class), Events::BACKUP_EVENT)
             ->will(
                 function ($arguments) {
-                    $arguments[1]->setStatus(BackupStatus::STATE_FAILED);
+                    $arguments[0]->setStatus(BackupStatus::STATE_FAILED);
+
+                    return $arguments[0];
                 }
             );
-        $this->eventDispatcher->dispatch(Events::POST_BACKUP_EVENT, Argument::type(PostBackupEvent::class))
-            ->shouldBeCalled();
+        $this->eventDispatcher->dispatch(Argument::type(PostBackupEvent::class), Events::POST_BACKUP_EVENT)
+            ->shouldBeCalled()
+            ->willReturn(new \stdClass());
 
         $this->assertEquals(BackupStatus::STATE_PARTIALLY, $nanbando->execute());
 
@@ -247,11 +264,15 @@ class LocalBackupCommandTest extends \PHPUnit_Framework_TestCase
         $filesystem = new Filesystem(new MemoryAdapter());
         $this->storage->start()->willReturn($filesystem);
 
-        $this->eventDispatcher->dispatch(Events::PRE_BACKUP_EVENT, Argument::type(PreBackupEvent::class))
-            ->shouldBeCalled();
-        $this->eventDispatcher->dispatch(Events::BACKUP_EVENT, Argument::type(BackupEvent::class))->shouldBeCalled();
-        $this->eventDispatcher->dispatch(Events::POST_BACKUP_EVENT, Argument::type(PostBackupEvent::class))
-            ->shouldBeCalled();
+        $this->eventDispatcher->dispatch(Argument::type(PreBackupEvent::class), Events::PRE_BACKUP_EVENT)
+            ->shouldBeCalled()
+            ->willReturn(new \stdClass());
+        $this->eventDispatcher->dispatch(Argument::type(BackupEvent::class), Events::BACKUP_EVENT)
+            ->shouldBeCalled()
+            ->willReturn(new \stdClass());
+        $this->eventDispatcher->dispatch(Argument::type(PostBackupEvent::class), Events::POST_BACKUP_EVENT)
+            ->shouldBeCalled()
+            ->willReturn(new \stdClass());
 
         $this->storage->close($filesystem)->shouldBeCalled();
 
@@ -275,11 +296,15 @@ class LocalBackupCommandTest extends \PHPUnit_Framework_TestCase
         $filesystem = new Filesystem(new MemoryAdapter());
         $this->storage->start()->willReturn($filesystem);
 
-        $this->eventDispatcher->dispatch(Events::PRE_BACKUP_EVENT, Argument::type(PreBackupEvent::class))
-            ->shouldBeCalled();
-        $this->eventDispatcher->dispatch(Events::BACKUP_EVENT, Argument::type(BackupEvent::class))->shouldBeCalled();
-        $this->eventDispatcher->dispatch(Events::POST_BACKUP_EVENT, Argument::type(PostBackupEvent::class))
-            ->shouldBeCalled();
+        $this->eventDispatcher->dispatch(Argument::type(PreBackupEvent::class), Events::PRE_BACKUP_EVENT)
+            ->shouldBeCalled()
+            ->willReturn(new \stdClass());
+        $this->eventDispatcher->dispatch(Argument::type(BackupEvent::class), Events::BACKUP_EVENT)
+            ->shouldBeCalled()
+            ->willReturn(new \stdClass());
+        $this->eventDispatcher->dispatch(Argument::type(PostBackupEvent::class), Events::POST_BACKUP_EVENT)
+            ->shouldBeCalled()
+            ->willReturn(new \stdClass());
 
         $this->storage->close($filesystem)->shouldBeCalled();
 
@@ -303,11 +328,15 @@ class LocalBackupCommandTest extends \PHPUnit_Framework_TestCase
         $filesystem = new Filesystem(new MemoryAdapter());
         $this->storage->start()->willReturn($filesystem);
 
-        $this->eventDispatcher->dispatch(Events::PRE_BACKUP_EVENT, Argument::type(PreBackupEvent::class))
-            ->shouldBeCalled();
-        $this->eventDispatcher->dispatch(Events::BACKUP_EVENT, Argument::type(BackupEvent::class))->shouldNotBeCalled();
-        $this->eventDispatcher->dispatch(Events::POST_BACKUP_EVENT, Argument::type(PostBackupEvent::class))
-            ->shouldBeCalled();
+        $this->eventDispatcher->dispatch(Argument::type(PreBackupEvent::class), Events::PRE_BACKUP_EVENT)
+            ->shouldBeCalled()
+            ->willReturn(new \stdClass());
+        $this->eventDispatcher->dispatch(Argument::type(BackupEvent::class), Events::BACKUP_EVENT)
+            ->shouldNotBeCalled()
+            ->willReturn(new \stdClass());
+        $this->eventDispatcher->dispatch(Argument::type(PostBackupEvent::class), Events::POST_BACKUP_EVENT)
+            ->shouldBeCalled()
+            ->willReturn(new \stdClass());
 
         $this->storage->close($filesystem)->shouldBeCalled();
 
@@ -330,11 +359,15 @@ class LocalBackupCommandTest extends \PHPUnit_Framework_TestCase
         $filesystem = new Filesystem(new MemoryAdapter());
         $this->storage->start()->willReturn($filesystem);
 
-        $this->eventDispatcher->dispatch(Events::PRE_BACKUP_EVENT, Argument::type(PreBackupEvent::class))
-            ->shouldBeCalled();
-        $this->eventDispatcher->dispatch(Events::BACKUP_EVENT, Argument::type(BackupEvent::class))->shouldBeCalled();
-        $this->eventDispatcher->dispatch(Events::POST_BACKUP_EVENT, Argument::type(PostBackupEvent::class))
-            ->shouldBeCalled();
+        $this->eventDispatcher->dispatch(Argument::type(PreBackupEvent::class), Events::PRE_BACKUP_EVENT)
+            ->shouldBeCalled()
+            ->willReturn(new \stdClass());
+        $this->eventDispatcher->dispatch(Argument::type(BackupEvent::class), Events::BACKUP_EVENT)
+            ->shouldBeCalled()
+            ->willReturn(new \stdClass());
+        $this->eventDispatcher->dispatch(Argument::type(PostBackupEvent::class), Events::POST_BACKUP_EVENT)
+            ->shouldBeCalled()
+            ->willReturn(new \stdClass());
 
         $this->storage->close($filesystem)->shouldBeCalled();
 

@@ -18,7 +18,7 @@ class JsonLoader extends FileLoader
      * @throws \LogicException
      * @throws BadMethodCallException
      */
-    public function load($resource, $type = null)
+    public function load($resource, string $type = null)
     {
         $path = $this->locator->locate($resource);
         $this->container->addResource(new FileResource($path));
@@ -42,7 +42,7 @@ class JsonLoader extends FileLoader
                     $importFilename = Path::join([dirname($path), $import]);
                 }
 
-                $this->import($importFilename, null, false, $file);
+                $this->import($importFilename, null, false, $file->getPath());
             }
 
             unset($content['imports']);
@@ -54,7 +54,7 @@ class JsonLoader extends FileLoader
     /**
      * {@inheritdoc}
      */
-    public function supports($resource, $type = null)
+    public function supports($resource, string $type = null)
     {
         return is_string($resource) && 'json' === pathinfo(
             $resource,

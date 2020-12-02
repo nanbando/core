@@ -2,7 +2,7 @@
 
 namespace Nanbando\Core\Events;
 
-use Symfony\Component\EventDispatcher\Event;
+use Symfony\Contracts\EventDispatcher\Event;
 
 /**
  * Event args for post-backup.

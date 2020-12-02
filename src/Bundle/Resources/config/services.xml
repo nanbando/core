@@ -11,8 +11,10 @@
     </parameters>
 
     <services>
+        <defaults public="true"/>
+
         <!-- kernel -->
-        <service id="event_dispatcher" class="Symfony\Component\EventDispatcher\ContainerAwareEventDispatcher">
+        <service id="event_dispatcher" class="Symfony\Component\EventDispatcher\EventDispatcher">
             <argument type="service" id="service_container"/>
         </service>
         <service id="filesystem" class="Symfony\Component\Filesystem\Filesystem"/>

@@ -9,13 +9,15 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class RollbackCommand extends Command
 {
+    protected static $defaultName = 'rollback';
+
     /**
      * {@inheritdoc}
      */
     protected function configure()
     {
         $this
-            ->setName('rollback')
+            ->setName(self::$defaultName)
             ->setDescription('Rollback last self-update command.');
     }
 

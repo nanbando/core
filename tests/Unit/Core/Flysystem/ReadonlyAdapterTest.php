@@ -5,9 +5,10 @@ namespace Nanbando\Tests\Unit\Core\Flysystem;
 use League\Flysystem\AdapterInterface;
 use League\Flysystem\Config;
 use Nanbando\Core\Flysystem\ReadonlyAdapter;
+use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
 
-class ReadonlyAdapterTest extends \PHPUnit_Framework_TestCase
+class ReadonlyAdapterTest extends TestCase
 {
     public function provideExceptionData()
     {

@@ -9,10 +9,11 @@ use Nanbando\Core\EventListener\BackupListener;
 use Nanbando\Core\Events\BackupEvent;
 use Nanbando\Core\Plugin\PluginInterface;
 use Nanbando\Core\Plugin\PluginRegistry;
+use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class BackupListenerTest extends \PHPUnit_Framework_TestCase
+class BackupListenerTest extends TestCase
 {
     /**
      * @var PluginRegistry

@@ -11,12 +11,14 @@ use Symfony\Component\Console\Input\InputOption;
  */
 class GetCommand extends BaseServerCommand
 {
+    protected static $defaultName = 'get';
+
     /**
      * {@inheritdoc}
      */
     protected function configure()
     {
-        $this->setName('get')
+        $this->setName(self::$defaultName)
             ->addArgument('source-server', InputArgument::REQUIRED, 'Source of backup which should be loaded.')
             ->addArgument('name', InputArgument::REQUIRED, 'Name of loading backup.')
             ->addOption('latest', null, InputOption::VALUE_NONE, 'Loads the latest file.')

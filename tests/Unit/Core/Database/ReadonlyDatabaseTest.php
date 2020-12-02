@@ -4,8 +4,9 @@ namespace Nanbando\Tests\Unit\Core\Database;
 
 use Nanbando\Core\Database\PropertyNotExistsException;
 use Nanbando\Core\Database\ReadonlyDatabase;
+use PHPUnit\Framework\TestCase;
 
-class ReadonlyDatabaseTest extends \PHPUnit_Framework_TestCase
+class ReadonlyDatabaseTest extends TestCase
 {
     /**
      * @var ReadonlyDatabase
@@ -34,7 +35,7 @@ class ReadonlyDatabaseTest extends \PHPUnit_Framework_TestCase
 
     public function testGetNotExisting()
     {
-        $this->setExpectedException(PropertyNotExistsException::class);
+        $this->expectException(PropertyNotExistsException::class);
 
         $this->database->get('version');
     }

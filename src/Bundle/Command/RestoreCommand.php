@@ -8,12 +8,14 @@ use Symfony\Component\Console\Input\InputOption;
 
 class RestoreCommand extends BaseServerCommand
 {
+    protected static $defaultName = 'restore';
+
     /**
      * {@inheritdoc}
      */
     protected function configure()
     {
-        $this->setName('restore')
+        $this->setName(self::$defaultName)
             ->setDescription('Restore a backup archive.')
             ->addArgument(
                 'file',

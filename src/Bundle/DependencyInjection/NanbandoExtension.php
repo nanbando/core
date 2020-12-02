@@ -70,11 +70,12 @@ class NanbandoExtension extends Extension
         $loader->load('event-listener.xml');
         $loader->load('local-commands.xml');
         $loader->load('ssh-commands.xml');
+        $loader->load('commands.xml');
 
         // ensure container rebuild after puli bindings changes
-        $puliFile = Path::join([getcwd(), NANBANDO_DIR, '.puli']);
-        if (file_exists($puliFile)) {
-            $container->addResource(new FileResource($puliFile));
+        $discoveryFile = Path::join([getcwd(), NANBANDO_DIR, '.discovery']);
+        if (file_exists($discoveryFile)) {
+            $container->addResource(new FileResource($discoveryFile));
         }
     }
 }

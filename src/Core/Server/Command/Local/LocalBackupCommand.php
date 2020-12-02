@@ -79,7 +79,7 @@ class LocalBackupCommand implements CommandInterface
     {
         $label = array_key_exists('label', $options) ? $options['label'] : '';
         $message = array_key_exists('message', $options) ? $options['message'] : '';
-        $process = array_key_exists('process', $options) ? $options['process'] : null;
+        $process = array_key_exists('process', $options) ? $options['process'] : [];
 
         $destination = $this->storage->start();
 
@@ -98,7 +98,7 @@ class LocalBackupCommand implements CommandInterface
         }
 
         $event = new PreBackupEvent($this->backup, $systemDatabase, $source, $destination);
-        $this->eventDispatcher->dispatch(Events::PRE_BACKUP_EVENT, $event);
+        $this->eventDispatcher->dispatch($event, Events::PRE_BACKUP_EVENT);
         if ($event->isCanceled()) {
             $this->storage->cancel($destination);
 
@@ -124,7 +124,7 @@ class LocalBackupCommand implements CommandInterface
             $event = new BackupEvent(
                 $systemDatabase, $database, $source, $backupDestination, $backupName, $backup
             );
-            $this->eventDispatcher->dispatch(Events::BACKUP_EVENT, $event);
+            $this->eventDispatcher->dispatch($event, Events::BACKUP_EVENT);
             if ($event->isCanceled()) {
                 $this->storage->cancel($destination);
 
@@ -147,7 +147,7 @@ class LocalBackupCommand implements CommandInterface
 
         $name = $this->storage->close($destination);
 
-        $this->eventDispatcher->dispatch(Events::POST_BACKUP_EVENT, new PostBackupEvent($name, $status));
+        $this->eventDispatcher->dispatch(new PostBackupEvent($name, $status), Events::POST_BACKUP_EVENT);
 
         return $status;
     }

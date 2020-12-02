@@ -3,8 +3,9 @@ Bundle
 
 All begins with a bundle. The application uses Symfony Bundles
 to build the environment. The bundles will be discovered by
-puli. And loaded by composer. So you can guess which parts
-are mandatory to hook into nanbando.
+crawling the composer files of the installed packages.
+And loaded by composer. So you can guess which parts are
+mandatory to hook into nanbando.
 
 You can take a look into a already existing nanbando-bundle
 like `Mysql Plugin`_.
@@ -15,24 +16,12 @@ Composer
 Create a ``composer.json`` file and register the repository on
 `packagist`_.
 
-Puli
-----
-
-Puli uses a simple configuration file in json form so create
-a basic ``puli.json`` file with following content.
+Add a ``extra`` configuration inside of the ``composer.json``.
 
 .. code:: json
 
-    {
-        "version": "1.0",
-        "name": "<name>",
-        "bindings": {
-            "<uuid>": {
-                "_class": "Puli\\Discovery\\Binding\\ClassBinding",
-                "class": "<bundle-class>",
-                "type": "nanbando/bundle"
-            }
-        }
+    "extra": {
+        "nanbando-bundle-class": "<bundle-class>"
     }
 
 Bundle Class

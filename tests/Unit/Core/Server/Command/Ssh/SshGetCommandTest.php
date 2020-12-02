@@ -5,12 +5,13 @@ namespace Unit\Core\Server\Command\Ssh;
 use Nanbando\Core\Server\Command\Ssh\SshConnection;
 use Nanbando\Core\Server\Command\Ssh\SshGetCommand;
 use Nanbando\Core\Storage\StorageInterface;
+use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * Tests for class "SshGetCommand".
  */
-class SshGetCommandTest extends \PHPUnit_Framework_TestCase
+class SshGetCommandTest extends TestCase
 {
     /**
      * @var SshConnection

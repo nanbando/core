@@ -7,13 +7,14 @@ use Nanbando\Core\Database\DatabaseFactory;
 use Nanbando\Core\Database\ReadonlyDatabase;
 use Nanbando\Core\Server\Command\Local\LocalInformationCommand;
 use Nanbando\Core\Storage\StorageInterface;
+use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * Tests for class "LocalInformationCommand".
  */
-class LocalInformationCommandTest extends \PHPUnit_Framework_TestCase
+class LocalInformationCommandTest extends TestCase
 {
     /**
      * @var StorageInterface

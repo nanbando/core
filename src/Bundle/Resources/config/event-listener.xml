@@ -13,6 +13,8 @@
     </parameters>
 
     <services>
+        <defaults public="true"/>
+
         <service id="nanbando.event_listener.output" class="Nanbando\Core\EventListener\OutputListener">
             <argument type="string">%nanbando.name%</argument>
             <argument type="service" id="output"/>

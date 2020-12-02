@@ -5,22 +5,25 @@ namespace Nanbando\Bundle\Command;
 use Composer\Installer;
 use Composer\IO\ConsoleIO;
 use Dflydev\EmbeddedComposer\Core\EmbeddedComposerInterface;
-use Puli\Discovery\Api\Type\BindingType;
-use Puli\Manager\Api\Discovery\BindingTypeDescriptor;
-use Puli\Manager\Api\Puli;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\DependencyInjection\ContainerAwareInterface;
+use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use Symfony\Component\Filesystem\Filesystem;
 use Webmozart\PathUtil\Path;
 
-class ReconfigureCommand extends Command
+class ReconfigureCommand extends Command implements ContainerAwareInterface
 {
+    use ContainerAwareTrait;
+
+    protected static $defaultName = 'reconfigure';
+
     protected function configure()
     {
         $this
-            ->setName('reconfigure')
+            ->setName(self::$defaultName)
             ->setDescription('Reconfigure application')
             ->setDefinition(
                 [
@@ -99,52 +102,31 @@ EOT
     }
 
     /**
-     * Rebuild the puli dependencies for symfony container.
+     * Rebuild the dependencies for symfony container.
      */
     protected function rebuild(InputInterface $input, OutputInterface $output)
     {
-        $puli = new Puli(Path::join([getcwd(), NANBANDO_DIR]));
-        $puli->start();
-
         /** @var EmbeddedComposerInterface $embeddedComposer */
         $embeddedComposer = $this->getApplication()->getEmbeddedComposer();
 
-        $packageManager = $puli->getPackageManager();
         $io = new ConsoleIO($input, $output, $this->getApplication()->getHelperSet());
         $composer = $embeddedComposer->createComposer($io);
-        $installationManager = $composer->getInstallationManager();
         $rootPackage = $composer->getPackage();
 
-        $repository = $composer->getRepositoryManager()->getLocalRepository();
-        $packages = [];
-        foreach ($repository->getPackages() as $package) {
-            $packages[$package->getName()] = $package;
-        }
-
+        $discovery = [];
         foreach ($rootPackage->getRequires() as $require) {
-            if (!array_key_exists($require->getTarget(), $packages)) {
-                continue;
+            $package = $composer->getRepositoryManager()->findPackage($require->getTarget(), $require->getConstraint());
+            $bundleClasses = $package->getExtra()['nanbando']['bundle-classes'] ?? [];
+
+            foreach ($bundleClasses as $bundleClass) {
+                if ($bundleClass && class_exists($bundleClass)) {
+                    $discovery[] = $bundleClass;
+                }
             }
-
-            $packageManager->installPackage(
-                Path::normalize($installationManager->getInstallPath($packages[$require->getTarget()])),
-                $require->getTarget(),
-                'nanbando'
-            );
         }
-
-        $filesystem = new Filesystem();
-        $filesystem->remove(Path::join([getcwd(), NANBANDO_DIR, '.puli']));
-
-        $discoveryManager = $puli->getDiscoveryManager();
-        if (!$discoveryManager->hasRootTypeDescriptor('nanbando/bundle')) {
-            $discoveryManager->addRootTypeDescriptor(new BindingTypeDescriptor(new BindingType('nanbando/bundle')), 0);
-        }
-
-        $discoveryManager->clearDiscovery();
-        $discoveryManager->buildDiscovery();
 
         $filesystem = new Filesystem();
         $filesystem->remove(Path::join([getcwd(), NANBANDO_DIR, 'app', 'cache']));
+        $filesystem->dumpFile(Path::join([getcwd(), NANBANDO_DIR, '.discovery']), \json_encode($discovery) ?? '');
     }
 }

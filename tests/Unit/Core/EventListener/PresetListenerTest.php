@@ -6,11 +6,12 @@ use Nanbando\Core\EventListener\PresetListener;
 use Nanbando\Core\Events\PreBackupEvent;
 use Nanbando\Core\Events\PreRestoreEvent;
 use Nanbando\Core\Presets\PresetStore;
+use PHPUnit\Framework\TestCase;
 
 /**
  * Tests for preset-listener.
  */
-class PresetListenerTest extends \PHPUnit_Framework_TestCase
+class PresetListenerTest extends TestCase
 {
     /**
      * @var string

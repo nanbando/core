@@ -4,10 +4,12 @@ namespace Nanbando\Bundle\Command;
 
 use Nanbando\Core\Plugin\PluginRegistry;
 use Nanbando\Core\Presets\PresetStore;
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\DependencyInjection\ContainerAwareInterface;
+use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use Symfony\Component\OptionsResolver\Exception\InvalidArgumentException;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Yaml\Yaml;
@@ -15,14 +17,18 @@ use Symfony\Component\Yaml\Yaml;
 /**
  * This command provides functionality to check configuration.
  */
-class CheckCommand extends ContainerAwareCommand
+class CheckCommand extends Command implements ContainerAwareInterface
 {
+    use ContainerAwareTrait;
+
+    protected static $defaultName = 'check';
+
     /**
      * {@inheritdoc}
      */
     protected function configure()
     {
-        $this->setName('check')->setDescription('Checks configuration issues')->setHelp(
+        $this->setName(self::$defaultName)->setDescription('Checks configuration issues')->setHelp(
                 <<<EOT
 The <info>{$this->getName()}</info> command looks for configuration issues
 
@@ -39,11 +45,11 @@ EOT
 
         $io->title('Configuration Check Report');
 
-        $io->writeln('Name:            ' . $this->getContainer()->getParameter('nanbando.name'));
-        $io->writeln('Environment:     ' . $this->getContainer()->getParameter('nanbando.environment'));
-        $io->writeln('Local directory: ' . $this->getContainer()->getParameter('nanbando.storage.local_directory'));
+        $io->writeln('Name:            ' . $this->container->getParameter('nanbando.name'));
+        $io->writeln('Environment:     ' . $this->container->getParameter('nanbando.environment'));
+        $io->writeln('Local directory: ' . $this->container->getParameter('nanbando.storage.local_directory'));
 
-        if (!$this->getContainer()->has('filesystem.remote')) {
+        if (!$this->container->has('filesystem.remote')) {
             $io->warning(
                 'No remote storage configuration found. This leads into disabled "fetch" and "push" commands.'
                 . 'Please follow the documentation for global configuration.'
@@ -68,6 +74,8 @@ EOT
         $this->checkBackups($io, $backups);
 
         $io->writeln('');
+
+        return 1;
     }
 
     /**
@@ -79,7 +87,7 @@ EOT
     private function checkBackups(SymfonyStyle $io, array $backups)
     {
         /** @var PluginRegistry $plugins */
-        $plugins = $this->getContainer()->get('plugins');
+        $plugins = $this->container->get('plugins');
         foreach ($backups as $name => $backup) {
             $this->checkBackup($plugins, $io, $name, $backup);
         }
@@ -138,12 +146,12 @@ EOT
      */
     private function getBackups()
     {
-        $backups = $this->getContainer()->getParameter('nanbando.backup');
+        $backups = $this->container->getParameter('nanbando.backup');
 
         $preset = [];
         if ($name = $this->getParameter('nanbando.application.name')) {
             /** @var PresetStore $presetStore */
-            $presetStore = $this->getContainer()->get('presets');
+            $presetStore = $this->container->get('presets');
             $preset = $presetStore->getPreset(
                 $name,
                 $this->getParameter('nanbando.application.version'),
@@ -164,10 +172,10 @@ EOT
      */
     public function getParameter($name, $default = null)
     {
-        if (!$this->getContainer()->hasParameter($name)) {
+        if (!$this->container->hasParameter($name)) {
             return $default;
         }
 
-        return $this->getContainer()->getParameter($name);
+        return $this->container->getParameter($name);
     }
 }

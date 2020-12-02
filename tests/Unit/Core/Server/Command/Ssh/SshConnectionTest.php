@@ -4,6 +4,7 @@ namespace Unit\Core\Server\Command\Ssh;
 
 use Nanbando\Core\Server\Command\Ssh\SshConnection;
 use phpseclib\Net\SSH2;
+use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -11,7 +12,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 /**
  * Tests for class "SshConnection".
  */
-class SshConnectionTest extends \PHPUnit_Framework_TestCase
+class SshConnectionTest extends TestCase
 {
     /**
      * @var SSH2

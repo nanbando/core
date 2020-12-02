@@ -6,13 +6,14 @@ use Nanbando\Bundle\Command\CheckCommand;
 use Nanbando\Core\Plugin\PluginInterface;
 use Nanbando\Core\Plugin\PluginRegistry;
 use Nanbando\Core\Presets\PresetStore;
+use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class CheckCommandTest extends \PHPUnit_Framework_TestCase
+class CheckCommandTest extends TestCase
 {
     /**
      * @var ContainerInterface

@@ -11,13 +11,15 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class SelfUpdateCommand extends Command
 {
+    protected static $defaultName = 'self-update';
+
     /**
      * {@inheritdoc}
      */
     protected function configure()
     {
         $this
-            ->setName('self-update')
+            ->setName(self::$defaultName)
             ->setDescription('Updates the application.')
             ->addOption('nightly', null, InputOption::VALUE_NONE, 'Force an update to nightly channel');
     }
@@ -44,6 +46,8 @@ class SelfUpdateCommand extends Command
         }
 
         $output->writeln(sprintf('Updated from %s to %s', $updater->getOldVersion(), $updater->getNewVersion()));
+
+        return 1;
     }
 
     /**

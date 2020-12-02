@@ -6,11 +6,11 @@ use Cocur\Slugify\Bridge\Symfony\CocurSlugifyBundle;
 use Nanbando\Bundle\NanbandoBundle;
 use Nanbando\Core\Config\JsonLoader;
 use Oneup\FlysystemBundle\OneupFlysystemBundle;
-use Puli\Discovery\Api\Discovery;
-use Puli\Discovery\Binding\ClassBinding;
 use Symfony\Component\Config\Loader\DelegatingLoader;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\Config\Loader\LoaderResolver;
+use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DependencyInjection\Loader\ClosureLoader;
 use Symfony\Component\DependencyInjection\Loader\DirectoryLoader;
@@ -23,7 +23,7 @@ use Symfony\Component\HttpKernel\Config\FileLocator;
 use Symfony\Component\HttpKernel\Kernel as SymfonyKernel;
 use Webmozart\PathUtil\Path;
 
-class Kernel extends SymfonyKernel
+class Kernel extends SymfonyKernel implements CompilerPassInterface
 {
     protected $name = 'Nanbando';
 
@@ -33,22 +33,15 @@ class Kernel extends SymfonyKernel
     private $userDir;
 
     /**
-     * @var Discovery
-     */
-    private $discovery;
-
-    /**
      * @param string    $environment The environment
      * @param bool      $debug       Whether to enable debugging or not
      * @param string    $userDir
-     * @param Discovery $discovery
      */
-    public function __construct($environment, $debug, $userDir, Discovery $discovery)
+    public function __construct($environment, $debug, $userDir)
     {
         parent::__construct($environment, $debug);
 
         $this->userDir = $userDir;
-        $this->discovery = $discovery;
     }
 
     /**
@@ -62,9 +55,13 @@ class Kernel extends SymfonyKernel
             new CocurSlugifyBundle(),
         ];
 
-        /** @var ClassBinding $binding */
-        foreach ($this->discovery->findBindings('nanbando/bundle') as $binding) {
-            $class = $binding->getClassName();
+        $discoveryFile = Path::join([getcwd(), NANBANDO_DIR, '.discovery']);
+        if (!file_exists($discoveryFile)) {
+            return $bundles;
+        }
+
+        $discovery = json_decode(file_get_contents($discoveryFile), true);
+        foreach ($discovery as $class) {
             if (class_exists($class)) {
                 $bundles[] = new $class();
             }
@@ -85,7 +82,7 @@ class Kernel extends SymfonyKernel
 
         $applicationConfig = realpath('nanbando.json');
         if (is_file($applicationConfig)) {
-            $loader->load($applicationConfig);
+            $loader->load($applicationConfig, 'json');
         }
     }
 
@@ -144,5 +141,11 @@ class Kernel extends SymfonyKernel
         $parameter = parent::getKernelParameters();
 
         return array_merge($parameter, ['home' => $this->userDir, 'project' => getcwd()]);
+    }
+
+    public function process(ContainerBuilder $container)
+    {
+        $container->getDefinition('input')->setPublic(true);
+        $container->getDefinition('output')->setPublic(true);
     }
 }

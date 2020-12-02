@@ -4,13 +4,14 @@ namespace Unit\Core\Server\Command\Ssh;
 
 use Nanbando\Core\Server\Command\Ssh\SshConnection;
 use Nanbando\Core\Server\Command\Ssh\SshListBackupsCommand;
+use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * Tests for class "SshListBackupsCommand".
  */
-class SshListBackupsCommandTest extends \PHPUnit_Framework_TestCase
+class SshListBackupsCommandTest extends TestCase
 {
     /**
      * @var SshConnection

@@ -5,6 +5,7 @@ namespace Unit\Bundle\Command;
 use Nanbando\Bundle\Command\GetCommand;
 use Nanbando\Core\Server\Command\CommandInterface;
 use Nanbando\Core\Server\ServerRegistry;
+use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Input\InputInterface;
@@ -15,7 +16,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 /**
  * Tests for class "GetCommand".
  */
-class GetCommandTest extends \PHPUnit_Framework_TestCase
+class GetCommandTest extends TestCase
 {
     /**
      * @var ServerRegistry
