@@ -1,0 +1,54 @@
+name: Test application
+
+on:
+    pull_request:
+    push:
+        branches:
+            - master
+            - '[0-9]+.[0-9]+'
+
+jobs:
+    test:
+        name: "Run tests with php ${{ matrix.php-version }} and elasticsearch ${{ matrix.elasticsearch-version }} (${{ matrix.phpcr-transport }})"
+        runs-on: ubuntu-latest
+
+        strategy:
+            fail-fast: false
+            matrix:
+                include:
+                    - php-version: '7.2'
+                    - php-version: '7.4'
+
+        steps:
+            - name: Checkout project
+              uses: actions/checkout@v2
+
+            - name: Install and configure PHP
+              uses: shivammathur/setup-php@v2
+              with:
+                  php-version: ${{ matrix.php-version }}
+                  extensions: ${{ matrix.php-extensions }}
+                  tools: ${{ matrix.tools }}
+                  coverage: xdebug
+
+            - name: Get composer cache directory
+              id: composer-cache-dir
+              run: echo "::set-output name=dir::$(composer config cache-files-dir)"
+
+            - name: Cache dependencies
+              uses: actions/cache@v2
+              id: composer-cache
+              with:
+                  path: ${{ steps.composer-cache-dir.outputs.dir }}
+                  key: ${{ runner.os }}-composer-${{ hashFiles('composer.lock') }}
+                  restore-keys: |
+                      ${{ runner.os }}-composer-
+
+            - name: Install dependencies
+              run: |
+                  composer validate
+                  composer update
+
+            - name: Run tests
+              run: time vendor/bin/phpunit
+              env: ${{ matrix.env }}
