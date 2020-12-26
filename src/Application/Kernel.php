@@ -3,6 +3,8 @@
 namespace Nanbando\Application;
 
 use Cocur\Slugify\Bridge\Symfony\CocurSlugifyBundle;
+use Composer\IO\NullIO;
+use Dflydev\EmbeddedComposer\Core\EmbeddedComposerInterface;
 use Nanbando\Bundle\NanbandoBundle;
 use Nanbando\Core\Config\JsonLoader;
 use Symfony\Component\Config\Loader\DelegatingLoader;
@@ -32,15 +34,21 @@ class Kernel extends SymfonyKernel implements CompilerPassInterface
     private $userDir;
 
     /**
+     * @var EmbeddedComposerInterface
+     */
+    private $embeddedComposer;
+
+    /**
      * @param string    $environment The environment
      * @param bool      $debug       Whether to enable debugging or not
      * @param string    $userDir
      */
-    public function __construct($environment, $debug, $userDir)
+    public function __construct($environment, $debug, $userDir, $embeddedComposer)
     {
         parent::__construct($environment, $debug);
 
         $this->userDir = $userDir;
+        $this->embeddedComposer = $embeddedComposer;
     }
 
     /**
@@ -49,8 +57,8 @@ class Kernel extends SymfonyKernel implements CompilerPassInterface
     public function registerBundles()
     {
         $bundles = [
-            new NanbandoBundle(),
-            new CocurSlugifyBundle(),
+            NanbandoBundle::class => new NanbandoBundle(),
+            CocurSlugifyBundle::class => new CocurSlugifyBundle(),
         ];
 
         $discoveryFile = Path::join([getcwd(), NANBANDO_DIR, '.discovery']);
@@ -60,12 +68,12 @@ class Kernel extends SymfonyKernel implements CompilerPassInterface
 
         $discovery = json_decode(file_get_contents($discoveryFile), true);
         foreach ($discovery as $class) {
-            if (class_exists($class)) {
-                $bundles[] = new $class();
+            if (class_exists($class) && !array_key_exists($class, $bundles)) {
+                $bundles[$class] = new $class();
             }
         }
 
-        return $bundles;
+        return array_values($bundles);
     }
 
     /**
@@ -143,7 +151,6 @@ class Kernel extends SymfonyKernel implements CompilerPassInterface
 
     public function process(ContainerBuilder $container)
     {
-        $container->getDefinition('input')->setPublic(true);
-        $container->getDefinition('output')->setPublic(true);
+        $container->set('composer',$this->embeddedComposer->createComposer(new NullIO()));
     }
 }

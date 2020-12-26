@@ -20,8 +20,8 @@
         <service id="filesystem" class="Symfony\Component\Filesystem\Filesystem"/>
 
         <!-- console -->
-        <service id="input" class="Symfony\Component\Console\Input\ArgvInput"/>
-        <service id="output" class="Symfony\Component\Console\Output\ConsoleOutput"/>
+        <service id="input" class="Symfony\Component\Console\Input\ArgvInput" public="true"/>
+        <service id="output" class="Symfony\Component\Console\Output\ConsoleOutput" public="true"/>
 
         <!-- tempfiles -->
         <service id="temporary_filesystem" class="Neutron\TemporaryFilesystem\TemporaryFilesystem" public="false">
@@ -52,7 +52,7 @@
             <argument type="service" id="temporary_files"/>
             <argument type="service" id="slugify"/>
             <argument type="service" id="filesystem"/>
-            <argument type="service" id="filesystem.local"/>
+            <argument type="service" id="filesystem.local" on-invalid="null"/>
             <argument type="string">%nanbando.storage.local_directory%</argument>
             <argument type="service" id="filesystem.remote" on-invalid="null"/>
         </service>

@@ -38,7 +38,7 @@ $embeddedComposer = $embeddedComposerBuilder
     ->build();
 $embeddedComposer->processAdditionalAutoloads();
 
-$kernel = new Kernel('prod', false, Path::getHomeDirectory());
+$kernel = new Kernel('prod', false, Path::getHomeDirectory(), $embeddedComposer);
 $filesystem = new Filesystem();
 $filesystem->remove($kernel->getCacheDir());
 $kernel->boot();
