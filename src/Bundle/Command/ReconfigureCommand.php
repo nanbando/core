@@ -2,9 +2,9 @@
 
 namespace Nanbando\Bundle\Command;
 
-use Composer\Installer;
 use Composer\IO\ConsoleIO;
 use Dflydev\EmbeddedComposer\Core\EmbeddedComposerInterface;
+use Dflydev\EmbeddedComposer\Core\Installer;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -89,6 +89,11 @@ EOT
         $io = new ConsoleIO($input, $output, $this->getApplication()->getHelperSet());
         /** @var Installer $installer */
         $installer = $embeddedComposer->createInstaller($io);
+        $package = $installer->getPackage();
+        $package->setStabilityFlags(array_merge($package->getStabilityFlags(),[
+            'nanbando/core' => '20',
+            'dflydev/embedded-composer' => '20',
+        ]));
 
         $installer
             ->setDryRun($input->getOption('dry-run'))
