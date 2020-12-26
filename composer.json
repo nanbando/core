@@ -15,7 +15,7 @@
         "ext-mbstring": "*",
         "ext-zip": "*",
         "dflydev/embedded-composer": "dev-enhancement/composer-2",
-        "composer/composer": "^2.0",
+        "composer/composer": "dev-embedded-composer as 2.0.8",
         "symfony/console": "^5.2",
         "symfony/http-kernel": "^5.2",
         "symfony/dependency-injection": "^5.2",
@@ -68,6 +68,10 @@
         {
             "type": "vcs",
             "url": "git@github.com:nanbando/dflydev-embedded-composer.git"
+        },
+        {
+            "type": "vcs",
+            "url": "git@github.com:nanbando/composer.git"
         }
     ]
 }
