@@ -62,5 +62,11 @@
                 "Nanbando\\Bundle\\NanbandoBundle"
             ]
         }
-    }
+    },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "git@github.com:nanbando/dflydev-embedded-composer.git"
+        }
+    ]
 }
