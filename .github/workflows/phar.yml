@@ -53,7 +53,6 @@ jobs:
             - name: "Checkout gh-pages"
               uses: "actions/checkout@v2"
               with:
-                  repository: wachterjohannes/core-1
                   ref: gh-pages
                   path: gh-pages
                   token: ${{ secrets.PAT }}
