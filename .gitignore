@@ -7,7 +7,8 @@ composer.lock
 .nanbando
 nanbando.json
 
-.travis/phar-private.pem
+.github/phar-private.pem
+.github/pat.txt
 nanbando.phar
 nanbando.phar.pubkey
 nanbando.phar.version
