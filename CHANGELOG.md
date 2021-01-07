@@ -1,6 +1,40 @@
-# Change Log
+# Changelog
+
+## [Unreleased](https://github.com/nanbando/core/tree/HEAD)
+
+[Full Changelog](https://github.com/nanbando/core/compare/0.10.1...HEAD)
+
+**Closed issues:**
+
+- Update box [\#106](https://github.com/nanbando/core/issues/106)
+- Add auto build to github actions [\#105](https://github.com/nanbando/core/issues/105)
+- Integrate DotEnv [\#103](https://github.com/nanbando/core/issues/103)
+- Dropbox Adapter [\#101](https://github.com/nanbando/core/issues/101)
+- Tempdirectory size will have the size of one complete backup [\#67](https://github.com/nanbando/core/issues/67)
+
+**Merged pull requests:**
+
+- Add adapter for streaming zip library [\#110](https://github.com/nanbando/core/pull/110) ([wachterjohannes](https://github.com/wachterjohannes))
+- Add github action to build phar \(and updated box\) [\#109](https://github.com/nanbando/core/pull/109) ([wachterjohannes](https://github.com/wachterjohannes))
+
+## [0.10.1](https://github.com/nanbando/core/tree/0.10.1) (2020-12-02)
+
+[Full Changelog](https://github.com/nanbando/core/compare/0.10.0...0.10.1)
+
+**Merged pull requests:**
+
+- Add dotenv loading [\#107](https://github.com/nanbando/core/pull/107) ([wachterjohannes](https://github.com/wachterjohannes))
+
+## [0.10.0](https://github.com/nanbando/core/tree/0.10.0) (2020-12-02)
+
+[Full Changelog](https://github.com/nanbando/core/compare/0.9.4...0.10.0)
+
+**Merged pull requests:**
+
+- Remove puli and update dependencies [\#102](https://github.com/nanbando/core/pull/102) ([wachterjohannes](https://github.com/wachterjohannes))
 
 ## [0.9.4](https://github.com/nanbando/core/tree/0.9.4) (2017-09-22)
+
 [Full Changelog](https://github.com/nanbando/core/compare/0.9.3...0.9.4)
 
 **Fixed bugs:**
@@ -12,6 +46,7 @@
 - Fixed version of humbug/phar-updater [\#100](https://github.com/nanbando/core/pull/100) ([wachterjohannes](https://github.com/wachterjohannes))
 
 ## [0.9.3](https://github.com/nanbando/core/tree/0.9.3) (2017-07-03)
+
 [Full Changelog](https://github.com/nanbando/core/compare/0.9.2...0.9.3)
 
 **Merged pull requests:**
@@ -20,6 +55,7 @@
 - Fixed configuration for presets and services [\#96](https://github.com/nanbando/core/pull/96) ([wachterjohannes](https://github.com/wachterjohannes))
 
 ## [0.9.2](https://github.com/nanbando/core/tree/0.9.2) (2017-07-02)
+
 [Full Changelog](https://github.com/nanbando/core/compare/0.9.1...0.9.2)
 
 **Merged pull requests:**
@@ -27,6 +63,7 @@
 - Fixed creation of local-directory [\#95](https://github.com/nanbando/core/pull/95) ([wachterjohannes](https://github.com/wachterjohannes))
 
 ## [0.9.1](https://github.com/nanbando/core/tree/0.9.1) (2017-05-16)
+
 [Full Changelog](https://github.com/nanbando/core/compare/0.9.0...0.9.1)
 
 **Closed issues:**
@@ -38,6 +75,7 @@
 - Fixed order of password and rsakey check [\#93](https://github.com/nanbando/core/pull/93) ([wachterjohannes](https://github.com/wachterjohannes))
 
 ## [0.9.0](https://github.com/nanbando/core/tree/0.9.0) (2017-04-04)
+
 [Full Changelog](https://github.com/nanbando/core/compare/0.8.1...0.9.0)
 
 **Implemented enhancements:**
@@ -63,6 +101,7 @@
 - Fixed info-command interact [\#80](https://github.com/nanbando/core/pull/80) ([wachterjohannes](https://github.com/wachterjohannes))
 
 ## [0.8.1](https://github.com/nanbando/core/tree/0.8.1) (2017-03-03)
+
 [Full Changelog](https://github.com/nanbando/core/compare/0.8.0...0.8.1)
 
 **Merged pull requests:**
@@ -71,6 +110,7 @@
 - Fixed creating local directory [\#77](https://github.com/nanbando/core/pull/77) ([wachterjohannes](https://github.com/wachterjohannes))
 
 ## [0.8.0](https://github.com/nanbando/core/tree/0.8.0) (2017-02-28)
+
 [Full Changelog](https://github.com/nanbando/core/compare/0.7.0...0.8.0)
 
 **Merged pull requests:**
@@ -78,6 +118,7 @@
 - Implemented basic ssh-commands [\#54](https://github.com/nanbando/core/pull/54) ([wachterjohannes](https://github.com/wachterjohannes))
 
 ## [0.7.0](https://github.com/nanbando/core/tree/0.7.0) (2017-02-10)
+
 [Full Changelog](https://github.com/nanbando/core/compare/0.6.0...0.7.0)
 
 **Merged pull requests:**
@@ -85,6 +126,7 @@
 - Improved performance of restore by generating hash on backup [\#72](https://github.com/nanbando/core/pull/72) ([wachterjohannes](https://github.com/wachterjohannes))
 
 ## [0.6.0](https://github.com/nanbando/core/tree/0.6.0) (2017-02-03)
+
 [Full Changelog](https://github.com/nanbando/core/compare/0.5.1...0.6.0)
 
 **Implemented enhancements:**
@@ -98,6 +140,7 @@
 - Changed way to generate zip-file [\#66](https://github.com/nanbando/core/pull/66) ([wachterjohannes](https://github.com/wachterjohannes))
 
 ## [0.5.1](https://github.com/nanbando/core/tree/0.5.1) (2017-01-26)
+
 [Full Changelog](https://github.com/nanbando/core/compare/0.5.0...0.5.1)
 
 **Merged pull requests:**
@@ -105,6 +148,7 @@
 - Fixed relative paths for local-directoryy [\#65](https://github.com/nanbando/core/pull/65) ([wachterjohannes](https://github.com/wachterjohannes))
 
 ## [0.5.0](https://github.com/nanbando/core/tree/0.5.0) (2017-01-16)
+
 [Full Changelog](https://github.com/nanbando/core/compare/0.4.0...0.5.0)
 
 **Implemented enhancements:**
@@ -121,6 +165,7 @@
 - Added environment to generate filename [\#63](https://github.com/nanbando/core/pull/63) ([wachterjohannes](https://github.com/wachterjohannes))
 
 ## [0.4.0](https://github.com/nanbando/core/tree/0.4.0) (2017-01-15)
+
 [Full Changelog](https://github.com/nanbando/core/compare/0.3.0...0.4.0)
 
 **Implemented enhancements:**
@@ -139,6 +184,7 @@
 - Added requirements to documentation [\#55](https://github.com/nanbando/core/pull/55) ([wachterjohannes](https://github.com/wachterjohannes))
 
 ## [0.3.0](https://github.com/nanbando/core/tree/0.3.0) (2016-12-01)
+
 [Full Changelog](https://github.com/nanbando/core/compare/0.2.0...0.3.0)
 
 **Implemented enhancements:**
@@ -166,6 +212,7 @@
 - Added sulu 1.3 configuration [\#38](https://github.com/nanbando/core/pull/38) ([wachterjohannes](https://github.com/wachterjohannes))
 
 ## [0.2.0](https://github.com/nanbando/core/tree/0.2.0) (2016-09-23)
+
 [Full Changelog](https://github.com/nanbando/core/compare/0.1.1...0.2.0)
 
 **Implemented enhancements:**
@@ -182,10 +229,9 @@
 - Fixed restore if destination file already exists [\#36](https://github.com/nanbando/core/pull/36) ([wachterjohannes](https://github.com/wachterjohannes))
 - Fixed \#33 introduced default values for new database values [\#35](https://github.com/nanbando/core/pull/35) ([wachterjohannes](https://github.com/wachterjohannes))
 - Introduced project parameter [\#34](https://github.com/nanbando/core/pull/34) ([wachterjohannes](https://github.com/wachterjohannes))
-- Added latest option to fetch command [\#31](https://github.com/nanbando/core/pull/31) ([wachterjohannes](https://github.com/wachterjohannes))
-- Added exception handling for plugins [\#29](https://github.com/nanbando/core/pull/29) ([wachterjohannes](https://github.com/wachterjohannes))
 
 ## [0.1.1](https://github.com/nanbando/core/tree/0.1.1) (2016-07-21)
+
 [Full Changelog](https://github.com/nanbando/core/compare/0.1.0...0.1.1)
 
 **Closed issues:**
@@ -193,6 +239,9 @@
 - Remove fork for embedded-composer [\#28](https://github.com/nanbando/core/issues/28)
 
 ## [0.1.0](https://github.com/nanbando/core/tree/0.1.0) (2016-06-30)
+
+[Full Changelog](https://github.com/nanbando/core/compare/76053317ae538032b61d58afba2d88236964f0da...0.1.0)
+
 **Implemented enhancements:**
 
 - Replace TemporaryFilemanager with library [\#26](https://github.com/nanbando/core/issues/26)
@@ -211,6 +260,7 @@
 
 **Merged pull requests:**
 
+- Added exception handling for plugins [\#29](https://github.com/nanbando/core/pull/29) ([wachterjohannes](https://github.com/wachterjohannes))
 - Replaced own temporary-filesystem implementation with third party lib [\#27](https://github.com/nanbando/core/pull/27) ([wachterjohannes](https://github.com/wachterjohannes))
 - Changed requirement of global configuration to optional [\#22](https://github.com/nanbando/core/pull/22) ([wachterjohannes](https://github.com/wachterjohannes))
 - Implemented storage adapter [\#20](https://github.com/nanbando/core/pull/20) ([wachterjohannes](https://github.com/wachterjohannes))
@@ -223,4 +273,4 @@
 
 
 
-\* *This Change Log was automatically generated by [github_changelog_generator](https://github.com/skywinder/Github-Changelog-Generator)*
+\* *This Changelog was automatically generated by [github_changelog_generator](https://github.com/github-changelog-generator/github-changelog-generator)*

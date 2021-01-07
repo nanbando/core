@@ -36,7 +36,7 @@ The executable is signed with a OpenSSL private key.
 
 ## Requirements
 
-* php ^5.6 || ^7.0
+* php ^7.2
 * ext-xml
 * ext-curl
 * ext-mbstring
