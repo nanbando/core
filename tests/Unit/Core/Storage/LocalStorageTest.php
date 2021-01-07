@@ -3,16 +3,16 @@
 namespace Nanbando\Tests\Unit\Core\Storage;
 
 use Cocur\Slugify\SlugifyInterface;
-use League\Flysystem\Adapter\Local;
 use League\Flysystem\Filesystem;
 use League\Flysystem\ZipArchive\ZipArchiveAdapter;
 use Nanbando\Core\Flysystem\ReadonlyAdapter;
+use Nanbando\Core\Flysystem\ZipAdapter;
 use Nanbando\Core\Storage\LocalStorage;
 use Nanbando\Core\Storage\RemoteStorageNotConfiguredException;
 use Nanbando\Core\Storage\StorageInterface;
-use Nanbando\Core\Storage\Zipper;
 use Neutron\TemporaryFilesystem\TemporaryFilesystemInterface;
 use PHPUnit\Framework\TestCase;
+use PhpZip\ZipFile;
 use Prophecy\Argument;
 use Symfony\Component\Filesystem\Filesystem as SymfonyFilesystem;
 use Webmozart\PathUtil\Path;
@@ -31,11 +31,6 @@ class LocalStorageTest extends TestCase
      * @var string
      */
     private $environment = 'prod';
-
-    /**
-     * @var Zipper
-     */
-    private $zipper;
 
     /**
      * @var TemporaryFilesystemInterface
@@ -70,37 +65,49 @@ class LocalStorageTest extends TestCase
     /**
      * @var string
      */
-    private $tmpPath = '/tmp/test/';
+    private $localDirectory;
+
+    /**
+     * @var string
+     */
+    private $tmpPath;
 
     public function setUp()
     {
-        $this->zipper = $this->prophesize(Zipper::class);
+        $this->tmpPath = tempnam(sys_get_temp_dir(), 'test');
+
+        $zipFile = new ZipFile();
+        $zipFile->saveAsFile($this->tmpPath);
+
         $this->temporaryFileSystem = $this->prophesize(TemporaryFilesystemInterface::class);
         $this->localFilesystem = $this->prophesize(Filesystem::class);
         $this->remoteFilesystem = $this->prophesize(Filesystem::class);
         $this->slugify = $this->prophesize(SlugifyInterface::class);
         $this->filesystem = $this->prophesize(SymfonyFilesystem::class);
 
+        $this->localDirectory = Path::join([DATAFIXTURES_DIR, 'backups']);
+
         $this->storage = new LocalStorage(
-            $this->name, $this->environment, $this->zipper->reveal(),
+            $this->name,
+            $this->environment,
             $this->temporaryFileSystem->reveal(),
             $this->slugify->reveal(),
             $this->filesystem->reveal(),
             $this->localFilesystem->reveal(),
-            Path::join([DATAFIXTURES_DIR, 'backups']),
+            $this->localDirectory,
             $this->remoteFilesystem->reveal()
         );
     }
 
     public function testStart()
     {
-        $this->temporaryFileSystem->createTemporaryDirectory()->willReturn($this->tmpPath);
+        $this->temporaryFileSystem->createTemporaryFile()->willReturn($this->tmpPath);
 
         $filesystem = $this->storage->start();
 
         $this->assertInstanceOf(Filesystem::class, $filesystem);
-        $this->assertInstanceOf(Local::class, $filesystem->getAdapter());
-        $this->assertEquals($this->tmpPath, $filesystem->getAdapter()->getPathPrefix());
+        $this->assertInstanceOf(ZipAdapter::class, $filesystem->getAdapter());
+        $this->assertEquals($this->tmpPath, $filesystem->getAdapter()->getZipPath());
 
         return $filesystem;
     }
@@ -117,16 +124,18 @@ class LocalStorageTest extends TestCase
 
     public function testClose()
     {
+        $zipFile = new ZipFile();
+        $zipFile->saveAsFile($this->tmpPath);
+
         $filesystem = $this->testStart();
 
         $name = date(LocalStorage::FILE_NAME_PATTERN);
-        $this->zipper->zip($this->tmpPath, $name . '_' . $this->environment)->shouldBeCalled()->will(
-            function ($arguments) {
-                return $arguments[0] . '/' . $arguments[1] . '.zip';
-            }
-        );
 
         $this->slugify->slugify($this->environment)->willReturn($this->environment);
+
+        $this->filesystem
+            ->rename($this->tmpPath, Path::join([$this->localDirectory, $this->name, $name . '_' . $this->environment . '.zip']))
+            ->shouldBeCalled();
 
         $result = $this->storage->close($filesystem);
 
@@ -137,14 +146,12 @@ class LocalStorageTest extends TestCase
 
     public function testCloseLabel()
     {
+        $zipFile = new ZipFile();
+        $zipFile->saveAsFile($this->tmpPath);
+
         $filesystem = $this->testStart();
 
         $name = date(LocalStorage::FILE_NAME_PATTERN);
-        $this->zipper->zip($this->tmpPath, $name . '_' . $this->environment . '_test')->shouldBeCalled()->will(
-            function ($arguments) {
-                return $arguments[0] . '/' . $arguments[1] . '.zip';
-            }
-        );
 
         $this->slugify->slugify('test')->willReturn('test');
         $this->slugify->slugify($this->environment)->willReturn($this->environment);
@@ -157,7 +164,8 @@ class LocalStorageTest extends TestCase
     public function testCloseNoEnvironment()
     {
         $storage = new LocalStorage(
-            $this->name, null, $this->zipper->reveal(),
+            $this->name,
+            null,
             $this->temporaryFileSystem->reveal(),
             $this->slugify->reveal(),
             $this->filesystem->reveal(),
@@ -165,16 +173,14 @@ class LocalStorageTest extends TestCase
             Path::join([DATAFIXTURES_DIR, 'backups'])
         );
 
-        $this->temporaryFileSystem->createTemporaryDirectory()->willReturn($this->tmpPath);
+        $zipFile = new ZipFile();
+        $zipFile->saveAsFile($this->tmpPath);
+
+        $this->temporaryFileSystem->createTemporaryFile()->willReturn($this->tmpPath);
 
         $filesystem = $storage->start();
 
         $name = date(LocalStorage::FILE_NAME_PATTERN);
-        $this->zipper->zip($this->tmpPath, $name)->shouldBeCalled()->will(
-            function ($arguments) {
-                return $arguments[0] . '/' . $arguments[1] . '.zip';
-            }
-        );
 
         $this->slugify->slugify('test')->willReturn('test');
         $this->slugify->slugify($this->environment)->willReturn($this->environment);
@@ -187,7 +193,8 @@ class LocalStorageTest extends TestCase
     public function testCloseNoEnvironmentWithLabel()
     {
         $storage = new LocalStorage(
-            $this->name, null, $this->zipper->reveal(),
+            $this->name,
+            null,
             $this->temporaryFileSystem->reveal(),
             $this->slugify->reveal(),
             $this->filesystem->reveal(),
@@ -195,16 +202,14 @@ class LocalStorageTest extends TestCase
             Path::join([DATAFIXTURES_DIR, 'backups'])
         );
 
-        $this->temporaryFileSystem->createTemporaryDirectory()->willReturn($this->tmpPath);
+        $zipFile = new ZipFile();
+        $zipFile->saveAsFile($this->tmpPath);
+
+        $this->temporaryFileSystem->createTemporaryFile()->willReturn($this->tmpPath);
 
         $filesystem = $storage->start();
 
         $name = date(LocalStorage::FILE_NAME_PATTERN);
-        $this->zipper->zip($this->tmpPath, $name . '_test')->shouldBeCalled()->will(
-            function ($arguments) {
-                return $arguments[0] . '/' . $arguments[1] . '.zip';
-            }
-        );
 
         $this->slugify->slugify('test')->willReturn('test');
         $this->slugify->slugify($this->environment)->willReturn($this->environment);
@@ -219,7 +224,6 @@ class LocalStorageTest extends TestCase
         $name = $this->testClose();
         $path = Path::join([DATAFIXTURES_DIR, 'backups', $this->name, $name . '.zip']);
 
-        $this->temporaryFileSystem->createTemporaryFile()->shouldNotBeCalled();
         $this->localFilesystem->readStream(Argument::any())->shouldNotBeCalled();
 
         $filesystem = $this->storage->open($name);
@@ -379,7 +383,8 @@ class LocalStorageTest extends TestCase
         $this->expectException(RemoteStorageNotConfiguredException::class);
 
         $storage = new LocalStorage(
-            $this->name, $this->environment, $this->zipper->reveal(),
+            $this->name,
+            $this->environment,
             $this->temporaryFileSystem->reveal(),
             $this->slugify->reveal(),
             $this->filesystem->reveal(),
@@ -395,7 +400,8 @@ class LocalStorageTest extends TestCase
         $this->expectException(RemoteStorageNotConfiguredException::class);
 
         $storage = new LocalStorage(
-            $this->name, $this->environment, $this->zipper->reveal(),
+            $this->name,
+            $this->environment,
             $this->temporaryFileSystem->reveal(),
             $this->slugify->reveal(),
             $this->filesystem->reveal(), $this->localFilesystem->reveal(),
@@ -410,7 +416,8 @@ class LocalStorageTest extends TestCase
         $this->expectException(RemoteStorageNotConfiguredException::class);
 
         $storage = new LocalStorage(
-            $this->name, $this->environment, $this->zipper->reveal(),
+            $this->name,
+            $this->environment,
             $this->temporaryFileSystem->reveal(),
             $this->slugify->reveal(),
             $this->filesystem->reveal(),

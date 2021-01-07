@@ -8,6 +8,7 @@ use League\Flysystem\Filesystem;
 use League\Flysystem\Plugin\ListFiles;
 use League\Flysystem\ZipArchive\ZipArchiveAdapter;
 use Nanbando\Core\Flysystem\ReadonlyAdapter;
+use Nanbando\Core\Flysystem\ZipAdapter;
 use Neutron\TemporaryFilesystem\TemporaryFilesystemInterface;
 use Symfony\Component\Filesystem\Filesystem as SymfonyFilesystem;
 
@@ -27,11 +28,6 @@ class LocalStorage implements StorageInterface
      * @var string
      */
     private $environment;
-
-    /**
-     * @var Zipper
-     */
-    private $zipper;
 
     /**
      * @var TemporaryFilesystemInterface
@@ -65,8 +61,7 @@ class LocalStorage implements StorageInterface
 
     /**
      * @param string $name
-     * @param $environment
-     * @param Zipper $zipper
+     * @param string $environment
      * @param TemporaryFilesystemInterface $temporaryFileSystem
      * @param SlugifyInterface $slugify
      * @param SymfonyFilesystem $filesystem
@@ -77,7 +72,6 @@ class LocalStorage implements StorageInterface
     public function __construct(
         $name,
         $environment,
-        Zipper $zipper,
         TemporaryFilesystemInterface $temporaryFileSystem,
         SlugifyInterface $slugify,
         SymfonyFilesystem $filesystem,
@@ -87,7 +81,6 @@ class LocalStorage implements StorageInterface
     ) {
         $this->name = $name;
         $this->environment = $environment;
-        $this->zipper = $zipper;
         $this->temporaryFileSystem = $temporaryFileSystem;
         $this->slugify = $slugify;
         $this->filesystem = $filesystem;
@@ -101,8 +94,8 @@ class LocalStorage implements StorageInterface
      */
     public function start()
     {
-        $directory = $this->temporaryFileSystem->createTemporaryDirectory();
-        $filesystem = new Filesystem(new Local($directory));
+        $filename = $this->temporaryFileSystem->createTemporaryFile();
+        $filesystem = new Filesystem(new ZipAdapter($filename));
         $filesystem->addPlugin(new ListFiles());
 
         return $filesystem;
@@ -131,9 +124,12 @@ class LocalStorage implements StorageInterface
             (!empty($label) ? ('_' . $this->slugify->slugify($label)) : '')
         );
 
-        /** @var Local $adapter */
+        /** @var ZipAdapter $adapter */
         $adapter = $filesystem->getAdapter();
-        $path = $this->zipper->zip($adapter->getPathPrefix(), $fileName);
+        $filename = $adapter->close();
+
+        $path = sprintf('%s/%s/%s.zip', $this->localDirectory, $this->name, $fileName);
+        $this->filesystem->rename($filename, $path);
 
         return pathinfo($path, PATHINFO_FILENAME);
     }
