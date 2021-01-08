@@ -5,6 +5,7 @@ namespace Nanbando\Core\Flysystem;
 use League\Flysystem\Adapter\AbstractAdapter;
 use League\Flysystem\Adapter\Polyfill\NotSupportingVisibilityTrait;
 use League\Flysystem\Adapter\Polyfill\StreamedCopyTrait;
+use League\Flysystem\Adapter\Polyfill\StreamedReadingTrait;
 use League\Flysystem\Adapter\Polyfill\StreamedTrait;
 use League\Flysystem\AdapterInterface;
 use League\Flysystem\Config;
@@ -16,7 +17,7 @@ use PhpZip\ZipFile;
 class ZipAdapter extends AbstractAdapter implements AdapterInterface
 {
     use NotSupportingVisibilityTrait;
-    use StreamedTrait;
+    use StreamedReadingTrait;
     use StreamedCopyTrait;
 
     /**
@@ -50,6 +51,19 @@ class ZipAdapter extends AbstractAdapter implements AdapterInterface
     public function getZipPath()
     {
         return $this->zipPath;
+    }
+
+    public function writeStream($path, $resource, Config $config)
+    {
+        Util::rewindStream($resource);
+        $this->zip->addFromStream($resource, $path);
+
+        return compact('path');
+    }
+
+    public function updateStream($path, $resource, Config $config)
+    {
+        return $this->writeStream($path, $resource, $config);
     }
 
     /**

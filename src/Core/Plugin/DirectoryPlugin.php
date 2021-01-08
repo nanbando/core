@@ -77,7 +77,6 @@ class DirectoryPlugin implements PluginInterface
             $metadata[$path] = array_merge(['hash' => $this->getHash($stream)], $file);
 
             $destination->writeStream($path, $stream);
-            fclose($stream);
 
             $progressBar->advance();
         }
