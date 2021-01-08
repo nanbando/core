@@ -26,7 +26,6 @@
         "symfony/options-resolver": "^5.2",
         "symfony/filesystem": "^5.2",
         "symfony/proxy-manager-bridge": "^5.2",
-        "oneup/flysystem-bundle": "^3.2",
         "scriptfusion/byte-formatter": "^3.2",
         "padraic/phar-updater": "~1.0.4",
         "cocur/slugify": "^4.0",

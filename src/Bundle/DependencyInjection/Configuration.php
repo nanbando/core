@@ -2,6 +2,9 @@
 
 namespace Nanbando\Bundle\DependencyInjection;
 
+use League\Flysystem\AdapterInterface;
+use Nanbando\Bundle\DependencyInjection\Factory\AdapterFactoryInterface;
+use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 use Webmozart\PathUtil\Path;
@@ -15,15 +18,27 @@ class Configuration implements ConfigurationInterface
     const ENV_SSH_RSAKEY_PASSWORD = 'NANBANDO_SSH_RSAKEY_PASSWORD';
 
     /**
+     * @var AdapterFactoryInterface[]
+     */
+    protected $adapterFactories;
+
+    public function __construct(array $adapterFactories)
+    {
+        $this->adapterFactories = $adapterFactories;
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function getConfigTreeBuilder()
     {
         $treeBuilder = new TreeBuilder('nanbando');
 
-        $treeBuilder
-            ->getRootNode()
-            ->children()
+        $rootNode = $treeBuilder->getRootNode();
+        $this->addAdapterSection($rootNode);
+        $this->addFilesystemSection($rootNode);
+
+        $rootNode->children()
                 ->scalarNode('name')->defaultValue('nanbando')->end()
                 ->scalarNode('environment')
                     ->defaultValue('%env(' . self::ENV_ENVIRONMENT . ')%')
@@ -127,5 +142,95 @@ class Configuration implements ConfigurationInterface
             ->end();
 
         return $treeBuilder;
+    }
+
+    private function addAdapterSection(ArrayNodeDefinition $node)
+    {
+        $adapterNodeBuilder = $node
+            ->fixXmlConfig('adapter')
+            ->children()
+                ->arrayNode('adapters')
+                    ->useAttributeAsKey('name')
+                    ->prototype('array')
+                    ->performNoDeepMerging()
+                    ->children()
+        ;
+
+        foreach ($this->adapterFactories as $name => $factory) {
+            $factoryNode = $adapterNodeBuilder->arrayNode($name)->canBeUnset();
+
+            $factory->addConfiguration($factoryNode);
+        }
+    }
+
+    private function addFilesystemSection(ArrayNodeDefinition $node)
+    {
+        $supportedVisibilities = array(
+            AdapterInterface::VISIBILITY_PRIVATE,
+            AdapterInterface::VISIBILITY_PUBLIC,
+        );
+
+        $node
+            ->fixXmlConfig('filesystem')
+            ->children()
+                ->arrayNode('filesystems')
+                    ->useAttributeAsKey('name')
+                    ->prototype('array')
+                    ->children()
+                        ->booleanNode('disable_asserts')
+                            ->defaultFalse()
+                        ->end()
+                        ->arrayNode('plugins')->treatNullLike(array())->prototype('scalar')->end()->end()
+                        ->scalarNode('adapter')->isRequired()->end()
+                        ->scalarNode('alias')->defaultNull()->end()
+                        ->scalarNode('mount')->defaultNull()->end()
+                        ->arrayNode('stream_wrapper')
+                            ->beforeNormalization()
+                                ->ifString()->then(function ($protocol) {
+                                    return ['protocol' => $protocol];
+                                })
+                            ->end()
+                            ->children()
+                                ->scalarNode('protocol')->isRequired()->end()
+                                ->arrayNode('configuration')
+                                    ->children()
+                                        ->arrayNode('permissions')
+                                            ->isRequired()
+                                            ->children()
+                                                ->arrayNode('dir')
+                                                    ->isRequired()
+                                                    ->children()
+                                                        ->integerNode('private')->isRequired()->end()
+                                                        ->integerNode('public')->isRequired()->end()
+                                                    ->end()
+                                                ->end()
+                                                ->arrayNode('file')
+                                                    ->isRequired()
+                                                    ->children()
+                                                        ->integerNode('private')->isRequired()->end()
+                                                        ->integerNode('public')->isRequired()->end()
+                                                    ->end()
+                                                ->end()
+                                            ->end()
+                                        ->end()
+                                        ->arrayNode('metadata')
+                                            ->isRequired()
+                                            ->requiresAtLeastOneElement()
+                                            ->prototype('scalar')->cannotBeEmpty()->end()
+                                        ->end()
+                                        ->integerNode('public_mask')->isRequired()->end()
+                                    ->end()
+                                ->end()
+                            ->end()
+                        ->end()
+                        ->scalarNode('visibility')
+                            ->validate()
+                            ->ifNotInArray($supportedVisibilities)
+                            ->thenInvalid('The visibility %s is not supported.')
+                        ->end()
+                    ->end()
+                ->end()
+            ->end()
+        ;
     }
 }

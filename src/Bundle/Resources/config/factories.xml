@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+           <services>
+               <!-- Adapter factories -->
+               <service id="nanbando.adapter_factory.local" class="Nanbando\Bundle\DependencyInjection\Factory\Adapter\LocalFactory">
+                   <tag name="nanbando.adapter_factory" />
+               </service>
+               <service id="nanbando.adapter_factory.nulladapter" class="Nanbando\Bundle\DependencyInjection\Factory\Adapter\NullAdapterFactory">
+                   <tag name="nanbando.adapter_factory" />
+               </service>
+               <service id="nanbando.adapter_factory.zip" class="Nanbando\Bundle\DependencyInjection\Factory\Adapter\ZipFactory">
+                   <tag name="nanbando.adapter_factory" />
+               </service>
+               <service id="nanbando.adapter_factory.async_aws_s3" class="Nanbando\Bundle\DependencyInjection\Factory\Adapter\AsyncAwsS3Factory">
+                   <tag name="nanbando.adapter_factory" />
+               </service>
+               <service id="nanbando.adapter_factory.awss3v2" class="Nanbando\Bundle\DependencyInjection\Factory\Adapter\AwsS3V2Factory">
+                   <tag name="nanbando.adapter_factory" />
+               </service>
+               <service id="nanbando.adapter_factory.awss3v3" class="Nanbando\Bundle\DependencyInjection\Factory\Adapter\AwsS3V3Factory">
+                   <tag name="nanbando.adapter_factory" />
+               </service>
+               <service id="nanbando.adapter_factory.azureblob" class="Nanbando\Bundle\DependencyInjection\Factory\Adapter\AzureBlobFactory">
+                   <tag name="nanbando.adapter_factory" />
+               </service>
+               <service id="nanbando.adapter_factory.dropbox" class="Nanbando\Bundle\DependencyInjection\Factory\Adapter\DropboxFactory">
+                   <tag name="nanbando.adapter_factory" />
+               </service>
+               <service id="nanbando.adapter_factory.googlecloudstorage" class="Nanbando\Bundle\DependencyInjection\Factory\Adapter\GoogleCloudStorageFactory">
+                   <tag name="nanbando.adapter_factory" />
+               </service>
+               <service id="nanbando.adapter_factory.rackspace" class="Nanbando\Bundle\DependencyInjection\Factory\Adapter\RackspaceFactory">
+                   <tag name="nanbando.adapter_factory" />
+               </service>
+               <service id="nanbando.adapter_factory.webdav" class="Nanbando\Bundle\DependencyInjection\Factory\Adapter\WebDavFactory">
+                   <tag name="nanbando.adapter_factory" />
+               </service>
+               <service id="nanbando.adapter_factory.ftp" class="Nanbando\Bundle\DependencyInjection\Factory\Adapter\FtpFactory">
+                   <tag name="nanbando.adapter_factory" />
+               </service>
+               <service id="nanbando.adapter_factory.sftp" class="Nanbando\Bundle\DependencyInjection\Factory\Adapter\SftpFactory">
+                   <tag name="nanbando.adapter_factory" />
+               </service>
+               <service id="nanbando.adapter_factory.gridfs" class="Nanbando\Bundle\DependencyInjection\Factory\Adapter\GridFSFactory">
+                   <tag name="nanbando.adapter_factory" />
+               </service>
+               <service id="nanbando.adapter_factory.customadapter" class="Nanbando\Bundle\DependencyInjection\Factory\Adapter\CustomAdapterFactory">
+                   <tag name="nanbando.adapter_factory" />
+               </service>
+               <service id="nanbando.adapter_factory.memory" class="Nanbando\Bundle\DependencyInjection\Factory\Adapter\MemoryAdapterFactory">
+                   <tag name="nanbando.adapter_factory" />
+               </service>
+               <service id="nanbando.adapter_factory.fallback" class="Nanbando\Bundle\DependencyInjection\Factory\Adapter\FallbackFactory">
+                   <tag name="nanbando.adapter_factory" />
+               </service>
+               <service id="nanbando.adapter_factory.gaufrette" class="Nanbando\Bundle\DependencyInjection\Factory\Adapter\GaufretteFactory">
+                   <tag name="nanbando.adapter_factory" />
+               </service>
+               <service id="nanbando.adapter_factory.replicate" class="Nanbando\Bundle\DependencyInjection\Factory\Adapter\ReplicateFactory">
+                   <tag name="nanbando.adapter_factory" />
+               </service>
+
+               <!-- Cache factories -->
+               <service id="nanbando.cache_factory.adapter" class="Nanbando\Bundle\DependencyInjection\Factory\Cache\AdapterFactory">
+                   <tag name="nanbando.cache_factory" />
+               </service>
+               <service id="nanbando.cache_factory.memory" class="Nanbando\Bundle\DependencyInjection\Factory\Cache\MemoryFactory">
+                   <tag name="nanbando.cache_factory" />
+               </service>
+               <service id="nanbando.cache_factory.noop" class="Nanbando\Bundle\DependencyInjection\Factory\Cache\NoopFactory">
+                   <tag name="nanbando.cache_factory" />
+               </service>
+               <service id="nanbando.cache_factory.memcached" class="Nanbando\Bundle\DependencyInjection\Factory\Cache\MemcachedFactory">
+                   <tag name="nanbando.cache_factory" />
+               </service>
+               <service id="nanbando.cache_factory.php_redis" class="Nanbando\Bundle\DependencyInjection\Factory\Cache\PhpRedisFactory">
+                   <tag name="nanbando.cache_factory" />
+               </service>
+               <service id="nanbando.cache_factory.predis" class="Nanbando\Bundle\DependencyInjection\Factory\Cache\PredisFactory">
+                   <tag name="nanbando.cache_factory" />
+               </service>
+               <service id="nanbando.cache_factory.stash" class="Nanbando\Bundle\DependencyInjection\Factory\Cache\StashFactory">
+                   <tag name="nanbando.cache_factory" />
+               </service>
+               <service id="nanbando.cache_factory.psr6" class="Nanbando\Bundle\DependencyInjection\Factory\Cache\Psr6Factory">
+                   <tag name="nanbando.cache_factory" />
+               </service>
+           </services>
+
+</container>
