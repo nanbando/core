@@ -62,7 +62,7 @@ class DirectoryPluginTest extends TestCase
         $destination->writeStream('test.json', $stream)->shouldBeCalled();
 
         $this->plugin->backup($source->reveal(), $destination->reveal(), $database->reveal(), ['directory' => 'test']);
-        $this->assertFalse(is_resource($stream));
+        $this->assertTrue(is_resource($stream));
     }
 
     public function testRestore()
