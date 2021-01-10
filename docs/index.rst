@@ -17,7 +17,7 @@ Features
 Requirements
 ------------
 
-- PHP: ^5.2
+- PHP: ^7.2
 - ext-xml
 - ext-curl
 - ext-mbstring
