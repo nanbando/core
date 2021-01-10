@@ -14,34 +14,72 @@ Global configuration
 The global congfiguration is placed in the user home directory. This will be used for all projects used by the user.
 Put this configuration into ``~/.nanbando.yml``.
 
+**Local** directory (e.g. a mounted NFS drive):
+
 .. code:: yaml
 
     nanbando:
         storage:
             local_directory: "%home%/nanbando"
-            remote_service: filesystem.remote
-
-    oneup_flysystem:
-        adapters:
             remote:
                 local:
                     directory: "%home%/nanbando/remote"
 
-        filesystems:
+AWS **S3** bucket:
+
+.. code:: yaml
+
+    nanbando:
+        storage:
+            local_directory: "%home%/nanbando"
             remote:
-                adapter: remote
-                alias: filesystem.remote
-                plugins:
-                    - filesystem.list_files
+                s3:
+                    client:
+                        region: 'eu-central-1'
+                        credentials:
+                            key: '...'
+                            secret: '...'
+                    bucket: 'bucket-name'
+
+Digitalocean **S3** bucket:
+
+.. code:: yaml
+
+    nanbando:
+        storage:
+            local_directory: "%home%/nanbando"
+            remote:
+                s3:
+                    client:
+                        region: 'fra1'
+                        endpoint: 'https://fra1.digitaloceanspaces.com'
+                        credentials:
+                            key: '...'
+                            secret: '...'
+                    bucket: 'bucket-name'
+
+**Google Cloud Storage** remote bucket:
+
+.. code:: yaml
+
+    nanbando:
+        storage:
+            local_directory: "%home%/nanbando"
+            remote:
+                s3:
+                    client:
+                        projectId: 'project-id'
+                        keyFilePath: '/path/to/key.json'
+                    bucket: 'bucket-name'
 
 .. note::
 
-    The configuration documentation for the ``oneup_flysystem`` can be found on github `OneupFlysystemBundle`_.
+    This global configuration can also be configured inside the ``nanbando.json`` file.
 
 For nanbando you have to define the local directory, where the backup command can place the backup archives, and the
-remote filesystem-service which can be configured in the ``oneup_flysystem`` extension.
+connection details for the remote destination.
 
-By default the ``local_directory`` will be set to ``%home%/nanbando`` and the ``remote_service`` will be ``null``. This
+By default the ``local_directory`` will be set to ``%home%/nanbando`` and the ``remote`` will be ``null``. This
 leads to local backups will work out of the box but all commands (``fetch``, ``push``) which needs the remote-storage
 will be disabled.
 
@@ -61,7 +99,7 @@ The local configuration contains the name, backup configuration and the addition
             "production": {
                 "ssh": {
                     "host": "<ip-address>",
-                    "username": "nanbando",
+                    "username": "%env(SSH_USERNAME)%",
                     "password": "<your-password|true>"
                 },
                 "directory": "test-data",
@@ -85,7 +123,8 @@ The ``backup`` section can contain as much parts as needed. Each plugin can prov
 .. note::
 
     The section ``parameters`` can be used to define global parameters which can be used in the plugin configuration.
-    To import files place them in the ``imports`` array. This can be used to reuse the symfony-application parameter.
+    To import files place them in the ``imports`` array. This can be used to reuse the symfony-application parameter. As
+    an alternative to the ``parameters`` you can use ``%env(...)%`` and the ``.env`` file handling of `Symfony DotEnv`_.
 
 Server Configuration
 --------------------
@@ -163,4 +202,4 @@ As an example you could backup the database each hour and each night also the fi
 could restore user-data in a smaller granularity than the files but the resulting backups will use less disk space and
 the hourly backup will run faster.
 
-.. _`OneupFlysystemBundle`: https://github.com/1up-lab/OneupFlysystemBundle/blob/master/Resources/doc/index.md#step3-configure-your-filesystems
+.. _`Symfony DotEnv`: https://symfony.com/doc/4.1/components/dotenv.html

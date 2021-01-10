@@ -5,8 +5,6 @@ namespace Nanbando\Application;
 use Cocur\Slugify\Bridge\Symfony\CocurSlugifyBundle;
 use Nanbando\Bundle\NanbandoBundle;
 use Nanbando\Core\Config\JsonLoader;
-use Oneup\FlysystemBundle\OneupFlysystemBundle;
-use Symfony\Component\Config\ConfigCache;
 use Symfony\Component\Config\Loader\DelegatingLoader;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\Config\Loader\LoaderResolver;
@@ -52,7 +50,6 @@ class Kernel extends SymfonyKernel implements CompilerPassInterface
     {
         $bundles = [
             new NanbandoBundle(),
-            new OneupFlysystemBundle(),
             new CocurSlugifyBundle(),
         ];
 

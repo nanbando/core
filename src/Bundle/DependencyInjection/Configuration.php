@@ -2,9 +2,36 @@
 
 namespace Nanbando\Bundle\DependencyInjection;
 
+use League\Flysystem\AdapterInterface;
+use Nanbando\Bundle\DependencyInjection\Factory\AdapterFactoryInterface;
+use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 use Webmozart\PathUtil\Path;
+
+/*
+nanbando:
+    storage:
+        remote:
+            s3:
+                client:
+                    version: 'latest'
+                    region: 'region-id'
+                    endpoint: ~
+                    credentials:
+                        key: 's3-key'
+                        secret: 's3-secret'
+                bucket: 'my-bucket'
+                prefix: '/my-prefix'
+            googlecloudstorage:
+                client:
+                    projectId: 'your-project-id'
+                    keyFilePath: '/path/to/service-account.json'
+                bucket: 'my-bucket'
+                prefix: '/my-prefix'
+            local:
+                directory: '/nanbando'
+ */
 
 class Configuration implements ConfigurationInterface
 {
@@ -15,15 +42,26 @@ class Configuration implements ConfigurationInterface
     const ENV_SSH_RSAKEY_PASSWORD = 'NANBANDO_SSH_RSAKEY_PASSWORD';
 
     /**
+     * @var AdapterFactoryInterface[]
+     */
+    protected $adapterFactories;
+
+    public function __construct(array $adapterFactories)
+    {
+        $this->adapterFactories = $adapterFactories;
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function getConfigTreeBuilder()
     {
         $treeBuilder = new TreeBuilder('nanbando');
 
-        $treeBuilder
-            ->getRootNode()
-            ->children()
+        $rootNode = $treeBuilder->getRootNode();
+        $this->addStorageSection($rootNode);
+
+        $rootNode->children()
                 ->scalarNode('name')->defaultValue('nanbando')->end()
                 ->scalarNode('environment')
                     ->defaultValue('%env(' . self::ENV_ENVIRONMENT . ')%')
@@ -52,15 +90,6 @@ class Configuration implements ConfigurationInterface
                                 ->prototype('variable')->end()
                             ->end()
                         ->end()
-                    ->end()
-                ->end()
-                ->arrayNode('storage')
-                    ->addDefaultsIfNotSet()
-                    ->children()
-                        ->scalarNode('local_directory')
-                            ->defaultValue(Path::join([Path::getHomeDirectory(), 'nanbando']))
-                        ->end()
-                        ->scalarNode('remote_service')->end()
                     ->end()
                 ->end()
                 ->arrayNode('servers')
@@ -127,5 +156,25 @@ class Configuration implements ConfigurationInterface
             ->end();
 
         return $treeBuilder;
+    }
+
+    private function addStorageSection(ArrayNodeDefinition $node) {
+        $remoteNode = $node
+            ->children()
+                ->arrayNode('storage')
+                ->addDefaultsIfNotSet()
+                ->children()
+                    ->scalarNode('local_directory')
+                        ->defaultValue(Path::join([Path::getHomeDirectory(), 'nanbando']))
+                    ->end()
+                    ->arrayNode('remote')
+                        ->children()
+        ;
+
+        foreach ($this->adapterFactories as $name => $factory) {
+            $factoryNode = $remoteNode->arrayNode($name)->canBeUnset();
+
+            $factory->addConfiguration($factoryNode);
+        }
     }
 }

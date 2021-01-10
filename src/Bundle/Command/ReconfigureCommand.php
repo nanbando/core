@@ -116,6 +116,10 @@ EOT
         $discovery = [];
         foreach ($rootPackage->getRequires() as $require) {
             $package = $composer->getRepositoryManager()->findPackage($require->getTarget(), $require->getConstraint());
+            if (!$package) {
+                continue;
+            }
+
             $bundleClasses = $package->getExtra()['nanbando']['bundle-classes'] ?? [];
 
             foreach ($bundleClasses as $bundleClass) {

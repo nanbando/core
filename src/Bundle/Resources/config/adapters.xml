@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+       <services>
+           <service id="nanbando.adapter.local" class="League\Flysystem\Adapter\Local" abstract="true" public="false">
+               <argument /><!-- Directory -->
+           </service>
+
+           <service id="nanbando.adapter.awss3v3" class="League\Flysystem\AwsS3v3\AwsS3Adapter" abstract="true" public="false">
+               <argument /><!-- Client -->
+               <argument /><!-- Bucket -->
+               <argument /><!-- Prefix -->
+           </service>
+
+           <service id="nanbando.adapter.awss3v3.client" class="Aws\S3\S3Client" abstract="true" public="false">
+               <argument /><!-- Clien Configuration -->
+           </service>
+
+           <service id="nanbando.adapter.googlecloudstorage" class="Superbalist\Flysystem\GoogleStorage\GoogleStorageAdapter" abstract="true" public="false">
+               <argument /><!-- Client -->
+               <argument /><!-- Bucket -->
+               <argument /><!-- Prefix -->
+               <argument /><!-- StorageApiUrl -->
+           </service>
+
+           <service id="nanbando.adapter.googlecloudstorage.client" class="Google\Cloud\Storage\StorageClient" abstract="true" public="false">
+               <argument /><!-- Client Configuration -->
+           </service>
+
+           <service id="nanbando.adapter.googlecloudstorage.bucket" class="Google\Cloud\Storage\Bucket" abstract="true" public="false">
+               <argument /><!-- Bucket -->
+           </service>
+       </services>
+</container>

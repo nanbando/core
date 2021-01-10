@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+       <services>
+           <!-- Adapter factories -->
+           <service id="nanbando.adapter_factory.local" class="Nanbando\Bundle\DependencyInjection\Factory\Adapter\LocalFactory">
+               <tag name="nanbando.adapter_factory" />
+           </service>
+           <service id="nanbando.adapter_factory.awss3v3" class="Nanbando\Bundle\DependencyInjection\Factory\Adapter\AwsS3V3Factory">
+               <tag name="nanbando.adapter_factory" />
+           </service>
+           <service id="nanbando.adapter_factory.googlecloudstorage" class="Nanbando\Bundle\DependencyInjection\Factory\Adapter\GoogleCloudStorageFactory">
+               <tag name="nanbando.adapter_factory" />
+           </service>
+       </services>
+</container>
