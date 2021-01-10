@@ -7,6 +7,8 @@
   ],
   "files": [
     "LICENSE",
+    "README.md",
+    "UPGRADE.md",
     "vendor/composer/installed.json",
     "vendor/dflydev/embedded-composer/.root_package.json",
     "vendor/composer/ca-bundle/res/cacert.pem"
