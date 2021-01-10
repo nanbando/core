@@ -3,8 +3,47 @@ UPGRADE before 1.0-RC1
 
 # Table of Contents
 
+- [Remote configuration](#remove-configuration)
 - [Plugins Discovery](#plugin-discovery)
 - [Filename](#filenames)
+
+### Remote configuration
+
+Since 0.11.0 the bundle `OneupFlysystemBundle` was removed and replaced with a
+simpler configuration (see nanbando/core#113).
+
+**Before**: `nanbando.yml`
+
+```
+nanbando:
+    storage:
+        local_directory: "%home%/nanbando"
+        remote_service: filesystem.remote
+
+oneup_flysystem:
+    adapters:
+        remote:
+            local:
+                directory: "%home%/nanbando/remote"
+
+    filesystems:
+        remote:
+            adapter: remote
+            alias: filesystem.remote
+            plugins:
+                - filesystem.list_files
+```
+
+**After:**: `nanbando.yml`
+
+```
+nanbando:
+    storage:
+        local_directory: "%home%/nanbando"
+        remote:
+            local:
+                directory: "%home%/nanbando/remote"
+```
 
 ### Plugin Discovery
 
