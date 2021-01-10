@@ -2,85 +2,34 @@
 <container xmlns="http://symfony.com/schema/dic/services"
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+       <services>
+           <service id="nanbando.adapter.local" class="League\Flysystem\Adapter\Local" abstract="true" public="false">
+               <argument /><!-- Directory -->
+           </service>
 
-           <services>
-               <service id="nanbando.adapter.local" class="League\Flysystem\Adapter\Local" abstract="true" public="false">
-                   <argument /><!-- Directory -->
-                   <argument /><!-- WriteFlags -->
-                   <argument /><!-- LinkHandling -->
-                   <argument /><!-- Permissions -->
-               </service>
-               <service id="nanbando.adapter.cached" class="League\Flysystem\Cached\CachedAdapter" abstract="true" public="false">
-                   <argument /><!-- Adapter -->
-                   <argument /><!-- CacheAdapter -->
-               </service>
-               <service id="nanbando.adapter.nulladapter" class="League\Flysystem\Adapter\NullAdapter" abstract="true" public="false" />
-               <service id="nanbando.adapter.memory" class="League\Flysystem\Memory\MemoryAdapter" abstract="true" public="false" />
-               <service id="nanbando.adapter.zip" class="League\Flysystem\ZipArchive\ZipArchiveAdapter" abstract="true" public="false">
-                   <argument /><!-- Location -->
-                   <argument /><!-- Archive -->
-                   <argument /><!-- Prefix -->
-               </service>
-               <service id="nanbando.adapter.async_aws_s3" class="AsyncAws\Flysystem\S3\AsyncAwsS3Adapter" abstract="true" public="false">
-                   <argument /><!-- Client -->
-                   <argument /><!-- Bucket -->
-                   <argument /><!-- Prefix -->
-               </service>
-               <service id="nanbando.adapter.awss3v2" class="League\Flysystem\AwsS3v2\AwsS3Adapter" abstract="true" public="false">
-                   <argument /><!-- Client -->
-                   <argument /><!-- Bucket -->
-                   <argument /><!-- Prefix -->
-               </service>
-               <service id="nanbando.adapter.awss3v3" class="League\Flysystem\AwsS3v3\AwsS3Adapter" abstract="true" public="false">
-                   <argument /><!-- Client -->
-                   <argument /><!-- Bucket -->
-                   <argument /><!-- Prefix -->
-               </service>
-               <service id="nanbando.adapter.azureblob" class="League\Flysystem\AzureBlobStorage\AzureBlobStorageAdapter" abstract="true" public="false">
-                   <argument /><!-- Client -->
-                   <argument /><!-- Container -->
-                   <argument /><!-- Prefix -->
-               </service>
-               <service id="nanbando.adapter.dropbox" class="Spatie\FlysystemDropbox\DropboxAdapter" abstract="true" public="false">
-                   <argument /><!-- Client -->
-                   <argument /><!-- Prefix -->
-               </service>
-               <service id="nanbando.adapter.googlecloudstorage" class="Superbalist\Flysystem\GoogleStorage\GoogleStorageAdapter" abstract="true" public="false">
-                   <argument /><!-- Client -->
-                   <argument /><!-- Bucket -->
-                   <argument /><!-- Prefix -->
-                   <argument /><!-- StorageApiUrl -->
-               </service>
-               <service id="nanbando.adapter.rackspace" class="League\Flysystem\Rackspace\RackspaceAdapter" abstract="true" public="false">
-                   <argument /><!-- Lazy -->
-                   <argument /><!-- Container -->
-                   <argument /><!-- Prefix -->
-               </service>
-               <service id="nanbando.adapter.webdav" class="League\Flysystem\WebDAV\WebDAVAdapter" abstract="true" public="false">
-                   <argument /><!-- Client -->
-                   <argument /><!-- Prefix -->
-               </service>
-               <service id="nanbando.adapter.ftp" class="League\Flysystem\Adapter\Ftp" abstract="true" public="false">
-                   <argument /><!-- Options -->
-               </service>
-               <service id="nanbando.adapter.sftp" class="League\Flysystem\Sftp\SftpAdapter" abstract="true" public="false">
-                   <argument /><!-- Options -->
-               </service>
-               <service id="nanbando.adapter.gridfs" class="League\Flysystem\GridFS\GridFSAdapter" abstract="true" public="false">
-                   <argument /><!-- Client -->
-               </service>
-               <service id="nanbando.adapter.fallback" class="Litipk\Flysystem\Fallback\FallbackAdapter" abstract="true" public="false">
-                   <argument /><!-- MainAdapter -->
-                   <argument /><!-- Fallback -->
-                   <argument /><!-- forceCopyOnMain -->
-               </service>
-               <service id="nanbando.adapter.gaufrette" class="Jenko\Flysystem\GaufretteAdapter" abstract="true" public="false">
-                   <argument /><!-- GaufretteAdapter -->
-               </service>
-               <service id="nanbando.adapter.replicate" class="League\Flysystem\Replicate\ReplicateAdapter" abstract="true" public="false">
-                   <argument /><!-- SourceAdapter -->
-                   <argument /><!-- ReplicaAdapter -->
-               </service>
-           </services>
+           <service id="nanbando.adapter.awss3v3" class="League\Flysystem\AwsS3v3\AwsS3Adapter" abstract="true" public="false">
+               <argument /><!-- Client -->
+               <argument /><!-- Bucket -->
+               <argument /><!-- Prefix -->
+           </service>
 
+           <service id="nanbando.adapter.awss3v3.client" class="Aws\S3\S3Client" abstract="true" public="false">
+               <argument /><!-- Clien Configuration -->
+           </service>
+
+           <service id="nanbando.adapter.googlecloudstorage" class="Superbalist\Flysystem\GoogleStorage\GoogleStorageAdapter" abstract="true" public="false">
+               <argument /><!-- Client -->
+               <argument /><!-- Bucket -->
+               <argument /><!-- Prefix -->
+               <argument /><!-- StorageApiUrl -->
+           </service>
+
+           <service id="nanbando.adapter.googlecloudstorage.client" class="Google\Cloud\Storage\StorageClient" abstract="true" public="false">
+               <argument /><!-- Client Configuration -->
+           </service>
+
+           <service id="nanbando.adapter.googlecloudstorage.bucket" class="Google\Cloud\Storage\Bucket" abstract="true" public="false">
+               <argument /><!-- Bucket -->
+           </service>
+       </services>
 </container>

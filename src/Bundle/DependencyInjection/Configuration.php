@@ -9,6 +9,30 @@ use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 use Webmozart\PathUtil\Path;
 
+/*
+nanbando:
+    storage:
+        remote:
+            s3:
+                client:
+                    version: 'latest'
+                    region: 'region-id'
+                    endpoint: ~
+                    credentials:
+                        key: 's3-key'
+                        secret: 's3-secret'
+                bucket: 'my-bucket'
+                prefix: '/my-prefix'
+            googlecloudstorage:
+                client:
+                    projectId: 'your-project-id'
+                    keyFilePath: '/path/to/service-account.json'
+                bucket: 'my-bucket'
+                prefix: '/my-prefix'
+            local:
+                directory: '/nanbando'
+ */
+
 class Configuration implements ConfigurationInterface
 {
     const ENV_ENVIRONMENT = 'NANBANDO_ENVIRONMENT';
@@ -35,8 +59,7 @@ class Configuration implements ConfigurationInterface
         $treeBuilder = new TreeBuilder('nanbando');
 
         $rootNode = $treeBuilder->getRootNode();
-        $this->addAdapterSection($rootNode);
-        $this->addFilesystemSection($rootNode);
+        $this->addStorageSection($rootNode);
 
         $rootNode->children()
                 ->scalarNode('name')->defaultValue('nanbando')->end()
@@ -67,15 +90,6 @@ class Configuration implements ConfigurationInterface
                                 ->prototype('variable')->end()
                             ->end()
                         ->end()
-                    ->end()
-                ->end()
-                ->arrayNode('storage')
-                    ->addDefaultsIfNotSet()
-                    ->children()
-                        ->scalarNode('local_directory')
-                            ->defaultValue(Path::join([Path::getHomeDirectory(), 'nanbando']))
-                        ->end()
-                        ->scalarNode('remote_service')->end()
                     ->end()
                 ->end()
                 ->arrayNode('servers')
@@ -144,93 +158,23 @@ class Configuration implements ConfigurationInterface
         return $treeBuilder;
     }
 
-    private function addAdapterSection(ArrayNodeDefinition $node)
-    {
-        $adapterNodeBuilder = $node
-            ->fixXmlConfig('adapter')
+    private function addStorageSection(ArrayNodeDefinition $node) {
+        $remoteNode = $node
             ->children()
-                ->arrayNode('adapters')
-                    ->useAttributeAsKey('name')
-                    ->prototype('array')
-                    ->performNoDeepMerging()
-                    ->children()
+                ->arrayNode('storage')
+                ->addDefaultsIfNotSet()
+                ->children()
+                    ->scalarNode('local_directory')
+                        ->defaultValue(Path::join([Path::getHomeDirectory(), 'nanbando']))
+                    ->end()
+                    ->arrayNode('remote')
+                        ->children()
         ;
 
         foreach ($this->adapterFactories as $name => $factory) {
-            $factoryNode = $adapterNodeBuilder->arrayNode($name)->canBeUnset();
+            $factoryNode = $remoteNode->arrayNode($name)->canBeUnset();
 
             $factory->addConfiguration($factoryNode);
         }
-    }
-
-    private function addFilesystemSection(ArrayNodeDefinition $node)
-    {
-        $supportedVisibilities = array(
-            AdapterInterface::VISIBILITY_PRIVATE,
-            AdapterInterface::VISIBILITY_PUBLIC,
-        );
-
-        $node
-            ->fixXmlConfig('filesystem')
-            ->children()
-                ->arrayNode('filesystems')
-                    ->useAttributeAsKey('name')
-                    ->prototype('array')
-                    ->children()
-                        ->booleanNode('disable_asserts')
-                            ->defaultFalse()
-                        ->end()
-                        ->arrayNode('plugins')->treatNullLike(array())->prototype('scalar')->end()->end()
-                        ->scalarNode('adapter')->isRequired()->end()
-                        ->scalarNode('alias')->defaultNull()->end()
-                        ->scalarNode('mount')->defaultNull()->end()
-                        ->arrayNode('stream_wrapper')
-                            ->beforeNormalization()
-                                ->ifString()->then(function ($protocol) {
-                                    return ['protocol' => $protocol];
-                                })
-                            ->end()
-                            ->children()
-                                ->scalarNode('protocol')->isRequired()->end()
-                                ->arrayNode('configuration')
-                                    ->children()
-                                        ->arrayNode('permissions')
-                                            ->isRequired()
-                                            ->children()
-                                                ->arrayNode('dir')
-                                                    ->isRequired()
-                                                    ->children()
-                                                        ->integerNode('private')->isRequired()->end()
-                                                        ->integerNode('public')->isRequired()->end()
-                                                    ->end()
-                                                ->end()
-                                                ->arrayNode('file')
-                                                    ->isRequired()
-                                                    ->children()
-                                                        ->integerNode('private')->isRequired()->end()
-                                                        ->integerNode('public')->isRequired()->end()
-                                                    ->end()
-                                                ->end()
-                                            ->end()
-                                        ->end()
-                                        ->arrayNode('metadata')
-                                            ->isRequired()
-                                            ->requiresAtLeastOneElement()
-                                            ->prototype('scalar')->cannotBeEmpty()->end()
-                                        ->end()
-                                        ->integerNode('public_mask')->isRequired()->end()
-                                    ->end()
-                                ->end()
-                            ->end()
-                        ->end()
-                        ->scalarNode('visibility')
-                            ->validate()
-                            ->ifNotInArray($supportedVisibilities)
-                            ->thenInvalid('The visibility %s is not supported.')
-                        ->end()
-                    ->end()
-                ->end()
-            ->end()
-        ;
     }
 }

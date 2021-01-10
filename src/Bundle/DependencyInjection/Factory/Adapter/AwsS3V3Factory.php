@@ -10,30 +10,45 @@ use Nanbando\Bundle\DependencyInjection\Factory\AdapterFactoryInterface;
 
 class AwsS3V3Factory implements AdapterFactoryInterface
 {
-    public function getKey()
+    public function getKey(): string
     {
-        return 'awss3v3';
+        return 's3';
     }
 
-    public function create(ContainerBuilder $container, $id, array $config)
+    public function create(ContainerBuilder $container, $id, array $config): void
     {
-        $definition = $container
+        $container
+            ->setDefinition($id . '.client',  new ChildDefinition('nanbando.adapter.awss3v3.client'))
+            ->replaceArgument(0, $config['client']);
+
+        $container
             ->setDefinition($id, new ChildDefinition('nanbando.adapter.awss3v3'))
-            ->replaceArgument(0, new Reference($config['client']))
+            ->replaceArgument(0, new Reference($id . '.client'))
             ->replaceArgument(1, $config['bucket'])
-            ->replaceArgument(2, $config['prefix'])
-            ->addArgument((array) $config['options'])
-        ;
+            ->replaceArgument(2, $config['prefix']);
     }
 
-    public function addConfiguration(NodeDefinition $node)
+    public function addConfiguration(NodeDefinition $node): void
     {
         $node
             ->children()
-                ->scalarNode('client')->isRequired()->end()
+                ->arrayNode('client')
+                    ->isRequired()
+                    ->children()
+                        ->scalarNode('version')->defaultValue('latest')->end()
+                        ->scalarNode('region')->isRequired()->end()
+                        ->scalarNode('endpoint')->defaultNull()->end()
+                        ->arrayNode('credentials')
+                            ->isRequired()
+                                ->children()
+                                    ->scalarNode('key')->isRequired()->end()
+                                    ->scalarNode('secret')->isRequired()->end()
+                                ->end()
+                            ->end()
+                    ->end()
+                ->end()
                 ->scalarNode('bucket')->isRequired()->end()
                 ->scalarNode('prefix')->defaultNull()->end()
-                ->arrayNode('options')->prototype('scalar')->end()
             ->end()
         ;
     }

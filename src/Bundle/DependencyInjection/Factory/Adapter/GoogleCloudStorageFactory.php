@@ -10,30 +10,41 @@ use Nanbando\Bundle\DependencyInjection\Factory\AdapterFactoryInterface;
 
 class GoogleCloudStorageFactory implements AdapterFactoryInterface
 {
-    public function getKey()
+    public function getKey(): string
     {
         return 'googlecloudstorage';
     }
 
-    public function create(ContainerBuilder $container, $id, array $config)
+    public function create(ContainerBuilder $container, $id, array $config): void
     {
-        $definition = $container
+        $container->setDefinition($id . '.client', new ChildDefinition('nanbando.adapter.googlecloudstorage.client'))
+            ->replaceArgument(0, $config['client']);
+
+        $container->setDefinition($id . '.bucket', new ChildDefinition('nanbando.adapter.googlecloudstorage.bucket'))
+            ->setFactory([new Reference($id . '.client'), 'bucket'])
+            ->replaceArgument(0, $config['bucket']);
+
+        $container
             ->setDefinition($id, new ChildDefinition('nanbando.adapter.googlecloudstorage'))
-            ->replaceArgument(0, new Reference($config['client']))
-            ->replaceArgument(1, new Reference($config['bucket']))
+            ->replaceArgument(0, new Reference($id . '.client'))
+            ->replaceArgument(1, new Reference($id . '.bucket'))
             ->replaceArgument(2, $config['prefix'])
-            ->replaceArgument(3, $config['storage_api_url'])
         ;
     }
 
-    public function addConfiguration(NodeDefinition $node)
+    public function addConfiguration(NodeDefinition $node): void
     {
         $node
             ->children()
-                ->scalarNode('client')->isRequired()->end()
+                ->arrayNode('client')
+                    ->isRequired()
+                    ->children()
+                        ->scalarNode('projectId')->isRequired()->end()
+                        ->scalarNode('keyFilePath')->isRequired()->end()
+                    ->end()
+                ->end()
                 ->scalarNode('bucket')->isRequired()->end()
                 ->scalarNode('prefix')->defaultNull()->end()
-                ->scalarNode('storage_api_url')->defaultNull()->end()
             ->end()
         ;
     }

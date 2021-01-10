@@ -54,18 +54,6 @@ class NanbandoExtension extends Extension
             $container->setAlias('filesystem.remote', $config['storage']['remote_service']);
         }
 
-        $config['adapters']['local'] = [
-            'local' => [
-                'directory' => $container->getParameter('nanbando.storage.local_directory'),
-            ],
-        ];
-
-        $config['filesystems']['local'] = [
-            'adapter' => 'local',
-            'alias' => 'filesystem.local',
-            'plugins' => ['filesystem.list_files'],
-        ];
-
         $loader = new Loader\XmlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
         $loader->load('services.xml');
         $loader->load('event-listener.xml');
@@ -77,14 +65,42 @@ class NanbandoExtension extends Extension
         $loader->load('plugins.xml');
 
         $adapters = [];
+        $adapters['local'] = $this->createStorageAdapter(
+            'local',
+            [
+                'local' => [
+                    'directory' => $container->getParameter('nanbando.storage.local_directory'),
+                ],
+            ],
+            $container,
+            $adapterFactories
+        );
 
-        foreach ($config['adapters'] as $name => $adapter) {
-            $adapters[$name] = $this->createAdapter($name, $adapter, $container, $adapterFactories);
-        }
+        $this->createFilesystem(
+            'local',
+            [
+                'adapter' => 'local',
+                'alias' => 'filesystem.local',
+                'plugins' => ['nanbando.plugin.list_files'],
+            ],
+            $container,
+            $adapters
+        );
 
-        foreach ($config['filesystems'] as $name => $filesystem) {
-            $this->createFilesystem($name, $filesystem, $container, $adapters);
-        }
+        $adapters['remote'] = $this->createStorageAdapter(
+            'remote',
+            $config['storage']['remote'],
+            $container,
+            $adapterFactories
+        );
+
+        $this->createFilesystem('remote', [
+            'adapter' => 'remote',
+            'alias' => 'filesystem.remote',
+            'plugins' => [
+                'filesystem.list_files',
+            ],
+        ], $container, $adapters);
 
         // ensure container rebuild after puli bindings changes
         $discoveryFile = Path::join([getcwd(), NANBANDO_DIR, '.discovery']);
@@ -110,7 +126,7 @@ class NanbandoExtension extends Extension
         return $this->adapterFactories = $factories;
     }
 
-    private function createAdapter($name, array $config, ContainerBuilder $container, array $factories)
+    private function createStorageAdapter($name, array $config, ContainerBuilder $container, array $factories)
     {
         foreach ($config as $key => $adapter) {
             if (array_key_exists($key, $factories)) {

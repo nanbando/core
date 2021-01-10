@@ -19,3 +19,4 @@ box.phar
 manifest.json
 
 .DS_Store
+/key.json
