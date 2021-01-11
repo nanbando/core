@@ -129,6 +129,10 @@ class LocalStorage implements StorageInterface
         $filename = $adapter->close();
 
         $path = sprintf('%s/%s/%s.zip', $this->localDirectory, $this->name, $fileName);
+        if (!is_dir(dirname($path))) {
+            $this->filesystem->mkdir(dirname($path));
+        }
+
         $this->filesystem->rename($filename, $path);
 
         return pathinfo($path, PATHINFO_FILENAME);

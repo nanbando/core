@@ -137,6 +137,10 @@ class LocalStorageTest extends TestCase
             ->rename($this->tmpPath, Path::join([$this->localDirectory, $this->name, $name . '_' . $this->environment . '.zip']))
             ->shouldBeCalled();
 
+        $this->filesystem
+            ->mkdir(Path::join([$this->localDirectory, $this->name]))
+            ->shouldBeCalled();
+
         $result = $this->storage->close($filesystem);
 
         $this->assertEquals($name . '_' . $this->environment, $result);
