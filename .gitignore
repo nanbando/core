@@ -6,6 +6,7 @@ composer.lock
 
 .nanbando
 nanbando.json
+nanbando.lock
 
 .github/phar-private.pem
 .github/pat.txt

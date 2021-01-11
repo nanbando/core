@@ -50,6 +50,9 @@ jobs:
             - name: "Compile PHAR"
               run: php box.phar compile
 
+            - name: "Run phar to see if it works"
+              run: php nanbando.phar
+
             - name: "Checkout gh-pages"
               uses: "actions/checkout@v2"
               with:
