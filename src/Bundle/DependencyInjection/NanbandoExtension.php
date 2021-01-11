@@ -87,20 +87,27 @@ class NanbandoExtension extends Extension
             $adapters
         );
 
-        $adapters['remote'] = $this->createStorageAdapter(
-            'remote',
-            $config['storage']['remote'],
-            $container,
-            $adapterFactories
-        );
+        if (array_key_exists('remote', $config['storage'])) {
+            $adapters['remote'] = $this->createStorageAdapter(
+                'remote',
+                $config['storage']['remote'],
+                $container,
+                $adapterFactories
+            );
 
-        $this->createFilesystem('remote', [
-            'adapter' => 'remote',
-            'alias' => 'filesystem.remote',
-            'plugins' => [
-                'filesystem.list_files',
-            ],
-        ], $container, $adapters);
+            $this->createFilesystem(
+                'remote',
+                [
+                    'adapter' => 'remote',
+                    'alias' => 'filesystem.remote',
+                    'plugins' => [
+                        'filesystem.list_files',
+                    ],
+                ],
+                $container,
+                $adapters
+            );
+        }
 
         // ensure container rebuild after puli bindings changes
         $discoveryFile = Path::join([getcwd(), NANBANDO_DIR, '.discovery']);
