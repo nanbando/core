@@ -86,8 +86,6 @@ class SelfUpdateCommand extends Command
      */
     public function isEnabled()
     {
-        return true;
-
         return false !== strpos(__DIR__, 'phar:');
     }
 }
