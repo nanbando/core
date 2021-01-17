@@ -65,12 +65,24 @@
             <tag name="console.command"/>
         </service>
 
-        <service id="Nanbando\Bundle\Command\ReconfigureCommand">
+        <service id="composer.update" class="Nanbando\Bundle\Command\ComposerCommand">
             <call method="setContainer">
                 <argument type="service" id="service_container"/>
             </call>
 
-            <tag name="console.command"/>
+            <argument>true</argument>
+
+            <tag name="console.command" command="update"/>
+        </service>
+
+        <service id="composer.install" class="Nanbando\Bundle\Command\ComposerCommand">
+            <call method="setContainer">
+                <argument type="service" id="service_container"/>
+            </call>
+
+            <argument>false</argument>
+
+            <tag name="console.command" command="install"/>
         </service>
 
         <service id="Nanbando\Bundle\Command\RestoreCommand">

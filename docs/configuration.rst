@@ -3,15 +3,10 @@ Configuration
 
 The configuration is devided into two parts - global (optional) and project configuration.
 
-.. warning::
-
-    After changing configuration please run command ``reconfigure`` to be sure that the configuration will be used for
-    recreating the symfony container.
-
 Global configuration
 --------------------
 
-The global congfiguration is placed in the user home directory. This will be used for all projects used by the user.
+The global configuration is placed in the user home directory. This will be used for all projects used by the user.
 Put this configuration into ``~/.nanbando.yml``.
 
 **Local** directory (e.g. a mounted NFS drive):

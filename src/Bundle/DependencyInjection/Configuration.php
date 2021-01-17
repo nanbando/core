@@ -9,30 +9,6 @@ use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 use Webmozart\PathUtil\Path;
 
-/*
-nanbando:
-    storage:
-        remote:
-            s3:
-                client:
-                    version: 'latest'
-                    region: 'region-id'
-                    endpoint: ~
-                    credentials:
-                        key: 's3-key'
-                        secret: 's3-secret'
-                bucket: 'my-bucket'
-                prefix: '/my-prefix'
-            googlecloudstorage:
-                client:
-                    projectId: 'your-project-id'
-                    keyFilePath: '/path/to/service-account.json'
-                bucket: 'my-bucket'
-                prefix: '/my-prefix'
-            local:
-                directory: '/nanbando'
- */
-
 class Configuration implements ConfigurationInterface
 {
     const ENV_ENVIRONMENT = 'NANBANDO_ENVIRONMENT';
@@ -63,6 +39,7 @@ class Configuration implements ConfigurationInterface
 
         $rootNode->children()
                 ->scalarNode('name')->defaultValue('nanbando')->end()
+                ->scalarNode('backup_name')->defaultNull()->end()
                 ->scalarNode('environment')
                     ->defaultValue('%env(' . self::ENV_ENVIRONMENT . ')%')
                 ->end()

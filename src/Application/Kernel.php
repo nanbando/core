@@ -3,13 +3,20 @@
 namespace Nanbando\Application;
 
 use Cocur\Slugify\Bridge\Symfony\CocurSlugifyBundle;
+use Composer\IO\ConsoleIO;
 use Composer\IO\NullIO;
+use Composer\Package\Link;
+use Composer\Semver\Constraint\Constraint;
+use Dflydev\EmbeddedComposer\Core\EmbeddedComposerAwareInterface;
 use Dflydev\EmbeddedComposer\Core\EmbeddedComposerInterface;
 use Nanbando\Bundle\NanbandoBundle;
 use Nanbando\Core\Config\JsonLoader;
 use Symfony\Component\Config\Loader\DelegatingLoader;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\Config\Loader\LoaderResolver;
+use Symfony\Component\Console\Helper\HelperSet;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -24,7 +31,7 @@ use Symfony\Component\HttpKernel\Config\FileLocator;
 use Symfony\Component\HttpKernel\Kernel as SymfonyKernel;
 use Webmozart\PathUtil\Path;
 
-class Kernel extends SymfonyKernel implements CompilerPassInterface
+class Kernel extends SymfonyKernel implements CompilerPassInterface, EmbeddedComposerAwareInterface
 {
     protected $name = 'Nanbando';
 
@@ -61,13 +68,7 @@ class Kernel extends SymfonyKernel implements CompilerPassInterface
             CocurSlugifyBundle::class => new CocurSlugifyBundle(),
         ];
 
-        $discoveryFile = Path::join([getcwd(), NANBANDO_DIR, '.discovery']);
-        if (!file_exists($discoveryFile)) {
-            return $bundles;
-        }
-
-        $discovery = json_decode(file_get_contents($discoveryFile), true);
-        foreach ($discovery as $class) {
+        foreach ($this->discoverPlugins() as $class) {
             if (class_exists($class) && !array_key_exists($class, $bundles)) {
                 $bundles[$class] = new $class();
             }
@@ -151,6 +152,42 @@ class Kernel extends SymfonyKernel implements CompilerPassInterface
 
     public function process(ContainerBuilder $container)
     {
-        $container->set('composer',$this->embeddedComposer->createComposer(new NullIO()));
+        $container->set('composer', $this->embeddedComposer->createComposer(new NullIO()));
+    }
+
+    public function getEmbeddedComposer()
+    {
+        return $this->embeddedComposer;
+    }
+
+    protected function discoverPlugins(): array
+    {
+        /** @var EmbeddedComposerInterface $embeddedComposer */
+        $embeddedComposer = $this->getEmbeddedComposer();
+
+        $io = new NullIO();
+        $composer = $embeddedComposer->createComposer($io);
+        $rootPackage = $composer->getPackage();
+
+        $stack = $rootPackage->getRequires();
+
+        $discovery = [];
+        while ($require = array_shift($stack)) {
+            $package = $composer->getRepositoryManager()->findPackage($require->getTarget(), $require->getConstraint());
+            if (!$package) {
+                continue;
+            }
+
+            $stack = array_merge($stack, $package->getRequires());
+
+            $bundleClasses = $package->getExtra()['nanbando']['bundle-classes'] ?? [];
+            foreach ($bundleClasses as $bundleClass) {
+                if ($bundleClass && class_exists($bundleClass)) {
+                    $discovery[] = $bundleClass;
+                }
+            }
+        }
+
+        return $discovery;
     }
 }
