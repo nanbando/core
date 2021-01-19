@@ -152,11 +152,13 @@ class Kernel extends SymfonyKernel implements CompilerPassInterface, EmbeddedCom
 
     public function process(ContainerBuilder $container)
     {
-        if (!file_exists($this->embeddedComposer->getExternalComposerFilename())) {
-            return;
-        }
+    }
 
-        $container->set('composer', $this->embeddedComposer->createComposer(new NullIO()));
+    protected function initializeContainer()
+    {
+        parent::initializeContainer();
+
+        $this->container->set('embedded_composer', $this->embeddedComposer);
     }
 
     public function getEmbeddedComposer()

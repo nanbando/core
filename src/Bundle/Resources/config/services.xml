@@ -13,6 +13,9 @@
     <services>
         <defaults public="true"/>
 
+        <service id="embedded_composer" synthetic="true"/>
+        <service id="composer" synthetic="true"/>
+
         <!-- kernel -->
         <service id="event_dispatcher" class="Symfony\Component\EventDispatcher\EventDispatcher">
             <argument type="service" id="service_container"/>

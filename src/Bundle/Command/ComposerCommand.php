@@ -11,10 +11,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 
-class ComposerCommand extends Command implements ContainerAwareInterface
+class ComposerCommand extends BaseServerCommand
 {
-    use ContainerAwareTrait;
-
     /**
      * @var bool
      */
@@ -34,6 +32,13 @@ class ComposerCommand extends Command implements ContainerAwareInterface
             ->setDescription('Install application dependencies')
             ->setDefinition(
                 [
+                    new InputOption(
+                        'server',
+                        's',
+                        InputOption::VALUE_REQUIRED,
+                        'Where should the command be called.',
+                        'local'
+                    ),
                     new InputOption(
                         'prefer-source',
                         null,
@@ -71,32 +76,20 @@ EOT
             );
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function getServerName(InputInterface $input)
     {
-        /** @var EmbeddedComposerInterface $embeddedComposer */
-        $embeddedComposer = $this->getApplication()->getEmbeddedComposer();
+        return $input->getOption('server');
+    }
 
-        $io = new ConsoleIO($input, $output, $this->getApplication()->getHelperSet());
-        $composer = $embeddedComposer->createComposer($io);
-        $package = $composer->getPackage();
-        $package->setStabilityFlags(array_merge($package->getStabilityFlags(),[
-            'nanbando/core' => '20',
-            'dflydev/embedded-composer' => '20',
-        ]));
-
-        $installer = $embeddedComposer->createInstaller($io, $composer);
-        $installer
-            ->setDryRun($input->getOption('dry-run'))
-            ->setVerbose($input->getOption('verbose'))
-            ->setPreferSource($input->getOption('prefer-source'))
-            ->setDevMode($input->getOption('dev'))
-            ->setRunScripts(!$input->getOption('no-scripts'))
-            ->setUpdate($this->update);
-
-        return $installer->run();
+    protected function getCommandOptions(InputInterface $input)
+    {
+        return [
+            '--verbose' => $input->getOption('verbose'),
+            '--prefer-source' => $input->getOption('prefer-source'),
+            '--dry-run' => $input->getOption('dry-run'),
+            '--dev' => $input->getOption('dev'),
+            '--no-scripts' => $input->getOption('no-scripts'),
+        ];
     }
 
     public function isEnabled()
