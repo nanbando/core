@@ -10,13 +10,7 @@ You can use the following configuration to backup the application using jackrabb
 .. code::
 
     {
-        "name": "test-application",
-        "imports": [
-            "app/config/parameters.yml"
-        ],
-        "parameters": {
-            "jackrabbit_uri": "http://localhost:8080/server/"
-        },
+        "name": "test/application",
         "backup": {
             "uploads": {
                 "plugin": "directory",
@@ -27,47 +21,44 @@ You can use the following configuration to backup the application using jackrabb
             "database": {
                 "plugin": "mysql",
                 "parameter": {
-                    "username": "%database_user%",
-                    "password": "%database_password%",
-                    "database": "%database_name%"
+                    "databaseUrl": "%env(DATABASE_URL)%"
                 }
             },
             "cmf": {
                 "plugin": "jackrabbit",
                 "parameter": {
-                    "jackrabbit_uri": "%jackrabbit_uri%",
-                    "workspace": "%phpcr_workspace%",
+                    "jackrabbit_uri": "%env(PHPCR_BACKEND_URL)%",
+                    "workspace": "default",
                     "path": "/cmf"
                 }
             },
             "versions": {
                 "plugin": "jackrabbit",
                 "parameter": {
-                    "jackrabbit_uri": "%jackrabbit_uri%",
-                    "workspace": "%phpcr_workspace%",
+                    "jackrabbit_uri": "%env(PHPCR_BACKEND_URL)%",
+                    "workspace": "default",
                     "path": "/jcr:versions"
                 }
             },
             "cmf_live": {
                 "plugin": "jackrabbit",
                 "parameter": {
-                    "jackrabbit_uri": "%jackrabbit_uri%",
-                    "workspace": "%phpcr_workspace%_live",
+                    "jackrabbit_uri": "%env(PHPCR_BACKEND_URL)%",
+                    "workspace": "default_live",
                     "path": "/cmf"
                 }
             }
         },
         "require": {
-            "nanbando/mysql": "^0.1",
-            "nanbando/jackrabbit": "^0.1"
+            "nanbando/mysql": "^0.4.2",
+            "nanbando/jackrabbit": "^0.2.1"
         }
     }
 
 .. note::
 
-    This configuration is optimized for Sulu (minimal) version `^1.3` with the drafting feature. If you want to
-    backup earlier versions you can omit the backup section `cmf_Live`. For the standard edition you have to
-    adapt the path to the uploads directory.
+    This configuration is optimized for Sulu (minimal) version `^2.0` with the drafting feature. If you want to backup
+    earlier versions of sulu you have to adapt the parameter of the plugins.
 
 If you use mysql as data storage for phpcr you can remove the ``cmf``, ``cmf_live`` and ``versions`` part
 of the backup.
@@ -75,10 +66,7 @@ of the backup.
 .. code::
 
     {
-        "name": "test-application",
-        "imports": [
-            "app/config/parameters.yml"
-        ],
+        "name": "test/application",
         "backup": {
             "uploads": {
                 "plugin": "directory",
@@ -89,14 +77,12 @@ of the backup.
             "database": {
                 "plugin": "mysql",
                 "parameter": {
-                    "username": "%database_user%",
-                    "password": "%database_password%",
-                    "database": "%database_name%"
+                    "databaseUrl": "%env(DATABASE_URL)%"
                 }
             }
         },
         "require": {
-            "nanbando/mysql": "^0.1"
+            "nanbando/mysql": "^0.4.2"
         }
     }
 
