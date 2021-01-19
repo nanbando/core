@@ -98,4 +98,9 @@ EOT
 
         return $installer->run();
     }
+
+    public function isEnabled()
+    {
+        return file_exists($this->getApplication()->getEmbeddedComposer()->getExternalComposerFilename());
+    }
 }

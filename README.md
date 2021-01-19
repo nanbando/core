@@ -8,11 +8,6 @@ Nanbando is a simple application to automate website backups. It provides an ele
 backup parts. Nanbando has built-in support for various storage's and provides easy to use sync and fetch operations. It
 was built with modularity, extensibility and simplicity in mind.
 
-## Status
-
-This repository **will become** version 1.0 of Nanbando. It is **under heavy development** and currently it's APIs and
-code are not yet stable (pre 1.0).
-
 ## Installation
 
 To install the application simply download the executable and move it to the global bin folder.
