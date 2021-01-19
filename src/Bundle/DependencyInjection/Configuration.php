@@ -98,7 +98,7 @@ class Configuration implements ConfigurationInterface
                                 ->end()
                             ->end()
                             ->scalarNode('directory')->end()
-                            ->scalarNode('executable')->defaultValue('nanbando')->end()
+                            ->scalarNode('executable')->defaultValue('/usr/local/bin/nanbando')->end()
                         ->end()
                     ->end()
                 ->end()

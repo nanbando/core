@@ -4,6 +4,7 @@ namespace Nanbando\Application\CompilerPass;
 
 use Nanbando\Core\Server\Command\Ssh\SshConnection;
 use phpseclib\Net\SSH2;
+use Symfony\Component\DependencyInjection\ChildDefinition;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
@@ -111,11 +112,11 @@ class SshServerCompilerPass implements CompilerPassInterface
      * @param string $serverName
      * @param string $command
      *
-     * @return DefinitionDecorator
+     * @return ChildDefinition
      */
     private function createCommandDefinition($id, $connectionId, $class, $serverName, $command)
     {
-        $commandDefinition = new DefinitionDecorator($id);
+        $commandDefinition = new ChildDefinition($id);
         $commandDefinition->setClass($class);
         $commandDefinition->setLazy(true);
         $commandDefinition->replaceArgument(0, new Reference($connectionId));
