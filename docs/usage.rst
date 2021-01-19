@@ -60,7 +60,7 @@ configuration. If you have added requirements to the configuration the applicati
 
 .. code:: bash
 
-    php nanbando.phar install
+    php nanbando.phar plugins:install
     php nanbando.phar backup
 
 The second command will create a new backup zip in the local folder
