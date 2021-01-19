@@ -3,9 +3,15 @@ UPGRADE before 1.0-RC1
 
 # Table of Contents
 
+- [Plugin installation](#plugin-installation)
 - [Remote configuration](#remove-configuration)
 - [Plugins Discovery](#plugin-discovery)
 - [Filename](#filenames)
+
+### Plugin installation
+
+Since 1.0.0-RC1 the `reconfigure` command was renamed to `plugins:install` (which uses the lock file) and 
+`plugins:update` (which updates the lock file).
 
 ### Remote configuration
 

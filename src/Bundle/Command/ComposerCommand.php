@@ -2,7 +2,6 @@
 
 namespace Nanbando\Bundle\Command;
 
-use Composer\Installer;
 use Composer\IO\ConsoleIO;
 use Dflydev\EmbeddedComposer\Core\EmbeddedComposerInterface;
 use Symfony\Component\Console\Command\Command;
@@ -11,20 +10,28 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
-use Symfony\Component\Filesystem\Filesystem;
-use Webmozart\PathUtil\Path;
 
-class ReconfigureCommand extends Command implements ContainerAwareInterface
+class ComposerCommand extends Command implements ContainerAwareInterface
 {
     use ContainerAwareTrait;
 
-    protected static $defaultName = 'reconfigure';
+    /**
+     * @var bool
+     */
+    private $update;
+
+    public function __construct(bool $update)
+    {
+        parent::__construct($update ? 'plugins:update' : 'plugins:install');
+
+        $this->update = $update;
+    }
 
     protected function configure()
     {
         $this
-            ->setName(self::$defaultName)
-            ->setDescription('Reconfigure application')
+            ->setName($this->update ? 'plugins:update' : 'plugins:install')
+            ->setDescription('Install application dependencies')
             ->setDefinition(
                 [
                     new InputOption(
@@ -51,12 +58,6 @@ class ReconfigureCommand extends Command implements ContainerAwareInterface
                         InputOption::VALUE_NONE,
                         'Skips the execution of all scripts defined in nanbando.json file.'
                     ),
-                    new InputOption(
-                        'update',
-                        null,
-                        InputOption::VALUE_NONE,
-                        'Updated dependencies and lock-file.'
-                    ),
                 ]
             )
             ->setHelp(
@@ -75,62 +76,26 @@ EOT
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $installer = $this->update($input, $output);
-        $this->rebuild($input, $output);
-
-        return $installer;
-    }
-
-    protected function update(InputInterface $input, OutputInterface $output)
-    {
         /** @var EmbeddedComposerInterface $embeddedComposer */
         $embeddedComposer = $this->getApplication()->getEmbeddedComposer();
 
         $io = new ConsoleIO($input, $output, $this->getApplication()->getHelperSet());
-        /** @var Installer $installer */
-        $installer = $embeddedComposer->createInstaller($io);
+        $composer = $embeddedComposer->createComposer($io);
+        $package = $composer->getPackage();
+        $package->setStabilityFlags(array_merge($package->getStabilityFlags(),[
+            'nanbando/core' => '20',
+            'dflydev/embedded-composer' => '20',
+        ]));
 
+        $installer = $embeddedComposer->createInstaller($io, $composer);
         $installer
             ->setDryRun($input->getOption('dry-run'))
             ->setVerbose($input->getOption('verbose'))
             ->setPreferSource($input->getOption('prefer-source'))
             ->setDevMode($input->getOption('dev'))
             ->setRunScripts(!$input->getOption('no-scripts'))
-            ->setUpdate($input->getOption('update'));
+            ->setUpdate($this->update);
 
         return $installer->run();
-    }
-
-    /**
-     * Rebuild the dependencies for symfony container.
-     */
-    protected function rebuild(InputInterface $input, OutputInterface $output)
-    {
-        /** @var EmbeddedComposerInterface $embeddedComposer */
-        $embeddedComposer = $this->getApplication()->getEmbeddedComposer();
-
-        $io = new ConsoleIO($input, $output, $this->getApplication()->getHelperSet());
-        $composer = $embeddedComposer->createComposer($io);
-        $rootPackage = $composer->getPackage();
-
-        $discovery = [];
-        foreach ($rootPackage->getRequires() as $require) {
-            $package = $composer->getRepositoryManager()->findPackage($require->getTarget(), $require->getConstraint());
-            if (!$package) {
-                continue;
-            }
-
-            $bundleClasses = $package->getExtra()['nanbando']['bundle-classes'] ?? [];
-
-            foreach ($bundleClasses as $bundleClass) {
-                if ($bundleClass && class_exists($bundleClass)) {
-                    $discovery[] = $bundleClass;
-                }
-            }
-        }
-
-        $filesystem = new Filesystem();
-        $filesystem->remove(Path::join([getcwd(), NANBANDO_DIR, 'app', 'cache']));
-        $filesystem->dumpFile(Path::join([getcwd(), NANBANDO_DIR, '.discovery']), \json_encode($discovery) ?? '');
     }
 }
