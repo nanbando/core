@@ -72,7 +72,7 @@
 
             <argument>true</argument>
 
-            <tag name="console.command" command="update"/>
+            <tag name="console.command" command="plugins:update"/>
         </service>
 
         <service id="composer.install" class="Nanbando\Bundle\Command\ComposerCommand">
@@ -82,7 +82,7 @@
 
             <argument>false</argument>
 
-            <tag name="console.command" command="install"/>
+            <tag name="console.command" command="plugins:install"/>
         </service>
 
         <service id="Nanbando\Bundle\Command\RestoreCommand">
