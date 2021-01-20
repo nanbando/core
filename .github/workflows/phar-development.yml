@@ -1,0 +1,52 @@
+# https://help.github.com/en/categories/automating-your-workflow-with-github-actions
+
+name: "Compile PHAR without publishing"
+
+on:
+    pull_request:
+    push:
+        branches:
+            - '**'        # matches every branch
+            - '!master'   # excludes master
+
+jobs:
+    compile:
+        name: "Compile PHAR without publishing"
+        runs-on: "ubuntu-latest"
+
+        steps:
+            - name: "Checkout"
+              uses: "actions/checkout@v2"
+              with:
+                  fetch-depth: 0
+
+            - name: "Install PHP"
+              uses: "shivammathur/setup-php@v2"
+              with:
+                  coverage: "none"
+                  php-version: "7.4"
+                  tools: composer:v1
+
+            - name: "Cache dependencies"
+              uses: "actions/cache@v2"
+              with:
+                  path: "~/.composer/cache"
+                  key: "php-7.4-composer-${{ hashFiles('**/composer.json') }}"
+                  restore-keys: "php-7.4-composer-"
+
+            - name: "Install dependencies"
+              run: "composer install --no-interaction --no-progress --no-suggest --no-dev"
+
+            - name: "Download box"
+              run: wget -O box.phar https://github.com/box-project/box/releases/download/${BOX_VERSION}/box.phar
+              env:
+                  BOX_VERSION: 3.11.0
+
+            - name: "Prepare config File"
+              run: cat box.json.dist | jq 'del(.key)' | jq 'del(.algorithm)' > box.json
+
+            - name: "Compile PHAR"
+              run: php box.phar compile
+
+            - name: "Run phar to see if it works"
+              run: php nanbando.phar
