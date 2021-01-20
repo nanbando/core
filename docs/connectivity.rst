@@ -33,6 +33,7 @@ You can append the options ``--server`` to the following commands to execute the
 
 .. code::
 
+    php nanbando.phar plugins:install --server <server-name>
     php nanbando.phar backup --server <server-name>
     php nanbando.phar information <backup-name> --server <server-name>
     php nanbando.phar get <server-name> <backup-name>

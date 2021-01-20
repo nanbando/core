@@ -42,5 +42,25 @@
 
             <tag name="nanbando.ssh.abstract_server_command" command="list:backups"/>
         </service>
+
+        <service id="nanbando.server.abstract_ssh.plugins_install"
+                 class="Nanbando\Core\Server\Command\Ssh\SshComposerCommand"
+                 abstract="true">
+            <argument><!-- ssh --></argument>
+            <argument type="service" id="output"/>
+            <argument>false</argument>
+
+            <tag name="nanbando.ssh.abstract_server_command" command="plugins:install"/>
+        </service>
+
+        <service id="nanbando.server.abstract_ssh.plugins_update"
+                 class="Nanbando\Core\Server\Command\Ssh\SshComposerCommand"
+                 abstract="true">
+            <argument><!-- ssh --></argument>
+            <argument type="service" id="output"/>
+            <argument>true</argument>
+
+            <tag name="nanbando.ssh.abstract_server_command" command="plugins:update"/>
+        </service>
     </services>
 </container>

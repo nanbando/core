@@ -38,5 +38,23 @@
 
             <tag name="nanbando.server_command" server="local" command="list:backups"/>
         </service>
+
+        <service id="nanbando.server.local.plugins_install" class="Nanbando\Core\Server\Command\Local\LocalComposerCommand">
+            <argument type="service" id="input"/>
+            <argument type="service" id="output"/>
+            <argument type="service" id="embedded_composer"/>
+            <argument>false</argument>
+
+            <tag name="nanbando.server_command" server="local" command="plugins:install"/>
+        </service>
+
+        <service id="nanbando.server.local.plugins_install" class="Nanbando\Core\Server\Command\Local\LocalComposerCommand">
+            <argument type="service" id="input"/>
+            <argument type="service" id="output"/>
+            <argument type="service" id="embedded_composer"/>
+            <argument>true</argument>
+
+            <tag name="nanbando.server_command" server="local" command="plugins:update"/>
+        </service>
     </services>
 </container>
