@@ -103,6 +103,7 @@ class Configuration implements ConfigurationInterface
                     ->end()
                 ->end()
                 ->scalarNode('minimum_stability')->end()
+                ->variableNode('repositories')->end()
                 ->arrayNode('require')
                     ->prototype('variable')->end()
                 ->end()

@@ -4,6 +4,7 @@ namespace Nanbando\Core\Storage;
 
 use Cocur\Slugify\SlugifyInterface;
 use League\Flysystem\Adapter\Local;
+use League\Flysystem\AdapterInterface;
 use League\Flysystem\Filesystem;
 use League\Flysystem\Plugin\ListFiles;
 use League\Flysystem\ZipArchive\ZipArchiveAdapter;
@@ -95,10 +96,15 @@ class LocalStorage implements StorageInterface
     public function start()
     {
         $filename = $this->temporaryFileSystem->createTemporaryFile();
-        $filesystem = new Filesystem(new ZipAdapter($filename));
+        $filesystem = new Filesystem($this->createZipAdapter($filename));
         $filesystem->addPlugin(new ListFiles());
 
         return $filesystem;
+    }
+
+    protected function createZipAdapter(string $filename): AdapterInterface
+    {
+        return new ZipAdapter($filename);
     }
 
     /**
@@ -148,7 +154,7 @@ class LocalStorage implements StorageInterface
             $fileName = $this->path($name);
         }
 
-        $filesystem = new Filesystem(new ReadonlyAdapter(new ZipArchiveAdapter($fileName)));
+        $filesystem = new Filesystem(new ReadonlyAdapter($this->createZipAdapter($fileName)));
         $filesystem->addPlugin(new ListFiles());
 
         return $filesystem;
