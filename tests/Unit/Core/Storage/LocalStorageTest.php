@@ -234,8 +234,7 @@ class LocalStorageTest extends TestCase
 
         $this->assertInstanceOf(Filesystem::class, $filesystem);
         $this->assertInstanceOf(ReadonlyAdapter::class, $filesystem->getAdapter());
-        $this->assertInstanceOf(ZipArchiveAdapter::class, $filesystem->getAdapter()->getAdapter());
-        $this->assertEquals($path, $filesystem->getAdapter()->getAdapter()->getArchive()->filename);
+        $this->assertInstanceOf(ZipAdapter::class, $filesystem->getAdapter()->getAdapter());
     }
 
     public function testOpenAbsolutePath()
@@ -249,8 +248,7 @@ class LocalStorageTest extends TestCase
 
         $this->assertInstanceOf(Filesystem::class, $filesystem);
         $this->assertInstanceOf(ReadonlyAdapter::class, $filesystem->getAdapter());
-        $this->assertInstanceOf(ZipArchiveAdapter::class, $filesystem->getAdapter()->getAdapter());
-        $this->assertEquals($path, $filesystem->getAdapter()->getAdapter()->getArchive()->filename);
+        $this->assertInstanceOf(ZipAdapter::class, $filesystem->getAdapter()->getAdapter());
     }
 
     public function testLocalListing()

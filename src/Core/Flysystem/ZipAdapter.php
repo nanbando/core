@@ -11,6 +11,7 @@ use League\Flysystem\AdapterInterface;
 use League\Flysystem\Config;
 use League\Flysystem\Util;
 use LogicException;
+use PhpZip\Exception\ZipException;
 use PhpZip\Model\ZipInfo;
 use PhpZip\ZipFile;
 
@@ -44,8 +45,15 @@ class ZipAdapter extends AbstractAdapter implements AdapterInterface
         $this->zipPath = $zipPath;
         $this->setPathPrefix($prefix);
 
-        $this->zip = new ZipFile();
         $this->maxMemory = $maxMemory;
+
+        try {
+            $this->zip = new ZipFile();
+            $this->zip->openFile($zipPath);
+        } catch (ZipException $exception) {
+            // empty file
+            $this->zip = new ZipFile();
+        }
     }
 
     public function getZipPath()
@@ -98,7 +106,7 @@ class ZipAdapter extends AbstractAdapter implements AdapterInterface
     {
         $path = $this->applyPathPrefix($path);
 
-        return $this->zip->getEntryContents($path);
+        return ['contents' => $this->zip->getEntryContents($path)];
     }
 
     /**
@@ -181,8 +189,8 @@ class ZipAdapter extends AbstractAdapter implements AdapterInterface
             array_map(
                 function (ZipInfo $item) use ($pathPrefix, $prefixLength) {
                     if ($pathPrefix
-                        && (substr($item->getPath(), 0, $prefixLength) !== $pathPrefix
-                            || $item->getPath() === $pathPrefix)
+                        && (substr($item->getName(), 0, $prefixLength) !== $pathPrefix
+                            || $item->getName() === $pathPrefix)
                     ) {
                         return false;
                     }
@@ -219,7 +227,7 @@ class ZipAdapter extends AbstractAdapter implements AdapterInterface
     {
         if ($object->isFolder()) {
             return [
-                'path' => $this->removePathPrefix(trim($object->getPath(), '/')),
+                'path' => $this->removePathPrefix(trim($object->getName(), '/')),
                 'type' => 'dir',
             ];
         }
@@ -228,7 +236,7 @@ class ZipAdapter extends AbstractAdapter implements AdapterInterface
             'type' => 'file',
             'size' => $object->getSize(),
             'timestamp' => $object->getMtime(),
-            'path' => $this->removePathPrefix($object->getPath()),
+            'path' => $this->removePathPrefix($object->getName()),
         ];
     }
 
