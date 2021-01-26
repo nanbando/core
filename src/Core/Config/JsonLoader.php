@@ -5,6 +5,7 @@ namespace Nanbando\Core\Config;
 use Composer\Json\JsonFile;
 use Symfony\Component\Config\Resource\FileResource;
 use Symfony\Component\DependencyInjection\Exception\BadMethodCallException;
+use Symfony\Component\DependencyInjection\Exception\InvalidArgumentException;
 use Symfony\Component\DependencyInjection\Loader\FileLoader;
 use Webmozart\PathUtil\Path;
 
@@ -42,7 +43,7 @@ class JsonLoader extends FileLoader
                     $importFilename = Path::join([dirname($path), $import]);
                 }
 
-                $this->import($importFilename, null, false, $file->getPath());
+                $this->import($importFilename, null, true, $file->getPath());
             }
 
             unset($content['imports']);

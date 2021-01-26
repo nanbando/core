@@ -23,42 +23,42 @@ class LocalStorage implements StorageInterface
     /**
      * @var string
      */
-    private $name;
+    protected $name;
 
     /**
      * @var string
      */
-    private $environment;
+    protected $environment;
 
     /**
      * @var TemporaryFilesystemInterface
      */
-    private $temporaryFileSystem;
+    protected $temporaryFileSystem;
 
     /**
      * @var Filesystem
      */
-    private $localFilesystem;
+    protected $localFilesystem;
 
     /**
      * @var string
      */
-    private $localDirectory;
+    protected $localDirectory;
 
     /**
      * @var Filesystem
      */
-    private $remoteFilesystem;
+    protected $remoteFilesystem;
 
     /**
      * @var SlugifyInterface
      */
-    private $slugify;
+    protected $slugify;
 
     /**
      * @var SymfonyFilesystem
      */
-    private $filesystem;
+    protected $filesystem;
 
     /**
      * @param string $name
@@ -96,13 +96,13 @@ class LocalStorage implements StorageInterface
     public function start()
     {
         $filename = $this->temporaryFileSystem->createTemporaryFile();
-        $filesystem = new Filesystem($this->createZipAdapter($filename));
+        $filesystem = new Filesystem($this->createBackupAdapter($filename));
         $filesystem->addPlugin(new ListFiles());
 
         return $filesystem;
     }
 
-    protected function createZipAdapter(string $filename): AdapterInterface
+    protected function createBackupAdapter(string $filename): AdapterInterface
     {
         return new ZipAdapter($filename);
     }
@@ -154,10 +154,15 @@ class LocalStorage implements StorageInterface
             $fileName = $this->path($name);
         }
 
-        $filesystem = new Filesystem(new ReadonlyAdapter($this->createZipAdapter($fileName)));
+        $filesystem = new Filesystem($this->createRestoreAdapter($fileName));
         $filesystem->addPlugin(new ListFiles());
 
         return $filesystem;
+    }
+
+    protected function createRestoreAdapter(string $filename): AdapterInterface
+    {
+        return new ReadonlyAdapter(new ZipAdapter($filename));
     }
 
     /**
