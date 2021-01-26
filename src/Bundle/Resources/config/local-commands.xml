@@ -48,7 +48,7 @@
             <tag name="nanbando.server_command" server="local" command="plugins:install"/>
         </service>
 
-        <service id="nanbando.server.local.plugins_install" class="Nanbando\Core\Server\Command\Local\LocalComposerCommand">
+        <service id="nanbando.server.local.plugins_update" class="Nanbando\Core\Server\Command\Local\LocalComposerCommand">
             <argument type="service" id="input"/>
             <argument type="service" id="output"/>
             <argument type="service" id="embedded_composer"/>
