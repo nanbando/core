@@ -39,7 +39,10 @@ EOT
         /** @var StorageInterface $storage */
         $storage = $this->container->get('storage');
 
-        foreach ($storage->localListing() as $file) {
+        $localFiles = $storage->localListing();
+        $remoteFiles = $storage->remoteListing();
+
+        foreach (array_diff($localFiles, $remoteFiles) as $file) {
             $storage->push($file);
         }
 
