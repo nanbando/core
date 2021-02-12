@@ -42,7 +42,7 @@ class SelfUpdateCommand extends Command
             $output->writeln('You are already using "' . $updater->getNewVersion() . '" version.');
 
             // No update needed!
-            return 1;
+            return 0;
         }
 
         $upgradeFile = 'phar://' . $updater->getLocalPharFile() . '/UPGRADE.md';
@@ -53,7 +53,7 @@ class SelfUpdateCommand extends Command
 
         $output->writeln(sprintf('Updated from %s to %s', $updater->getOldVersion(), $updater->getNewVersion()));
 
-        return 1;
+        return 0;
     }
 
     /**

@@ -46,7 +46,7 @@ EOT
             $storage->push($file);
         }
 
-        return 1;
+        return 0;
     }
 
     /**
