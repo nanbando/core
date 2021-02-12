@@ -32,7 +32,7 @@ abstract class BaseServerCommand extends Command implements ContainerAwareInterf
     {
         $this->getCommand($input)->execute($this->getCommandOptions($input));
 
-        return 1;
+        return 0;
     }
 
     /**

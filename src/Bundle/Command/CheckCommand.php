@@ -75,7 +75,7 @@ EOT
 
         $io->writeln('');
 
-        return 1;
+        return 0;
     }
 
     /**

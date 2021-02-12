@@ -92,7 +92,7 @@ EOT
             $storage->fetch($file);
         }
 
-        return 1;
+        return 0;
     }
 
     /**
