@@ -20,14 +20,14 @@ class PrefixAdapterTest extends TestCase
      */
     private $adapter;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->decorated = $this->prophesize(AdapterInterface::class);
 
         $this->adapter = new PrefixAdapter(__DIR__, $this->decorated->reveal());
     }
 
-    public function provideDelegateData()
+    public function provideDelegateData(): array
     {
         $config = new Config();
 
@@ -60,7 +60,7 @@ class PrefixAdapterTest extends TestCase
     /**
      * @dataProvider provideDelegateData
      */
-    public function testDelegate($method, array $parameter, array $delegatedParameter, $result = null, $root = '/test')
+    public function testDelegate($method, array $parameter, array $delegatedParameter, $result = null, $root = '/test'): void
     {
         $adapter = $this->prophesize(AdapterInterface::class);
 
@@ -78,7 +78,7 @@ class PrefixAdapterTest extends TestCase
         );
     }
 
-    public function testListContents()
+    public function testListContents(): void
     {
         $adapter = $this->prophesize(AdapterInterface::class);
         $prefixAdapter = new PrefixAdapter('/test', $adapter->reveal());

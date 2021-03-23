@@ -30,7 +30,7 @@ class CheckCommandTest extends TestCase
      */
     private $presetStore;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->container = $this->prophesize(ContainerInterface::class);
         $this->plugins = $this->prophesize(PluginRegistry::class);
@@ -38,7 +38,7 @@ class CheckCommandTest extends TestCase
         $this->presetStore->getPreset(Argument::cetera())->willReturn([]);
     }
 
-    private function getCommandTester($remote = false, $backup = [])
+    private function getCommandTester($remote = false, $backup = []): CommandTester
     {
         foreach ($backup as $name => $backupConfig) {
             $backup[$name] = array_merge(['plugin' => null, 'process' => [], 'parameter' => []], $backupConfig);
@@ -72,36 +72,36 @@ class CheckCommandTest extends TestCase
         return new CommandTester($command);
     }
 
-    public function testExecute()
+    public function testExecute(): void
     {
         $commandTester = $this->getCommandTester();
         $commandTester->execute([]);
 
-        $this->assertContains('Local directory: /User/test/nanbando', $commandTester->getDisplay());
-        $this->assertContains('No remote storage configuration found.', $commandTester->getDisplay());
-        $this->assertContains('No backup configuration found.', $commandTester->getDisplay());
+        $this->assertStringContainsString('Local directory: /User/test/nanbando', $commandTester->getDisplay());
+        $this->assertStringContainsString('No remote storage configuration found.', $commandTester->getDisplay());
+        $this->assertStringContainsString('No backup configuration found.', $commandTester->getDisplay());
     }
 
-    public function testExecuteWithRemote()
+    public function testExecuteWithRemote(): void
     {
         $commandTester = $this->getCommandTester(true);
         $commandTester->execute([]);
 
-        $this->assertContains('Local directory: /User/test/nanbando', $commandTester->getDisplay());
-        $this->assertContains('Remote Storage: YES', $commandTester->getDisplay());
+        $this->assertStringContainsString('Local directory: /User/test/nanbando', $commandTester->getDisplay());
+        $this->assertStringContainsString('Remote Storage: YES', $commandTester->getDisplay());
     }
 
-    public function testExecutePluginNotFound()
+    public function testExecutePluginNotFound(): void
     {
         $this->plugins->has('my-plugin')->willReturn(false);
 
         $commandTester = $this->getCommandTester(true, ['test' => ['plugin' => 'my-plugin']]);
         $commandTester->execute([]);
 
-        $this->assertContains('Plugin "my-plugin" not found', $commandTester->getDisplay());
+        $this->assertStringContainsString('Plugin "my-plugin" not found', $commandTester->getDisplay());
     }
 
-    public function testExecutePluginNotFoundMultiple()
+    public function testExecutePluginNotFoundMultiple(): void
     {
         $plugin = $this->prophesize(PluginInterface::class);
         $plugin->configureOptionsResolver(Argument::type(OptionsResolver::class))->shouldBeCalled();
@@ -123,7 +123,7 @@ class CheckCommandTest extends TestCase
         $this->assertRegExp('/test-2[-\s]*\[WARNING\] Plugin "my-plugin-2" not found/', $commandTester->getDisplay());
     }
 
-    public function testExecuteParameterNotValid()
+    public function testExecuteParameterNotValid(): void
     {
         $plugin = $this->prophesize(PluginInterface::class);
         $plugin->configureOptionsResolver(Argument::type(OptionsResolver::class))
@@ -142,10 +142,10 @@ class CheckCommandTest extends TestCase
         );
         $commandTester->execute([]);
 
-        $this->assertContains('Parameter not valid', $commandTester->getDisplay());
+        $this->assertStringContainsString('Parameter not valid', $commandTester->getDisplay());
     }
 
-    public function testExecuteParameterNotValidMultiple()
+    public function testExecuteParameterNotValidMultiple(): void
     {
         $plugin = $this->prophesize(PluginInterface::class);
         $plugin->configureOptionsResolver(Argument::type(OptionsResolver::class))
@@ -173,7 +173,7 @@ class CheckCommandTest extends TestCase
         $this->assertRegExp('/test-2([-\s]*)([^-]*)OK/', $commandTester->getDisplay());
     }
 
-    public function testExecuteOK()
+    public function testExecuteOK(): void
     {
         $plugin = $this->prophesize(PluginInterface::class);
         $plugin->configureOptionsResolver(Argument::type(OptionsResolver::class))
@@ -192,10 +192,10 @@ class CheckCommandTest extends TestCase
         );
         $commandTester->execute([]);
 
-        $this->assertContains('OK', $commandTester->getDisplay());
+        $this->assertStringContainsString('OK', $commandTester->getDisplay());
     }
 
-    public function testExecuteOKMultiple()
+    public function testExecuteOKMultiple(): void
     {
         $plugin = $this->prophesize(PluginInterface::class);
         $plugin->configureOptionsResolver(Argument::type(OptionsResolver::class))
@@ -221,7 +221,7 @@ class CheckCommandTest extends TestCase
         $this->assertRegExp('/test-2([-\s]*)([^-]*)OK/', $commandTester->getDisplay());
     }
 
-    public function testExecuteProcess()
+    public function testExecuteProcess(): void
     {
         $plugin = $this->prophesize(PluginInterface::class);
 

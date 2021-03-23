@@ -37,7 +37,7 @@ class SshInformationCommandTest extends TestCase
     /**
      * {@inheritdoc}
      */
-    public function setUp()
+    public function setUp(): void
     {
         $this->connection = $this->prophesize(SshConnection::class);
         $this->input = $this->prophesize(InputInterface::class);
@@ -50,7 +50,7 @@ class SshInformationCommandTest extends TestCase
         );
     }
 
-    public function testExecute($file = '2017-01-01')
+    public function testExecute($file = '2017-01-01'): void
     {
         $this->connection->executeNanbando('information', [$file], Argument::type('callable'))->shouldBeCalled();
 

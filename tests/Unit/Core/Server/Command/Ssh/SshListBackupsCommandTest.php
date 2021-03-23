@@ -31,7 +31,7 @@ class SshListBackupsCommandTest extends TestCase
     /**
      * {@inheritdoc}
      */
-    public function setUp()
+    public function setUp(): void
     {
         $this->connection = $this->prophesize(SshConnection::class);
         $this->output = $this->prophesize(OutputInterface::class);
@@ -39,14 +39,14 @@ class SshListBackupsCommandTest extends TestCase
         $this->command = new SshListBackupsCommand($this->connection->reveal(), $this->output->reveal());
     }
 
-    public function testExecute()
+    public function testExecute(): void
     {
         $this->connection->executeNanbando('list:backups', [], Argument::any())->shouldBeCalled();
 
         $this->command->execute();
     }
 
-    public function testExecuteWithRemoteFlag()
+    public function testExecuteWithRemoteFlag(): void
     {
         $this->connection->executeNanbando('list:backups', ['-r' => ''], Argument::type('callable'))
             ->shouldBeCalled();

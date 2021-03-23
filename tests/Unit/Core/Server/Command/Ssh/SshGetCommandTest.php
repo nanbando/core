@@ -33,7 +33,7 @@ class SshGetCommandTest extends TestCase
      */
     private $command;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->connection = $this->prophesize(SshConnection::class);
         $this->storage = $this->prophesize(StorageInterface::class);
@@ -46,7 +46,7 @@ class SshGetCommandTest extends TestCase
         );
     }
 
-    public function testExecute($name = '2017-01-01')
+    public function testExecute($name = '2017-01-01'): void
     {
         $remotePath = '/var/backups/2017-01-01.zip';
         $localPath = '/var/local/backup/2017-01-01.zip';

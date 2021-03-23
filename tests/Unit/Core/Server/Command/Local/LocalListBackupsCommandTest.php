@@ -30,7 +30,7 @@ class LocalListBackupsCommandTest extends TestCase
     /**
      * {@inheritdoc}
      */
-    public function setUp()
+    public function setUp(): void
     {
         $this->storage = $this->prophesize(StorageInterface::class);
         $this->output = $this->prophesize(OutputInterface::class);
@@ -38,7 +38,7 @@ class LocalListBackupsCommandTest extends TestCase
         $this->command = new LocalListBackupsCommand($this->storage->reveal(), $this->output->reveal());
     }
 
-    public function testExecute()
+    public function testExecute(): void
     {
         $this->storage->localListing()->willReturn(['2017-01-01-00-00-00', '2016-01-01-00-00-00']);
 
@@ -48,7 +48,7 @@ class LocalListBackupsCommandTest extends TestCase
         $this->command->execute();
     }
 
-    public function testExecuteWithRemoteFlag()
+    public function testExecuteWithRemoteFlag(): void
     {
         $this->storage->remoteListing()->willReturn(['2017-01-01-00-00-00', '2016-01-01-00-00-00']);
 

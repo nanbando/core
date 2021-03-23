@@ -30,7 +30,7 @@ class RestoreListenerTest extends TestCase
      */
     private $event;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->pluginRegistry = $this->prophesize(PluginRegistry::class);
         $this->listener = new RestoreListener($this->pluginRegistry->reveal());
@@ -38,7 +38,7 @@ class RestoreListenerTest extends TestCase
         $this->event = $this->prophesize(RestoreEvent::class);
     }
 
-    public function testOnRestore()
+    public function testOnRestore(): void
     {
         $this->event->getOption('parameter')->willReturn(['directory' => '/test']);
         $this->event->getOption('plugin')->willReturn('test');
@@ -69,7 +69,7 @@ class RestoreListenerTest extends TestCase
         $this->listener->onRestore($this->event->reveal());
     }
 
-    public function testOnRestoreFail()
+    public function testOnRestoreFail(): void
     {
         $exception = $this->prophesize(\Exception::class);
 

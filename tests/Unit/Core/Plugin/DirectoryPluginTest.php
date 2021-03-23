@@ -23,14 +23,14 @@ class DirectoryPluginTest extends TestCase
      */
     private $plugin;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->output = new NullOutput();
 
         $this->plugin = new DirectoryPlugin($this->output);
     }
 
-    public function testConfigureOptionsResolver()
+    public function testConfigureOptionsResolver(): void
     {
         $optionsResolver = $this->prophesize(OptionsResolver::class);
 
@@ -39,7 +39,7 @@ class DirectoryPluginTest extends TestCase
         $optionsResolver->setRequired('directory')->shouldBeCalled();
     }
 
-    public function testBackup()
+    public function testBackup(): void
     {
         $source = $this->prophesize(Filesystem::class);
         $destination = $this->prophesize(Filesystem::class);
@@ -65,7 +65,7 @@ class DirectoryPluginTest extends TestCase
         $this->assertTrue(is_resource($stream));
     }
 
-    public function testRestore()
+    public function testRestore(): void
     {
         $source = $this->prophesize(Filesystem::class)->willImplement(HashPluginInterface::class);
         $destination = $this->prophesize(Filesystem::class)->willImplement(HashPluginInterface::class);
@@ -94,7 +94,7 @@ class DirectoryPluginTest extends TestCase
         $this->assertFalse(is_resource($stream));
     }
 
-    public function testRestoreExistingFile()
+    public function testRestoreExistingFile(): void
     {
         $source = $this->prophesize(Filesystem::class)->willImplement(HashPluginInterface::class);
         $destination = $this->prophesize(Filesystem::class)->willImplement(HashPluginInterface::class);
@@ -120,7 +120,7 @@ class DirectoryPluginTest extends TestCase
         $this->plugin->restore($source->reveal(), $destination->reveal(), $database->reveal(), ['directory' => 'test']);
     }
 
-    public function testRestoreExistingDifferentFile()
+    public function testRestoreExistingDifferentFile(): void
     {
         $source = $this->prophesize(Filesystem::class)->willImplement(HashPluginInterface::class);
         $destination = $this->prophesize(Filesystem::class)->willImplement(HashPluginInterface::class);

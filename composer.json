@@ -9,7 +9,7 @@
         }
     ],
     "require": {
-        "php": "^7.2.5",
+        "php": "^7.4 || ^8.0",
         "ext-xml": "*",
         "ext-curl": "*",
         "ext-mbstring": "*",
@@ -29,7 +29,7 @@
         "scriptfusion/byte-formatter": "^3.2",
         "padraic/phar-updater": "~1.0.4",
         "cocur/slugify": "^4.0",
-        "neutron/temporary-filesystem": "^2.2",
+        "neutron/temporary-filesystem": "^3.0",
         "emgag/flysystem-hash": "^1.0",
         "composer/semver": "^3.0",
         "phpseclib/phpseclib": "^2.0",
@@ -38,11 +38,11 @@
         "league/flysystem-aws-s3-v3": "^1.0",
         "league/flysystem-sftp": "^1.0",
         "symfony/dotenv": "^5.2",
-        "nelexa/zip": "^3.3",
+        "nelexa/zip": "^4.0",
         "superbalist/flysystem-google-storage": "^7.2"
     },
     "require-dev": {
-        "phpunit/phpunit": "^6.0",
+        "phpunit/phpunit": "^7.0 || ^8.5",
         "league/flysystem-memory": "^1.0"
     },
     "autoload": {

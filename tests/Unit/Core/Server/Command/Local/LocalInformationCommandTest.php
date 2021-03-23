@@ -44,7 +44,7 @@ class LocalInformationCommandTest extends TestCase
     /**
      * {@inheritdoc}
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->storage = $this->prophesize(StorageInterface::class);
         $this->databaseFactory = $this->prophesize(DatabaseFactory::class);
@@ -56,7 +56,7 @@ class LocalInformationCommandTest extends TestCase
         );
     }
 
-    public function testExecute($file = '2017-01-01-00-00')
+    public function testExecute($file = '2017-01-01-00-00'): void
     {
         $filesystem = $this->prophesize(FilesystemInterface::class);
         $filesystem->read('database/system.json')->willReturn('{"test":"test"}');

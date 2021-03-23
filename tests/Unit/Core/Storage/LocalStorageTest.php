@@ -72,7 +72,7 @@ class LocalStorageTest extends TestCase
      */
     private $tmpPath;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->tmpPath = tempnam(sys_get_temp_dir(), 'test');
 
@@ -99,7 +99,7 @@ class LocalStorageTest extends TestCase
         );
     }
 
-    public function testStart()
+    public function testStart(): Filesystem
     {
         $this->temporaryFileSystem->createTemporaryFile()->willReturn($this->tmpPath);
 
@@ -112,7 +112,7 @@ class LocalStorageTest extends TestCase
         return $filesystem;
     }
 
-    public function testCancel()
+    public function testCancel(): void
     {
         $filesystem = $this->testStart();
 
@@ -122,7 +122,7 @@ class LocalStorageTest extends TestCase
         $this->storage->cancel($filesystem);
     }
 
-    public function testClose()
+    public function testClose(): string
     {
         $zipFile = new ZipFile();
         $zipFile->saveAsFile($this->tmpPath);
@@ -148,7 +148,7 @@ class LocalStorageTest extends TestCase
         return $name;
     }
 
-    public function testCloseLabel()
+    public function testCloseLabel(): void
     {
         $zipFile = new ZipFile();
         $zipFile->saveAsFile($this->tmpPath);
@@ -165,7 +165,7 @@ class LocalStorageTest extends TestCase
         $this->assertEquals($name . '_' . $this->environment . '_test', $result);
     }
 
-    public function testCloseNoEnvironment()
+    public function testCloseNoEnvironment(): void
     {
         $storage = new LocalStorage(
             $this->name,
@@ -194,7 +194,7 @@ class LocalStorageTest extends TestCase
         $this->assertEquals($name, $result);
     }
 
-    public function testCloseNoEnvironmentWithLabel()
+    public function testCloseNoEnvironmentWithLabel(): void
     {
         $storage = new LocalStorage(
             $this->name,
@@ -223,7 +223,7 @@ class LocalStorageTest extends TestCase
         $this->assertEquals($name . '_test', $result);
     }
 
-    public function testOpen()
+    public function testOpen(): void
     {
         $name = $this->testClose();
         $path = Path::join([DATAFIXTURES_DIR, 'backups', $this->name, $name . '.zip']);
@@ -237,7 +237,7 @@ class LocalStorageTest extends TestCase
         $this->assertInstanceOf(ZipAdapter::class, $filesystem->getAdapter()->getAdapter());
     }
 
-    public function testOpenAbsolutePath()
+    public function testOpenAbsolutePath(): void
     {
         $path = Path::join([DATAFIXTURES_DIR, 'backups', self::BACKUP_SUCCESS . '.zip']);
 
@@ -251,7 +251,7 @@ class LocalStorageTest extends TestCase
         $this->assertInstanceOf(ZipAdapter::class, $filesystem->getAdapter()->getAdapter());
     }
 
-    public function testLocalListing()
+    public function testLocalListing(): void
     {
         $this->localFilesystem->listFiles($this->name)
             ->willReturn(
@@ -268,7 +268,7 @@ class LocalStorageTest extends TestCase
         );
     }
 
-    public function testRemoteListing()
+    public function testRemoteListing(): void
     {
         $this->remoteFilesystem->listFiles($this->name)
             ->willReturn(
@@ -285,27 +285,7 @@ class LocalStorageTest extends TestCase
         );
     }
 
-    /**
-     * @deprecated this test the BC break for 1.4 and will be removed in 1.0-RC1.
-     */
-    public function testRemoteListingBC()
-    {
-        $this->remoteFilesystem->listFiles($this->name)
-            ->willReturn(
-                [
-                    ['filename' => '09-23-38-2016-12-24_test-1'],
-                    ['filename' => '17-24-51-2016-12-01'],
-                    ['filename' => '2016-12-01-17-40-15_test-3'],
-                ]
-            );
-
-        $this->assertEquals(
-            ['17-24-51-2016-12-01', '2016-12-01-17-40-15_test-3', '09-23-38-2016-12-24_test-1'],
-            $this->storage->remoteListing()
-        );
-    }
-
-    public function testSize()
+    public function testSize(): void
     {
         $path = Path::join([DATAFIXTURES_DIR, 'backups', self::BACKUP_SUCCESS . '.zip']);
 
@@ -315,14 +295,14 @@ class LocalStorageTest extends TestCase
         $this->assertEquals(filesize($path), $this->storage->size(self::BACKUP_SUCCESS));
     }
 
-    public function testPath()
+    public function testPath(): void
     {
         $path = Path::join([DATAFIXTURES_DIR, 'backups', 'test', self::BACKUP_SUCCESS . '.zip']);
 
         $this->assertEquals($path, $this->storage->path(self::BACKUP_SUCCESS));
     }
 
-    public function testFetch()
+    public function testFetch(): void
     {
         $zipPath = Path::join([DATAFIXTURES_DIR, 'backups', self::BACKUP_SUCCESS . '.zip']);
 
@@ -334,7 +314,7 @@ class LocalStorageTest extends TestCase
         $this->storage->fetch($file);
     }
 
-    public function testFetchNotExists()
+    public function testFetchNotExists(): void
     {
         $file = '123-123-123';
         $path = sprintf('%s/%s.zip', $this->name, $file);
@@ -344,7 +324,7 @@ class LocalStorageTest extends TestCase
         $this->storage->fetch($file);
     }
 
-    public function testPush()
+    public function testPush(): void
     {
         $zipPath = Path::join([DATAFIXTURES_DIR, 'backups', self::BACKUP_SUCCESS . '.zip']);
 
@@ -357,7 +337,7 @@ class LocalStorageTest extends TestCase
         $this->storage->push($file);
     }
 
-    public function testPushExistsRemote()
+    public function testPushExistsRemote(): void
     {
         $zipPath = Path::join([DATAFIXTURES_DIR, 'backups', self::BACKUP_SUCCESS . '.zip']);
 
@@ -370,7 +350,7 @@ class LocalStorageTest extends TestCase
         $this->storage->push($file);
     }
 
-    public function testPushNotExists()
+    public function testPushNotExists(): void
     {
         $file = '123-123-123';
         $path = sprintf('%s/%s.zip', $this->name, $file);
@@ -380,7 +360,7 @@ class LocalStorageTest extends TestCase
         $this->storage->push($file);
     }
 
-    public function testPushNoRemote()
+    public function testPushNoRemote(): void
     {
         $this->expectException(RemoteStorageNotConfiguredException::class);
 
@@ -397,7 +377,7 @@ class LocalStorageTest extends TestCase
         $storage->push('test');
     }
 
-    public function testFetchNoRemote()
+    public function testFetchNoRemote(): void
     {
         $this->expectException(RemoteStorageNotConfiguredException::class);
 
@@ -413,7 +393,7 @@ class LocalStorageTest extends TestCase
         $storage->fetch('test');
     }
 
-    public function testRemoteListingNoRemote()
+    public function testRemoteListingNoRemote(): void
     {
         $this->expectException(RemoteStorageNotConfiguredException::class);
 

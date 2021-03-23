@@ -21,3 +21,5 @@ manifest.json
 
 .DS_Store
 /key.json
+
+.phpunit.result.cache
