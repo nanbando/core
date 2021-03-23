@@ -5,6 +5,7 @@ namespace Nanbando\Tests\Unit\Core\Flysystem;
 use League\Flysystem\AdapterInterface;
 use League\Flysystem\Config;
 use Nanbando\Core\Flysystem\ReadonlyAdapter;
+use Nanbando\Core\Flysystem\ReadonlyException;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
 
@@ -30,11 +31,11 @@ class ReadonlyAdapterTest extends TestCase
 
     /**
      * @dataProvider provideExceptionData
-     *
-     * @expectedException \Nanbando\Core\Flysystem\ReadonlyException
      */
     public function testException($method, array $parameter)
     {
+        $this->expectException(ReadonlyException::class);
+
         $adapter = $this->prophesize(AdapterInterface::class);
 
         call_user_func_array([new ReadonlyAdapter($adapter->reveal()), $method], $parameter);

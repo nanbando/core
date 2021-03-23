@@ -32,7 +32,7 @@ class SshBackupCommandTest extends TestCase
     /**
      * {@inheritdoc}
      */
-    public function setUp()
+    public function setUp(): void
     {
         $this->connection = $this->prophesize(SshConnection::class);
         $this->output = $this->prophesize(OutputInterface::class);
@@ -40,7 +40,7 @@ class SshBackupCommandTest extends TestCase
         $this->command = new SshBackupCommand($this->connection->reveal(), $this->output->reveal());
     }
 
-    public function provideData()
+    public function provideData(): array
     {
         return [
             ['successfully', BackupStatus::STATE_SUCCESS],
@@ -52,7 +52,7 @@ class SshBackupCommandTest extends TestCase
     /**
      * @dataProvider provideData
      */
-    public function testExecute($output, $status, $label = 'test-label', $message = 'test-message')
+    public function testExecute($output, $status, $label = 'test-label', $message = 'test-message'): void
     {
         $this->connection->executeNanbando('backup', [$label, '-m' => '"' . $message . '"'], Argument::type('callable'))
             ->shouldBeCalled()
@@ -70,7 +70,7 @@ class SshBackupCommandTest extends TestCase
     /**
      * @dataProvider provideData
      */
-    public function testExecuteWithProcess($output, $status, $label = 'test-label', $message = 'test-message')
+    public function testExecuteWithProcess($output, $status, $label = 'test-label', $message = 'test-message'): void
     {
         $this->connection->executeNanbando(
                 'backup',

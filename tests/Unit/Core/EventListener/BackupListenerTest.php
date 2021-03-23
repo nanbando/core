@@ -35,7 +35,7 @@ class BackupListenerTest extends TestCase
      */
     private $event;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->pluginRegistry = $this->prophesize(PluginRegistry::class);
         $this->listener = new BackupListener($this->pluginRegistry->reveal());
@@ -46,7 +46,7 @@ class BackupListenerTest extends TestCase
         $this->event->getDatabase()->willReturn($this->database->reveal());
     }
 
-    public function testOnBackupStarted()
+    public function testOnBackupStarted(): void
     {
         $this->database->set(
             'started',
@@ -62,7 +62,7 @@ class BackupListenerTest extends TestCase
         $this->listener->onBackupStarted($this->event->reveal());
     }
 
-    public function testOnBackup()
+    public function testOnBackup(): void
     {
         $this->event->getOption('parameter')->willReturn(['directory' => '/test']);
         $this->event->getOption('plugin')->willReturn('test');
@@ -94,7 +94,7 @@ class BackupListenerTest extends TestCase
         $this->listener->onBackup($this->event->reveal());
     }
 
-    public function testOnBackupException()
+    public function testOnBackupException(): void
     {
         $this->event->getOption('parameter')->willReturn(['directory' => '/test']);
         $this->event->getOption('plugin')->willReturn('test');
@@ -131,7 +131,7 @@ class BackupListenerTest extends TestCase
         $this->listener->onBackup($this->event->reveal());
     }
 
-    public function testOnBackupFinished()
+    public function testOnBackupFinished(): void
     {
         $this->event->getStatus()->willReturn(BackupStatus::STATE_SUCCESS);
 
@@ -150,7 +150,7 @@ class BackupListenerTest extends TestCase
         $this->listener->onBackupFinished($this->event->reveal());
     }
 
-    public function testOnBackupFinishedFailed()
+    public function testOnBackupFinishedFailed(): void
     {
         $this->event->getStatus()->willReturn(BackupStatus::STATE_FAILED);
         $this->event->getException()->willReturn(new \Exception());

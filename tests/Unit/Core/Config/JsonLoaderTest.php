@@ -29,7 +29,7 @@ class JsonLoaderTest extends TestCase
      */
     private $loader;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->container = $this->prophesize(ContainerBuilder::class);
         $this->locator = $this->prophesize(FileLocatorInterface::class);
@@ -37,7 +37,7 @@ class JsonLoaderTest extends TestCase
         $this->loader = new JsonLoader($this->container->reveal(), $this->locator->reveal());
     }
 
-    public function provideSupportData()
+    public function provideSupportData(): array
     {
         return [
             ['/test.json', true],
@@ -48,12 +48,12 @@ class JsonLoaderTest extends TestCase
     /**
      * @dataProvider provideSupportData
      */
-    public function testSupport($resource, $expected)
+    public function testSupport($resource, $expected): void
     {
         $this->assertEquals($expected, $this->loader->supports($resource));
     }
 
-    public function testLoad()
+    public function testLoad(): void
     {
         $path = Path::join([DATAFIXTURES_DIR, 'config', 'test.json']);
 
@@ -71,7 +71,7 @@ class JsonLoaderTest extends TestCase
         $this->loader->load('test.json');
     }
 
-    public function testImport()
+    public function testImport(): void
     {
         $ymlLoader = $this->prophesize(LoaderInterface::class);
         $ymlLoader->load(Path::join([DATAFIXTURES_DIR, 'config', 'parameters.yml']), null)->shouldBeCalled();
@@ -100,7 +100,7 @@ class JsonLoaderTest extends TestCase
         $this->loader->load('test-imports.json');
     }
 
-    public function testParameters()
+    public function testParameters(): void
     {
         $path = Path::join([DATAFIXTURES_DIR, 'config', 'test-parameters.json']);
 

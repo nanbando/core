@@ -38,14 +38,14 @@ class PresetListenerTest extends TestCase
      */
     private $listener;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->presetStore = $this->prophesize(PresetStore::class);
 
         $this->listener = new PresetListener($this->application, $this->version, $this->options, $this->presetStore->reveal());
     }
 
-    public function testOnPreBackup()
+    public function testOnPreBackup(): void
     {
         $event = $this->prophesize(PreBackupEvent::class);
         $event->getBackup()->willReturn(['test1' => 1, 'test2' => 2]);
@@ -57,7 +57,7 @@ class PresetListenerTest extends TestCase
         $this->listener->onPreBackup($event->reveal());
     }
 
-    public function testOnPreRestore()
+    public function testOnPreRestore(): void
     {
         $event = $this->prophesize(PreRestoreEvent::class);
         $event->getBackup()->willReturn(['test1' => 1, 'test2' => 2]);

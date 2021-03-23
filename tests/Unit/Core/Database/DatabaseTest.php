@@ -13,26 +13,26 @@ class DatabaseTest extends ReadonlyDatabaseTest
      */
     protected $database;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->database = new Database($this->data);
     }
 
-    public function testSet()
+    public function testSet(): void
     {
         $this->database->set('version', '1.0');
 
         $this->assertEquals(['name' => 'nanbando', 'version' => '1.0'], $this->database->getAll());
     }
 
-    public function testRemove()
+    public function testRemove(): void
     {
         $this->database->remove('name');
 
         $this->assertEmpty($this->database->getAll());
     }
 
-    public function testRemoveNotExists()
+    public function testRemoveNotExists(): void
     {
         $this->database->remove('version');
 

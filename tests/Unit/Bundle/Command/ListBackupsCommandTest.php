@@ -31,13 +31,13 @@ class ListBackupsCommandTest extends TestCase
     /**
      * {@inheritdoc}
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->serverRegistry = $this->prophesize(ServerRegistry::class);
         $this->container = $this->prophesize(ContainerInterface::class);
     }
 
-    private function getCommandTester()
+    private function getCommandTester(): CommandTester
     {
         $this->container->get('nanbando.server_registry')->willReturn($this->serverRegistry->reveal());
 
@@ -52,7 +52,7 @@ class ListBackupsCommandTest extends TestCase
         return new CommandTester($command);
     }
 
-    public function testExecute()
+    public function testExecute(): void
     {
         $command = $this->prophesize(CommandInterface::class);
         $command->interact(Argument::type(InputInterface::class), Argument::type(OutputInterface::class))

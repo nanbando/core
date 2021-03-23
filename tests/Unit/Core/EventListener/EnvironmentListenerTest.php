@@ -30,7 +30,7 @@ class EnvironmentListenerTest extends TestCase
      */
     private $listener;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->environment = $this->prophesize(EnvironmentInterface::class);
         $this->output = $this->prophesize(OutputInterface::class);
@@ -38,7 +38,7 @@ class EnvironmentListenerTest extends TestCase
         $this->listener = new EnvironmentListener($this->environment->reveal(), $this->output->reveal());
     }
 
-    public function testOnBackupFinished()
+    public function testOnBackupFinished(): void
     {
         $exception = $this->prophesize(\Exception::class);
 
@@ -53,7 +53,7 @@ class EnvironmentListenerTest extends TestCase
         $this->listener->onBackupFinished($event->reveal());
     }
 
-    public function testOnBackupFinishedSuccess()
+    public function testOnBackupFinishedSuccess(): void
     {
         $event = $this->prophesize(BackupEvent::class);
         $event->getStatus()->willReturn(BackupStatus::STATE_SUCCESS);
@@ -65,7 +65,7 @@ class EnvironmentListenerTest extends TestCase
         $this->listener->onBackupFinished($event->reveal());
     }
 
-    public function testOnBackupFinishedContinue()
+    public function testOnBackupFinishedContinue(): void
     {
         $exception = $this->prophesize(\Exception::class);
 
@@ -80,7 +80,7 @@ class EnvironmentListenerTest extends TestCase
         $this->listener->onBackupFinished($event->reveal());
     }
 
-    public function testOnPreRestore()
+    public function testOnPreRestore(): void
     {
         $systemDatabase = $this->prophesize(ReadonlyDatabase::class);
 
@@ -95,7 +95,7 @@ class EnvironmentListenerTest extends TestCase
         $this->listener->onPreRestore($event->reveal());
     }
 
-    public function testOnPreRestoreSuccess()
+    public function testOnPreRestoreSuccess(): void
     {
         $systemDatabase = $this->prophesize(ReadonlyDatabase::class);
 
@@ -110,7 +110,7 @@ class EnvironmentListenerTest extends TestCase
         $this->listener->onPreRestore($event->reveal());
     }
 
-    public function testOnPreRestoreContinue()
+    public function testOnPreRestoreContinue(): void
     {
         $systemDatabase = $this->prophesize(ReadonlyDatabase::class);
 
@@ -125,7 +125,7 @@ class EnvironmentListenerTest extends TestCase
         $this->listener->onPreRestore($event->reveal());
     }
 
-    public function testOnRestoreStated()
+    public function testOnRestoreStated(): void
     {
         $database = $this->prophesize(ReadonlyDatabase::class);
 
@@ -139,7 +139,7 @@ class EnvironmentListenerTest extends TestCase
         $this->listener->onRestoreStarted($event->reveal());
     }
 
-    public function testOnRestoreStatedSuccess()
+    public function testOnRestoreStatedSuccess(): void
     {
         $database = $this->prophesize(ReadonlyDatabase::class);
 

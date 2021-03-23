@@ -18,29 +18,29 @@ class ReadonlyDatabaseTest extends TestCase
      */
     protected $data = ['name' => 'nanbando'];
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->database = new ReadonlyDatabase($this->data);
     }
 
-    public function testGet()
+    public function testGet(): void
     {
         $this->assertEquals($this->data['name'], $this->database->get('name'));
     }
 
-    public function testGetAll()
+    public function testGetAll(): void
     {
         $this->assertEquals($this->data, $this->database->getAll());
     }
 
-    public function testGetNotExisting()
+    public function testGetNotExisting(): void
     {
         $this->expectException(PropertyNotExistsException::class);
 
         $this->database->get('version');
     }
 
-    public function provideGetWithDefaultData()
+    public function provideGetWithDefaultData(): array
     {
         return [
             ['name', null, 'nanbando'],
@@ -53,7 +53,7 @@ class ReadonlyDatabaseTest extends TestCase
     /**
      * @dataProvider provideGetWithDefaultData
      */
-    public function testGetWithDefault($name, $default, $expected)
+    public function testGetWithDefault($name, $default, $expected): void
     {
         $this->assertEquals($expected, $this->database->getWithDefault($name, $default));
     }
@@ -69,7 +69,7 @@ class ReadonlyDatabaseTest extends TestCase
     /**
      * @dataProvider provideExistsData
      */
-    public function testExists($name, $expected)
+    public function testExists($name, $expected): void
     {
         $this->assertEquals($expected, $this->database->exists($name));
     }

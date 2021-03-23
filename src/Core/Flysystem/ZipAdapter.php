@@ -12,6 +12,7 @@ use League\Flysystem\Config;
 use League\Flysystem\Util;
 use LogicException;
 use PhpZip\Exception\ZipException;
+use PhpZip\Model\ZipEntry;
 use PhpZip\Model\ZipInfo;
 use PhpZip\ZipFile;
 
@@ -180,14 +181,14 @@ class ZipAdapter extends AbstractAdapter implements AdapterInterface
      */
     public function listContents($directory = '', $recursive = false)
     {
-        $result = $this->zip->getAllInfo();
+        $result = $this->zip->getEntries();
 
         $pathPrefix = $this->getPathPrefix();
         $prefixLength = strlen($pathPrefix);
 
         return array_filter(
             array_map(
-                function (ZipInfo $item) use ($pathPrefix, $prefixLength) {
+                function (ZipEntry $item) use ($pathPrefix, $prefixLength) {
                     if ($pathPrefix
                         && (substr($item->getName(), 0, $prefixLength) !== $pathPrefix
                             || $item->getName() === $pathPrefix)
@@ -209,7 +210,7 @@ class ZipAdapter extends AbstractAdapter implements AdapterInterface
     {
         $location = $this->applyPathPrefix($path);
 
-        if (!$info = $this->zip->getEntryInfo($location)) {
+        if (!$info = $this->zip->getEntry($location)) {
             return false;
         }
 
@@ -223,9 +224,9 @@ class ZipAdapter extends AbstractAdapter implements AdapterInterface
      *
      * @return array
      */
-    protected function normalizeObject(ZipInfo $object)
+    protected function normalizeObject(ZipEntry $object)
     {
-        if ($object->isFolder()) {
+        if ($object->isDirectory()) {
             return [
                 'path' => $this->removePathPrefix(trim($object->getName(), '/')),
                 'type' => 'dir',
@@ -234,7 +235,7 @@ class ZipAdapter extends AbstractAdapter implements AdapterInterface
 
         return [
             'type' => 'file',
-            'size' => $object->getSize(),
+            'size' => $object->getUncompressedSize(),
             'timestamp' => $object->getMtime(),
             'path' => $this->removePathPrefix($object->getName()),
         ];

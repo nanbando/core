@@ -271,19 +271,10 @@ class LocalStorage implements StorageInterface
      * @param string $filename
      *
      * @return \DateTime
-     *
-     * @deprecated This function contains deprecated parts
      */
     protected function parseDateFromFilename($filename)
     {
-        if ($date = \DateTime::createFromFormat(self::FILE_NAME_PATTERN, explode('_', $filename)[0])) {
-            return $date;
-        }
-
-        /**
-         * @deprecated handle BC break of PR #62. will be remove in 1.0-RC1.
-         */
-        return \DateTime::createFromFormat('H-i-s-Y-m-d', explode('_', $filename)[0]);
+        return \DateTime::createFromFormat(self::FILE_NAME_PATTERN, explode('_', $filename)[0]);
     }
 
     /**

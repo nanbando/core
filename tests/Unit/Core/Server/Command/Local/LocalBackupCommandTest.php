@@ -41,7 +41,7 @@ class LocalBackupCommandTest extends TestCase
     /**
      * {@inheritdoc}
      */
-    public function setUp()
+    public function setUp(): void
     {
         $this->storage = $this->prophesize(StorageInterface::class);
         $this->databaseFactory = $this->prophesize(DatabaseFactory::class);
@@ -66,7 +66,7 @@ class LocalBackupCommandTest extends TestCase
      *
      * @return LocalBackupCommand
      */
-    private function createCommand(array $backup)
+    private function createCommand(array $backup): LocalBackupCommand
     {
         return new LocalBackupCommand(
             $this->storage->reveal(),
@@ -76,7 +76,7 @@ class LocalBackupCommandTest extends TestCase
         );
     }
 
-    public function testBackup()
+    public function testBackup(): void
     {
         $nanbando = $this->createCommand(
             [
@@ -125,7 +125,7 @@ class LocalBackupCommandTest extends TestCase
         );
     }
 
-    public function testBackupCancelOnPreBackup()
+    public function testBackupCancelOnPreBackup(): void
     {
         $nanbando = $this->createCommand(
             [
@@ -160,7 +160,7 @@ class LocalBackupCommandTest extends TestCase
         $this->assertEquals(BackupStatus::STATE_FAILED, $nanbando->execute());
     }
 
-    public function testBackupCancelOnBackup()
+    public function testBackupCancelOnBackup(): void
     {
         $nanbando = $this->createCommand(
             [
@@ -194,7 +194,7 @@ class LocalBackupCommandTest extends TestCase
         $this->assertEquals(BackupStatus::STATE_FAILED, $nanbando->execute());
     }
 
-    public function testBackupCancelOnBackupGoOn()
+    public function testBackupCancelOnBackupGoOn(): void
     {
         $nanbando = $this->createCommand(
             [
@@ -247,7 +247,7 @@ class LocalBackupCommandTest extends TestCase
         );
     }
 
-    public function testBackupProcess()
+    public function testBackupProcess(): void
     {
         $nanbando = $this->createCommand(
             [
@@ -279,7 +279,7 @@ class LocalBackupCommandTest extends TestCase
         $this->assertEquals(BackupStatus::STATE_SUCCESS, $nanbando->execute(['process' => ['test']]));
     }
 
-    public function testBackupProcessNoProcessGiven()
+    public function testBackupProcessNoProcessGiven(): void
     {
         $nanbando = $this->createCommand(
             [
@@ -311,7 +311,7 @@ class LocalBackupCommandTest extends TestCase
         $this->assertEquals(BackupStatus::STATE_SUCCESS, $nanbando->execute());
     }
 
-    public function testBackupWrongProcess()
+    public function testBackupWrongProcess(): void
     {
         $nanbando = $this->createCommand(
             [
@@ -343,7 +343,7 @@ class LocalBackupCommandTest extends TestCase
         $this->assertEquals(BackupStatus::STATE_SUCCESS, $nanbando->execute(['process' => ['test-2']]));
     }
 
-    public function testBackupNoProcess()
+    public function testBackupNoProcess(): void
     {
         $nanbando = $this->createCommand(
             [

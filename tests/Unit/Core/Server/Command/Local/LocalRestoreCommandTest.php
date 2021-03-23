@@ -39,7 +39,7 @@ class LocalRestoreCommandTest extends TestCase
      */
     private $eventDispatcher;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->storage = $this->prophesize(StorageInterface::class);
         $this->databaseFactory = $this->prophesize(DatabaseFactory::class);
@@ -64,7 +64,7 @@ class LocalRestoreCommandTest extends TestCase
      *
      * @return LocalRestoreCommand
      */
-    protected function createCommand(array $backup)
+    protected function createCommand(array $backup): LocalRestoreCommand
     {
         return new LocalRestoreCommand(
             $this->storage->reveal(),
@@ -74,7 +74,7 @@ class LocalRestoreCommandTest extends TestCase
         );
     }
 
-    public function testRestore()
+    public function testRestore(): void
     {
         $nanbando = $this->createCommand(
             [
