@@ -27,6 +27,8 @@ jobs:
               uses: shivammathur/setup-php@v2
               with:
                   php-version: ${{ matrix.php-version }}
+              env:
+                  COMPOSER_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
             - name: Get composer cache directory
               id: composer-cache-dir

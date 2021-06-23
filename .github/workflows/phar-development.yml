@@ -11,8 +11,15 @@ on:
 
 jobs:
     compile:
-        name: "Compile PHAR without publishing"
+        name: "Compile PHAR without publishing with ${{ matrix.php-version }}"
         runs-on: "ubuntu-latest"
+
+        strategy:
+            fail-fast: false
+            matrix:
+                include:
+                    - php-version: '7.4'
+                    - php-version: '8.0'
 
         steps:
             - name: "Checkout"
@@ -24,15 +31,17 @@ jobs:
               uses: "shivammathur/setup-php@v2"
               with:
                   coverage: "none"
-                  php-version: "7.4"
-                  tools: composer:v1
+                  php-version: ${{ matrix.php-version }}
+                  tools: composer:v2
+              env:
+                  COMPOSER_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
             - name: "Cache dependencies"
               uses: "actions/cache@v2"
               with:
                   path: "~/.composer/cache"
-                  key: "php-7.4-composer-${{ hashFiles('**/composer.json') }}"
-                  restore-keys: "php-7.4-composer-"
+                  key: "php-${{ matrix.php-version }}-composer-${{ hashFiles('**/composer.json') }}"
+                  restore-keys: "php-${{ matrix.php-version }}-composer-"
 
             - name: "Install dependencies"
               run: "composer install --no-interaction --no-progress --no-suggest --no-dev"
