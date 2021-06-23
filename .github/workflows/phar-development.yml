@@ -59,3 +59,6 @@ jobs:
 
             - name: "Run phar to see if it works"
               run: php nanbando.phar
+
+            - name: "Try plugins install inside of the example directory"
+              run: cd example && php ../nanbando.phar plugins:install

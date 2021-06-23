@@ -1,0 +1,20 @@
+{
+    "name": "nanbando/example",
+    "backup": {
+        "uploads": {
+            "plugin": "directory",
+            "parameter": {
+                "directory": "var/uploads"
+            }
+        },
+        "database": {
+            "plugin": "mysql",
+            "parameter": {
+                "databaseUrl": "mysql://root:root@127.0.0.1:3306/example"
+            }
+        }
+    },
+    "require": {
+        "nanbando/mysql": "^0.4.1"
+    }
+}
