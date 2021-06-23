@@ -5,7 +5,7 @@ composer.lock
 *.iml
 
 .nanbando
-nanbando.json
+/nanbando.json
 nanbando.lock
 
 .github/phar-private.pem
