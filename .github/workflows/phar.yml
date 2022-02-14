@@ -3,6 +3,7 @@
 name: "Compile PHAR"
 
 on:
+    workflow_dispatch:
     push:
         branches:
             - "master"
