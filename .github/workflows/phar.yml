@@ -64,7 +64,7 @@ jobs:
             -   name: "Rename PHAR with version suffix"
                 run: |
                     mv nanbando.phar nanbando-php${{ matrix.php-version }}.phar
-                    cp nanbando-php${{ matrix.php-version }}.phar nanbando-php${{ matrix.php-version }}.phar.pubkey
+                    cp nanbando.phar.pubkey nanbando-php${{ matrix.php-version }}.phar.pubkey
 
             -   name: "Upload PHAR as artifact"
                 uses: actions/upload-artifact@v2
