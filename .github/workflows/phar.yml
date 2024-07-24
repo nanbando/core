@@ -1,5 +1,3 @@
-# https://help.github.com/en/categories/automating-your-workflow-with-github-actions
-
 name: "Compile PHAR"
 
 on:
@@ -14,90 +12,126 @@ jobs:
     compile:
         name: "Compile PHAR"
         runs-on: "ubuntu-latest"
-
         strategy:
-            fail-fast: false
+            fail-fast: true
             matrix:
                 include:
-                    - php-version: '8.0'
+                    -   php-version: '8.0'
+                    -   php-version: '8.1'
+                    -   php-version: '8.2'
 
         steps:
-            - name: "Checkout"
-              uses: "actions/checkout@v2"
-              with:
-                  fetch-depth: 0
+            -   name: "Checkout"
+                uses: "actions/checkout@v2"
+                with:
+                    fetch-depth: 0
 
-            - name: "Install PHP"
-              uses: "shivammathur/setup-php@v2"
-              with:
-                  coverage: "none"
-                  php-version: ${{ matrix.php-version }}
-                  tools: composer:v1
-              env:
-                  COMPOSER_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            -   name: "Install PHP"
+                uses: "shivammathur/setup-php@v2"
+                with:
+                    coverage: "none"
+                    php-version: ${{ matrix.php-version }}
+                    tools: composer:v1
+                env:
+                    COMPOSER_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-            - name: "Cache dependencies"
-              uses: "actions/cache@v2"
-              with:
-                  path: "~/.composer/cache"
-                  key: "php-${{ matrix.php-version }}-composer-${{ hashFiles('**/composer.json') }}"
-                  restore-keys: "php-${{ matrix.php-version }}-composer-"
+            -   name: "Cache dependencies"
+                uses: "actions/cache@v2"
+                with:
+                    path: "~/.composer/cache"
+                    key: "php-${{ matrix.php-version }}-composer-${{ hashFiles('**/composer.json') }}"
+                    restore-keys: "php-${{ matrix.php-version }}-composer-"
 
-            - name: "Install dependencies"
-              run: "composer install --no-interaction --no-progress --no-suggest --no-dev"
+            -   name: "Install dependencies"
+                run: "composer install --no-interaction --no-progress --no-suggest --no-dev"
 
-            - name: "Download box"
-              run: wget -O box.phar https://github.com/box-project/box/releases/download/${BOX_VERSION}/box.phar
-              env:
-                  BOX_VERSION: 3.11.0
+            -   name: "Download box"
+                run: wget -O box.phar https://github.com/box-project/box/releases/download/${BOX_VERSION}/box.phar
+                env:
+                    BOX_VERSION: 3.11.0
 
-            - name: "Prepare pem File"
-              env:
-                  PHAR_PRIVATE: ${{ secrets.PHAR_PRIVATE }}
-              run: echo "$PHAR_PRIVATE" > .github/phar-private.pem
+            -   name: "Prepare pem File"
+                env:
+                    PHAR_PRIVATE: ${{ secrets.PHAR_PRIVATE }}
+                run: echo "$PHAR_PRIVATE" > .github/phar-private.pem
 
-            - name: "Compile PHAR"
-              run: php box.phar compile
+            -   name: "Compile PHAR"
+                run: php box.phar compile
 
-            - name: "Run phar to see if it works"
-              run: php nanbando.phar
+            -   name: "Run phar to see if it works"
+                run: php nanbando.phar
 
-            - name: "Checkout gh-pages"
-              uses: "actions/checkout@v2"
-              with:
-                  ref: gh-pages
-                  path: gh-pages
-                  token: ${{ secrets.PAT }}
+            -   name: "Rename PHAR with version suffix"
+                run: |
+                    mv nanbando.phar nanbando-php${{ matrix.php-version }}.phar
+                    cp nanbando-php${{ matrix.php-version }}.phar nanbando-php${{ matrix.php-version }}.phar.pubkey
 
-            - name: "cp PHAR"
-              run: |
-                  cp nanbando.phar gh-pages/nanbando.phar
+            -   name: "Upload PHAR as artifact"
+                uses: actions/upload-artifact@v2
+                with:
+                    name: nanbando-php${{ matrix.php-version }}
+                    path: |
+                        nanbando-php${{ matrix.php-version }}.phar
+                        nanbando-php${{ matrix.php-version }}.phar.pubkey
 
-            - name: "Create sha1sum"
-              working-directory: gh-pages
-              run: |
-                  sha1sum nanbando.phar > nanbando.phar.version
+    deploy:
+        name: "Deploy PHARs"
+        needs: compile
+        runs-on: "ubuntu-latest"
+        steps:
+            -   name: "Checkout gh-pages"
+                uses: "actions/checkout@v2"
+                with:
+                    ref: gh-pages
+                    path: gh-pages
+                    token: ${{ secrets.PAT }}
 
-            - name: "Configure Git"
-              working-directory: gh-pages
-              run: |
-                  git config user.email "johannes@sulu.io" && \
-                  git config user.name "Johannes Wachter"
+            -   name: "Download all artifacts"
+                uses: actions/download-artifact@v2
+                with:
+                    path: artifacts
 
-            - name: "Commit PHAR - master"
-              working-directory: gh-pages
-              if: "!startsWith(github.ref, 'refs/tags/')"
-              run: |
-                  git add nanbando.phar nanbando.phar.version && \
-                  git commit -m "Updated nanbando to commit ${{ github.event.after }}" && \
-                  git push
+            -   name: "Copy PHARs to gh-pages"
+                run: |
+                    cp artifacts/nanbando-php8.0/nanbando-php8.0.phar* gh-pages/
+                    cp artifacts/nanbando-php8.1/nanbando-php8.1.phar* gh-pages/
+                    cp artifacts/nanbando-php8.2/nanbando-php8.2.phar* gh-pages/
+                    cp artifacts/nanbando-php8.2/nanbando-php8.2.phar gh-pages/nanbando.phar
+                    cp artifacts/nanbando-php8.2/nanbando-php8.2.phar.pubkey gh-pages/nanbando.phar.pubkey
 
-            - name: "Create Release - tag"
-              uses: softprops/action-gh-release@v1
-              if: startsWith(github.ref, 'refs/tags/')
-              env:
-                  GITHUB_TOKEN: ${{ secrets.PAT }}
-              with:
-                  files: |
-                      nanbando.phar
-                      nanbando.phar.pubkey
+            -   name: "Create sha1sum"
+                working-directory: gh-pages
+                run: |
+                    sha1sum nanbando-php8.0.phar > nanbando-php8.0.phar.version
+                    sha1sum nanbando-php8.1.phar > nanbando-php8.1.phar.version
+                    sha1sum nanbando-php8.2.phar > nanbando-php8.2.phar.version
+                    sha1sum nanbando.phar > nanbando.phar.version
+
+            -   name: "Configure Git"
+                working-directory: gh-pages
+                run: |
+                    git config user.email "johannes@sulu.io"
+                    git config user.name "Johannes Wachter"
+
+            -   name: "Commit PHARs"
+                working-directory: gh-pages
+                run: |
+                    git add nanbando-php8.0.phar* nanbando-php8.1.phar* nanbando-php8.2.phar* nanbando.phar*
+                    git commit -m "Updated nanbando PHARs for commit ${{ github.sha }}"
+                    git push
+
+            -   name: "Create Release"
+                if: startsWith(github.ref, 'refs/tags/')
+                uses: softprops/action-gh-release@v1
+                env:
+                    GITHUB_TOKEN: ${{ secrets.PAT }}
+                with:
+                    files: |
+                        gh-pages/nanbando-php8.0.phar
+                        gh-pages/nanbando-php8.1.phar
+                        gh-pages/nanbando-php8.2.phar
+                        gh-pages/nanbando.phar
+                        gh-pages/nanbando-php8.0.phar.pubkey
+                        gh-pages/nanbando-php8.1.phar.pubkey
+                        gh-pages/nanbando-php8.2.phar.pubkey
+                        gh-pages/nanbando.phar.pubkey
