@@ -2,6 +2,7 @@
 
 namespace Nanbando\Bundle\Command;
 
+use Nanbando\Core\BackupStatus;
 use Nanbando\Core\Server\Command\CommandInterface;
 use Nanbando\Core\Server\ServerRegistry;
 use Symfony\Component\Console\Command\Command;
@@ -30,7 +31,11 @@ abstract class BaseServerCommand extends Command implements ContainerAwareInterf
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->getCommand($input)->execute($this->getCommandOptions($input));
+        $status = $this->getCommand($input)->execute($this->getCommandOptions($input));
+
+        if (in_array($status, [BackupStatus::STATE_FAILED, BackupStatus::STATE_PARTIALLY], true)) {
+            return 1;
+        }
 
         return 0;
     }
